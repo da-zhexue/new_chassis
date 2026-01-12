@@ -1,0 +1,5 @@
+[info] Log at : 2026/1/10|14:12:51|GMT+0800
+
+[Warn] 发现无效的文件组，Group: app/control
+[Warn] 发现无效的文件组，Group: app/upc
+[Warn] 发现无效的文件组，Group: ::CMSIS
