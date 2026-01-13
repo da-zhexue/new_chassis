@@ -188,6 +188,33 @@ float loop_float_constrain(float Input, float minValue, float maxValue)
     return Input;
 }
 
+//ѭ���޷�����
+int loop_int_constrain(int Input, int minValue, int maxValue)
+{
+    if (maxValue < minValue)
+    {
+        return Input;
+    }
+
+    if (Input > maxValue)
+    {
+        float len = maxValue - minValue;
+        while (Input > maxValue)
+        {
+            Input -= len;
+        }
+    }
+    else if (Input < minValue)
+    {
+        float len = maxValue - minValue;
+        while (Input < minValue)
+        {
+            Input += len;
+        }
+    }
+    return Input;
+}
+
 //���ȸ�ʽ��Ϊ-PI~PI
 float radian_format(float Rad)
 {

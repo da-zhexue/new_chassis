@@ -7,7 +7,7 @@
 
 void ChassisTask(void const * argument)
 {   
-	dbus_uart_init();
+	//dbus_uart_init();
 	chassis_ctrl_init();
 	motor_ctrl_init();
 	CAN_Receive_Init();

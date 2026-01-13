@@ -112,7 +112,8 @@ int main(void)
 	while (BMI088_init(&hspi1, 1) != BMI088_NO_ERROR)
 			;
   uart1_init();
-  //uart6_init();
+	dbus_uart_init();
+  uart6_init();
   can_filter_init();
   delay_init();
   /* USER CODE END 2 */

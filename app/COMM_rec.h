@@ -15,6 +15,12 @@ typedef struct
 
 } upc_t;
 
+typedef struct
+{
+    fp32 big_gimbal_angle[3];
+    fp32 big_gimbal_imu_last_online_time;
+} big_gimbal_angle_t; // 暂时将大小云台拆为两个结构体
+
 #define UPC_HEADER 0xA5
 #define UPC_HEADER_LEN 5
 #define UPC_DATA_LEN 0x0D
@@ -38,8 +44,8 @@ typedef enum
 } upc_cmd_t;
 
 uint8_t upc_decode(uint8_t* rx_data);
-float* get_small_gimbal_angle(void);
-float* get_big_gimbal_angle(void);
+big_gimbal_angle_t* get_big_gimbal_angle(void);
 upc_t* get_upc_data(void);
+void temp_imu_handler(uint8_t* data);
 
 #endif

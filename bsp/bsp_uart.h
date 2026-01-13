@@ -3,7 +3,7 @@
 #include "usart.h"
 
 #define COMM_MESSAGE_LEN 22
-#define DEBUG_MESSAGE_LEN 100
+#define DEBUG_MESSAGE_LEN 24
 
 #define COMM_HUART huart1
 #define DEBUG_HUART huart6 

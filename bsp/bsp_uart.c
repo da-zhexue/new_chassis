@@ -18,7 +18,6 @@ void uart1_init(void) // COMMUNICATION_BOARD
 
 void uart6_init(void) // DEBUG
 {
-	//HAL_UART_Receive_IT(&DEBUG_HUART, uart6_rx_buffer, sizeof(uart6_rx_buffer));
 	HAL_UARTEx_ReceiveToIdle_DMA(&DEBUG_HUART, uart6_rx_buffer, sizeof(uart6_rx_buffer));
 	__HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
 }
@@ -34,7 +33,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) //DMA
 	}
 	else if(huart == &DEBUG_HUART)
 	{
-		decode_error = upc_decode(uart6_rx_buffer);
+		temp_imu_handler(uart6_rx_buffer);
 		HAL_UARTEx_ReceiveToIdle_DMA(&DEBUG_HUART, uart6_rx_buffer, sizeof(uart6_rx_buffer));
 		__HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
 	}

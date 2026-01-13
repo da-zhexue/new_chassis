@@ -17,7 +17,7 @@ Library Manager: ArmAr.exe V5.06 update 6 (build 750)
 Hex Converter:   FromElf.exe V5.06 update 6 (build 750)
 CPU DLL:         SARMCM3.DLL V5.29.0.0
 Dialog DLL:      DCM.DLL V1.17.3.0
-Target DLL:      CMSIS_AGDI.dll V1.32.0.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.7.0
 Dialog DLL:      TCM.DLL V1.36.5.0
  
 <h2>Project:</h2>
@@ -27,11 +27,24 @@ Project File Date:  01/12/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\keil5\ARM\ARMCC\Bin'
 Build target 'new_chassis'
+compiling comm_task.c...
+compiling chassis_task.c...
+compiling COMM_rec.c...
+compiling TF_task.c...
+compiling user_lib.c...
 compiling motor_ctrl.c...
+..\app\motor_ctrl.c(16): warning:  #177-D: variable "MF9025_ANGLE_MULTI_PID"  was declared but never referenced
+  static fp32 MF9025_ANGLE_MULTI_PID [3][4] = {
+..\app\motor_ctrl.c: 1 warning, 0 errors
+compiling adrc.c...
+compiling CAN_rx.c...
+..\app\CAN_rx.c(145): warning:  #1-D: last line of file ends without a newline
+  }
+..\app\CAN_rx.c: 1 warning, 0 errors
 linking...
-Program Size: Code=40556 RO-data=1880 RW-data=500 ZI-data=35268  
+Program Size: Code=40156 RO-data=1880 RW-data=496 ZI-data=35152  
 FromELF: creating hex file...
-"new_chassis\new_chassis.axf" - 0 Error(s), 0 Warning(s).
+"new_chassis\new_chassis.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -58,9 +71,9 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.3.0
 
    * Component: ARM::CMSIS:DSP:Library:1.7.0
-      Include file:  CMSIS\DSP\Include\arm_math.h
       Library file:  CMSIS\DSP\Lib\ARM\arm_cortexM4lf_math.lib
-Build Time Elapsed:  00:00:03
+      Include file:  CMSIS\DSP\Include\arm_math.h
+Build Time Elapsed:  00:00:09
 </pre>
 </body>
 </html>

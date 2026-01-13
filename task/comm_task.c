@@ -22,7 +22,7 @@ void commTask(void const * argument)
         while((&huart1)->gState != HAL_UART_STATE_READY)
             ; 
         //upc_send_attitude_handler();
-				debug();
+				//debug();
         osDelay(5);
     }
 }

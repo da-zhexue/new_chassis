@@ -134,6 +134,8 @@ float float_constrain(float Value, float minValue, float maxValue);
 int16_t int16_constrain(int16_t Value, int16_t minValue, int16_t maxValue);
 //ѭ���޷�����
 float loop_float_constrain(float Input, float minValue, float maxValue);
+
+int loop_int_constrain(int Input, int minValue, int maxValue);
 //�����޷� -PI~PI
 float radian_format(float Rad);
 //�Ƕ� ���޷� 180 ~ -180

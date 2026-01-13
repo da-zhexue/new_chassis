@@ -33,9 +33,9 @@ void motor_ctrl_init(void)
     }
     PID_init(&motor_9025_ctrl.pid, PID_POSITION, MF9025_ANGLE_PID, MF9025_ANGLE_PID_OUT_MAX, MF9025_ANGLE_PID_IOUT_MAX,
       MF9025_MAX_POSITION_ACCEL, MF9025_MAX_NEGATIVE_ACCEL, MF9025_DEADZONE);
-    fp32 (*multi_Kpid_ptr)[4];
-    multi_Kpid_ptr = MF9025_ANGLE_MULTI_PID;
-    PID_multi_Kp_init(&motor_9025_ctrl.pid,multi_Kpid_ptr,3);
+//    fp32 (*multi_Kpid_ptr)[4];
+//    multi_Kpid_ptr = MF9025_ANGLE_MULTI_PID;
+//    PID_multi_Kp_init(&motor_9025_ctrl.pid,multi_Kpid_ptr,3);
 }
 
 void motor_ctrl_update(chassis_ctrl_t* chassis_ctrl)
@@ -87,25 +87,20 @@ void motor_ctrl_update(chassis_ctrl_t* chassis_ctrl)
 								motor_3508_ctrl[j].given_speed = 0;
     }
     Online_Monitors(motor_9025_ctrl.measure->last_online, GIMBAL_MOTOR_ONLINE);
-		if(!Online_Monitors(tf_ptr->Big_Gimbal_IMU_last_online_time, BIG_GIMBAL_IMU_ONLINE))
+		if(!Online_Monitors(tf_ptr->big_gimbal_imu_last_online_time, BIG_GIMBAL_IMU_ONLINE))
 			chassis_ctrl->gimbal_shutdown_flag = 1;
 		for(int i = 0; i < 4; i++){
         PID_calc(&motor_3508_ctrl[i].pid, motor_3508_ctrl[i].measure->speed, motor_3508_ctrl[i].given_speed);
     }
 		CAN_Control3508Current(*motor_3508_ctrl[0].pid.out, *motor_3508_ctrl[1].pid.out, *motor_3508_ctrl[2].pid.out, *motor_3508_ctrl[3].pid.out);
 		
-		if(chassis_ctrl->gimbal_shutdown_flag)
-				CAN_Manage9025State(CAN_9025_M1_TX_ID, CMD_9025_STOP);
-		else
+		if(!chassis_ctrl->gimbal_shutdown_flag)
 		{
-				if(chassis_ctrl->last_gimbal_shutdown_flag)
-						CAN_Manage9025State(CAN_9025_M1_TX_ID, CMD_9025_START);
 				PID_calc(&motor_9025_ctrl.pid, -tf_ptr->Big_Gimbal_angle.yaw_total_angle, motor_9025_ctrl.given_angle);
 				CAN_Control9025Speed(CAN_9025_M1_TX_ID, MF9025_MAX_IQ, (int32_t)(*motor_9025_ctrl.pid.out + (5729.5779513f * tf_ptr->Gyro[2]))); // 前馈补偿 底盘yaw轴角速度
 		}
-		chassis_ctrl->last_gimbal_shutdown_flag = chassis_ctrl->gimbal_shutdown_flag;
-		
-    
+		else 
+				CAN_Control9025Speed(CAN_9025_M1_TX_ID, MF9025_MAX_IQ, 0);
 }
 
 motor_9025_measure_t* get_motor_9025_measure_data(void)

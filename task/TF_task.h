@@ -23,8 +23,9 @@ typedef struct
     float Gyro[3]; 
     float Accel[3]; 
 
-	fp32 Small_Gimbal_IMU_last_online_time;
-	fp32 Big_Gimbal_IMU_last_online_time;
+	fp32 small_gimbal_imu_last_online_time;
+	fp32 big_gimbal_imu_last_online_time;
+
 	angle_t Chassis_angle;
 	angle_t Small_Gimbal_angle;
 	angle_t Big_Gimbal_angle;

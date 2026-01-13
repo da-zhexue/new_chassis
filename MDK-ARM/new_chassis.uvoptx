@@ -140,7 +140,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name></Name>
+          <Name>(105=-1,-1,-1,-1,0)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -204,6 +204,11 @@
           <count>9</count>
           <WinNumber>1</WinNumber>
           <ItemText>DBUS_MAX_LEN - dma_current_data_counter(huart-&gt;hdmarx-&gt;Instance)</ItemText>
+        </Ww>
+        <Ww>
+          <count>10</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>huart6</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

@@ -83,9 +83,7 @@ void CAN_9025_MeasureProcess(motor_9025_measure_t* motor_9025_measure, uint8_t* 
     }
 }
 
-static float small_gimbal_yaw_deg[3] = {0.0f, 0.0f, 0.0f};
-static float big_gimbal_yaw_deg[3] = {0.0f, 0.0f, 0.0f};
-
+static small_gimbal_angle_t_temp small_gimbal_angle_deg_temp;
 static uint8_t rx_data[8];
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
@@ -122,27 +120,16 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 				{
 					case CBOARD_GIMBAL_1:
 					{
-                        unpack_4bytes_to_floats(&rx_data[0], &small_gimbal_yaw_deg[0]);
-                        unpack_4bytes_to_floats(&rx_data[4], &small_gimbal_yaw_deg[1]);
+                        unpack_4bytes_to_floats(&rx_data[0], &small_gimbal_angle_deg_temp.small_gimbal_angle[0]);
+                        unpack_4bytes_to_floats(&rx_data[4], &small_gimbal_angle_deg_temp.small_gimbal_angle[1]);
+                        small_gimbal_angle_deg_temp.small_gimbal_imu_last_online_time = DWT_GetTimeline_s();
 						break;
 					}
 					
 					case CBOARD_GIMBAL_2:
 					{
-                        unpack_4bytes_to_floats(&rx_data[0], &small_gimbal_yaw_deg[2]);
-						break;
-					}
-
-                    case 0x335:
-					{
-                        unpack_4bytes_to_floats(&rx_data[0], &big_gimbal_yaw_deg[0]);
-                        unpack_4bytes_to_floats(&rx_data[4], &big_gimbal_yaw_deg[1]);
-						break;
-					}
-					
-					case 0x336:
-					{
-                        unpack_4bytes_to_floats(&rx_data[0], &big_gimbal_yaw_deg[2]);
+                        unpack_4bytes_to_floats(&rx_data[0], &small_gimbal_angle_deg_temp.small_gimbal_angle[2]);
+                        small_gimbal_angle_deg_temp.small_gimbal_imu_last_online_time = DWT_GetTimeline_s();
 						break;
 					}
 					
@@ -152,12 +139,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 		}
 }
 
-float* get_small_gimbal_yaw(void)
+small_gimbal_angle_t_temp* get_small_gimbal_angle_temp(void)
 {
-	return small_gimbal_yaw_deg;
-}
-
-float* get_big_gimbal_yaw(void)
-{
-	return big_gimbal_yaw_deg;
+	return &small_gimbal_angle_deg_temp;
 }
