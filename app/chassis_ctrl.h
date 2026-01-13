@@ -4,7 +4,7 @@
 #include "DBUS.h"
 #include "COMM_rec.h"
 
-#define GIMBAL_ANGLE_DELTA_MAX 0.1f
+#define GIMBAL_ANGLE_DELTA_MAX 0.15f
 #define CHASSIS_MAX_V 7000.0f
 #define CHASSIS_MAX_W 10.0f
 
@@ -12,8 +12,8 @@ typedef enum
 {
     CHASSIS_RC_OFFLINE = 0,
     CHASSIS_RC = 1,
-    CHASSIS_UPC = 2,
-    CHASSIS_STOP = 3
+    CHASSIS_UPC = 3,
+    CHASSIS_STOP = 2
 }CHASSIS_CTRL_STATE;
 
 typedef struct

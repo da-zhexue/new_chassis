@@ -33,7 +33,7 @@ void TF_Task(void const * argurment)
 				TF.big_gimbal_imu_last_online_time = big_gimbal_angle_deg_ptr->big_gimbal_imu_last_online_time;
 				if(motors_9025_measure_ptr->ecd_offset == 0) motors_9025_measure_ptr->ecd_offset = motors_9025_measure_ptr->ecd;
 				Yaw_diff = radian_format((motors_9025_measure_ptr->ecd - motors_9025_measure_ptr->ecd_offset)/ 32768.0f * PI); // -PI~PI
-				chassis_angle_temp[0] = radian_format(Yaw_diff + TF.Small_Gimbal_angle.yaw_rad) * 57.295779513f;
+				chassis_angle_temp[0] = radian_format(Yaw_diff + TF.Big_Gimbal_angle.yaw_rad) * 57.295779513f;
 				TF_Update(&TF.Chassis_angle, chassis_angle_temp);
 			}
 

@@ -84,6 +84,7 @@ void upc_cmd_shoot_handler(uint8_t* data)
 {
 	uint8_t send_data[8] = {0};
 	send_data[0] = data[12];
+
 	CAN_CBoard_CMD(0x223, send_data);
 	
 }
