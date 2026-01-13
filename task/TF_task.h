@@ -7,6 +7,7 @@
 #define X 0
 #define Y 1
 #define Z 2
+#define MF9025_ECD_IN_ZERO 0x1300
 
 typedef struct
 {

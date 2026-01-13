@@ -16,7 +16,7 @@
 
 #define MF9025_ANGLE_PID_KP 150.0f
 #define MF9025_ANGLE_PID_KI 0.0f
-#define MF9025_ANGLE_PID_KD 1000.0f
+#define MF9025_ANGLE_PID_KD 2000.0f
 #define MF9025_ANGLE_PID_OUT_MAX 16000.0f
 #define MF9025_ANGLE_PID_IOUT_MAX 3000.0f
 #define MF9025_MAX_POSITION_ACCEL 1000.0f
@@ -51,6 +51,7 @@ typedef struct
     uint16_t ecd;
     fp32 last_online;
 		uint16_t ecd_offset;
+		fp32 imu_yaw_offset;
 }motor_9025_measure_t;
 
 typedef struct

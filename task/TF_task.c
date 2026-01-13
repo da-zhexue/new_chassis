@@ -9,14 +9,13 @@
 #include "CAN_rx.h"
 
 void TF_Update(angle_t *angle, float new_angle_deg[3]);
-void TF_Reset(angle_t *angle);
 
 TF_t TF;
 
 void TF_Task(void const * argurment)
 {
 		float Yaw_diff = 0.0f;
-		float chassis_angle_temp[3] = {0.0f, 0.0f, 0.0f};
+		float chassis_angle_temp[3] = {0.0f, 0.0f, 0.0f}, big_gimbal_angle_temp[3] = {0.0f, 0.0f, 0.0f}, small_gimbal_angle_temp[3] = {0.0f, 0.0f, 0.0f};
 		small_gimbal_angle_t_temp *small_gimbal_angle_deg_ptr = get_small_gimbal_angle_temp();
 		big_gimbal_angle_t *big_gimbal_angle_deg_ptr = get_big_gimbal_angle();
 		motor_9025_measure_t* motors_9025_measure_ptr = get_motor_9025_measure_data();
@@ -24,16 +23,24 @@ void TF_Task(void const * argurment)
 		{
 			if(Online_Monitors(small_gimbal_angle_deg_ptr->small_gimbal_imu_last_online_time, SMALL_GIMBAL_IMU_ONLINE))
 			{
+//				small_gimbal_angle_temp[0] = theta_format(small_gimbal_angle_deg_ptr->small_gimbal_angle[0] - motors_9025_measure_ptr->imu_yaw_offset);
+//				small_gimbal_angle_temp[1] = small_gimbal_angle_deg_ptr->small_gimbal_angle[1];
+//				small_gimbal_angle_temp[2] = small_gimbal_angle_deg_ptr->small_gimbal_angle[2];
 				TF_Update(&TF.Small_Gimbal_angle, small_gimbal_angle_deg_ptr->small_gimbal_angle);
 				TF.small_gimbal_imu_last_online_time = small_gimbal_angle_deg_ptr->small_gimbal_imu_last_online_time;
 			}
 			if(Online_Monitors(big_gimbal_angle_deg_ptr->big_gimbal_imu_last_online_time, BIG_GIMBAL_IMU_ONLINE))
 			{
+//				if(motors_9025_measure_ptr->imu_yaw_offset == 0) 
+//					motors_9025_measure_ptr->imu_yaw_offset = theta_format((motors_9025_measure_ptr->ecd - MF9025_ECD_IN_ZERO)/ 32768.0f * 180.0f);
+//				big_gimbal_angle_temp[0] = theta_format(big_gimbal_angle_deg_ptr->big_gimbal_angle[0] - motors_9025_measure_ptr->imu_yaw_offset);
+//				big_gimbal_angle_temp[1] = big_gimbal_angle_deg_ptr->big_gimbal_angle[1];
+//				big_gimbal_angle_temp[2] = big_gimbal_angle_deg_ptr->big_gimbal_angle[2];
 				TF_Update(&TF.Big_Gimbal_angle, big_gimbal_angle_deg_ptr->big_gimbal_angle);
 				TF.big_gimbal_imu_last_online_time = big_gimbal_angle_deg_ptr->big_gimbal_imu_last_online_time;
 				if(motors_9025_measure_ptr->ecd_offset == 0) motors_9025_measure_ptr->ecd_offset = motors_9025_measure_ptr->ecd;
-				Yaw_diff = radian_format((motors_9025_measure_ptr->ecd - motors_9025_measure_ptr->ecd_offset)/ 32768.0f * PI); // -PI~PI
-				chassis_angle_temp[0] = radian_format(Yaw_diff + TF.Big_Gimbal_angle.yaw_rad) * 57.295779513f;
+				Yaw_diff = theta_format((motors_9025_measure_ptr->ecd - motors_9025_measure_ptr->ecd_offset)/ 32768.0f * 180.0f); // -PI~PI
+				chassis_angle_temp[0] = theta_format(Yaw_diff + big_gimbal_angle_deg_ptr->big_gimbal_angle[0]);
 				TF_Update(&TF.Chassis_angle, chassis_angle_temp);
 			}
 
@@ -60,12 +67,6 @@ void TF_Update(angle_t *angle, float new_angle_deg[3])
 		angle->yaw_round_count++;
 	angle->yaw_total_angle = 360.0f * angle->yaw_round_count + angle->yaw_deg;
 	angle->yaw_angle_last = angle->yaw_deg;
-}
-
-void TF_Reset(angle_t *angle)
-{
-		static float angle_zero[3] = {0.0f, 0.0f, 0.0f};
-		TF_Update(angle, angle_zero);
 }
 
 TF_t* get_TF(){
