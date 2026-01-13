@@ -16,7 +16,7 @@ static fp32 MF9025_ANGLE_PID[3] = {MF9025_ANGLE_PID_KP, MF9025_ANGLE_PID_KI, MF9
 static fp32 MF9025_ANGLE_MULTI_PID [3][4] = {
     {10,MF9025_ANGLE_PID_KP, MF9025_ANGLE_PID_KI, MF9025_ANGLE_PID_KD},
     {30,MF9025_ANGLE_PID_KP2, MF9025_ANGLE_PID_KI2, MF9025_ANGLE_PID_KD2},
-    {40,MF9025_ANGLE_PID_KP3, MF9025_ANGLE_PID_KI3, MF9025_ANGLE_PID_KD3}
+    {720,MF9025_ANGLE_PID_KP3, MF9025_ANGLE_PID_KI3, MF9025_ANGLE_PID_KD3}
 };
 
 TF_t *tf_ptr;
@@ -94,13 +94,13 @@ void motor_ctrl_update(chassis_ctrl_t* chassis_ctrl)
     }
 		CAN_Control3508Current(*motor_3508_ctrl[0].pid.out, *motor_3508_ctrl[1].pid.out, *motor_3508_ctrl[2].pid.out, *motor_3508_ctrl[3].pid.out);
 		// 其实就是取pid.out[0]
-		if(!chassis_ctrl->gimbal_shutdown_flag)
-		{
+//		if(!chassis_ctrl->gimbal_shutdown_flag)
+//		{
 				PID_calc(&motor_9025_ctrl.pid, -tf_ptr->Big_Gimbal_angle.yaw_total_angle, motor_9025_ctrl.given_angle);
 				CAN_Control9025Speed(CAN_9025_M1_TX_ID, MF9025_MAX_IQ, (int32_t)(*motor_9025_ctrl.pid.out + (5729.5779513f * tf_ptr->Gyro[2]))); // 前馈补偿 底盘yaw轴角速度
-		}
-		else 
-				CAN_Control9025Speed(CAN_9025_M1_TX_ID, MF9025_MAX_IQ, 0);
+//		}
+//		else 
+//				CAN_Control9025Speed(CAN_9025_M1_TX_ID, MF9025_MAX_IQ, 0);
 }
 
 motor_9025_measure_t* get_motor_9025_measure_data(void)
