@@ -87,13 +87,13 @@ void motor_ctrl_update(chassis_ctrl_t* chassis_ctrl)
 								motor_3508_ctrl[j].given_speed = 0;
     }
     Online_Monitors(motor_9025_ctrl.measure->last_online, GIMBAL_MOTOR_ONLINE);
-		if(!Online_Monitors(tf_ptr->big_gimbal_imu_last_online_time, BIG_GIMBAL_IMU_ONLINE))
+		if((!Online_Monitors(tf_ptr->big_gimbal_imu_last_online_time, BIG_GIMBAL_IMU_ONLINE)))// || motor_9025_ctrl.measure->ecd_offset == 0)
 			chassis_ctrl->gimbal_shutdown_flag = 1;
 		for(int i = 0; i < 4; i++){
         PID_calc(&motor_3508_ctrl[i].pid, motor_3508_ctrl[i].measure->speed, motor_3508_ctrl[i].given_speed);
     }
 		CAN_Control3508Current(*motor_3508_ctrl[0].pid.out, *motor_3508_ctrl[1].pid.out, *motor_3508_ctrl[2].pid.out, *motor_3508_ctrl[3].pid.out);
-		
+		// 其实就是取pid.out[0]
 		if(!chassis_ctrl->gimbal_shutdown_flag)
 		{
 				PID_calc(&motor_9025_ctrl.pid, -tf_ptr->Big_Gimbal_angle.yaw_total_angle, motor_9025_ctrl.given_angle);

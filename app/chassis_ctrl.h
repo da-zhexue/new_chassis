@@ -4,7 +4,7 @@
 #include "DBUS.h"
 #include "COMM_rec.h"
 
-#define GIMBAL_ANGLE_DELTA_MAX 0.04f
+#define GIMBAL_ANGLE_DELTA_MAX 0.1f
 #define CHASSIS_MAX_V 7000.0f
 #define CHASSIS_MAX_W 10.0f
 

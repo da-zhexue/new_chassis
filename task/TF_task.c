@@ -8,7 +8,6 @@
 #include "CAN_tx.h"
 #include "CAN_rx.h"
 
-void TF_Init(void);
 void TF_Update(angle_t *angle, float new_angle_deg[3]);
 void TF_Reset(angle_t *angle);
 
@@ -16,7 +15,6 @@ TF_t TF;
 
 void TF_Task(void const * argurment)
 {
-		TF_Init();
 		float Yaw_diff = 0.0f;
 		float chassis_angle_temp[3] = {0.0f, 0.0f, 0.0f};
 		small_gimbal_angle_t_temp *small_gimbal_angle_deg_ptr = get_small_gimbal_angle_temp();
@@ -29,8 +27,6 @@ void TF_Task(void const * argurment)
 				TF_Update(&TF.Small_Gimbal_angle, small_gimbal_angle_deg_ptr->small_gimbal_angle);
 				TF.small_gimbal_imu_last_online_time = small_gimbal_angle_deg_ptr->small_gimbal_imu_last_online_time;
 			}
-			else
-				TF_Reset(&TF.Small_Gimbal_angle);
 			if(Online_Monitors(big_gimbal_angle_deg_ptr->big_gimbal_imu_last_online_time, BIG_GIMBAL_IMU_ONLINE))
 			{
 				TF_Update(&TF.Big_Gimbal_angle, big_gimbal_angle_deg_ptr->big_gimbal_angle);
@@ -40,24 +36,12 @@ void TF_Task(void const * argurment)
 				chassis_angle_temp[0] = radian_format(Yaw_diff + TF.Small_Gimbal_angle.yaw_rad) * 57.295779513f;
 				TF_Update(&TF.Chassis_angle, chassis_angle_temp);
 			}
-			else
-			{
-				TF_Reset(&TF.Big_Gimbal_angle);
-				TF_Reset(&TF.Chassis_angle);
-				CAN_Set9025ZeroAngle(CAN_9025_M1_TX_ID);
-			}
 
 			BMI088_Read(&BMI088);
 			TF.Gyro[Z] = BMI088.Gyro[Z]; // 读取底盘yaw轴角速度用于旋转时大云台前馈补偿
 
 			osDelay(1);
 		}
-}
-
-
-void TF_Init(void)
-{
-	CAN_Set9025ZeroAngle(CAN_9025_M1_TX_ID);
 }
 
 void TF_Update(angle_t *angle, float new_angle_deg[3])
