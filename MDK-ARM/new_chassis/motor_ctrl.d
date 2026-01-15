@@ -3,9 +3,10 @@ new_chassis\motor_ctrl.o: ..\app\motor_ctrl.h
 new_chassis\motor_ctrl.o: ../bsp/typedef.h
 new_chassis\motor_ctrl.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 new_chassis\motor_ctrl.o: ../algorithm/pid.h
-new_chassis\motor_ctrl.o: ..\app\chassis_ctrl.h
-new_chassis\motor_ctrl.o: ../devices/DBUS.h
-new_chassis\motor_ctrl.o: ../Core/Inc/usart.h
+new_chassis\motor_ctrl.o: ../bsp/data_transfer.h
+new_chassis\motor_ctrl.o: ../devices/Online_Monitor.h
+new_chassis\motor_ctrl.o: ../algorithm/user_lib.h
+new_chassis\motor_ctrl.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 new_chassis\motor_ctrl.o: ../Core/Inc/main.h
 new_chassis\motor_ctrl.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 new_chassis\motor_ctrl.o: ../Core/Inc/stm32f4xx_hal_conf.h
@@ -14,7 +15,6 @@ new_chassis\motor_ctrl.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.
 new_chassis\motor_ctrl.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
 new_chassis\motor_ctrl.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h
 new_chassis\motor_ctrl.o: ../Drivers/CMSIS/Include/core_cm4.h
-new_chassis\motor_ctrl.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 new_chassis\motor_ctrl.o: ../Drivers/CMSIS/Include/cmsis_version.h
 new_chassis\motor_ctrl.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
 new_chassis\motor_ctrl.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
@@ -40,11 +40,6 @@ new_chassis\motor_ctrl.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.
 new_chassis\motor_ctrl.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 new_chassis\motor_ctrl.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 new_chassis\motor_ctrl.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
-new_chassis\motor_ctrl.o: ..\app\COMM_rec.h
-new_chassis\motor_ctrl.o: ../devices/Online_Monitor.h
-new_chassis\motor_ctrl.o: ../task/TF_task.h
-new_chassis\motor_ctrl.o: ../devices/BMI088driver.h
-new_chassis\motor_ctrl.o: ../algorithm/user_lib.h
 new_chassis\motor_ctrl.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 new_chassis\motor_ctrl.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 new_chassis\motor_ctrl.o: ../Core/Inc/FreeRTOSConfig.h

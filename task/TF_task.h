@@ -9,30 +9,5 @@
 #define Z 2
 #define MF9025_ECD_IN_ZERO 0x1300
 
-typedef struct
-{
-	float roll_deg, yaw_deg, pitch_deg;
-	float roll_rad, yaw_rad, pitch_rad;
-	float yaw_total_angle;
-	int16_t yaw_round_count;
-	float yaw_angle_last;
-} angle_t;
-
-typedef struct
-{
-    float q[4]; 
-    float Gyro[3]; 
-    float Accel[3]; 
-
-	fp32 small_gimbal_imu_last_online_time;
-	fp32 big_gimbal_imu_last_online_time;
-
-	angle_t Chassis_angle;
-	angle_t Small_Gimbal_angle;
-	angle_t Big_Gimbal_angle;
-
-} TF_t;
-
 void TF_Task(void const * argurment);
-TF_t* get_TF(void);
 #endif

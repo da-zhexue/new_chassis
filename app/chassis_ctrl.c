@@ -30,9 +30,9 @@ void ctrl_data_update(rc_ctrl_t *rc_ctrl_ptr, upc_t *upc_ptr)
     else if(chassis_ctrl.ctrl == CHASSIS_UPC)
     {
         chassis_ctrl.mode = 1;//upc_ptr->mode;
-        vx = upc_ptr->vx * 500;
-        vy = upc_ptr->vy * 500;
-        vw = upc_ptr->vw * 500;
+        vx = upc_ptr->vx * 300;
+        vy = upc_ptr->vy * 300;
+        vw = upc_ptr->vw * 300;
 
         chassis_ctrl.gimbal_shutdown_flag = 0;
         chassis_ctrl.given_gimbal_yaw = upc_ptr->gimbal_yaw;

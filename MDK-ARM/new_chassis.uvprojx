@@ -744,6 +744,11 @@
               <FileType>1</FileType>
               <FilePath>..\bsp\bsp_uart.c</FilePath>
             </File>
+            <File>
+              <FileName>data_transfer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp\data_transfer.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -46,6 +46,7 @@
 "new_chassis\bsp_dwt.o"
 "new_chassis\bsp_led.o"
 "new_chassis\bsp_uart.o"
+"new_chassis\data_transfer.o"
 "new_chassis\chassis_task.o"
 "new_chassis\led_task.o"
 "new_chassis\tf_task.o"

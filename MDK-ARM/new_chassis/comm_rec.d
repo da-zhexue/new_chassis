@@ -37,6 +37,7 @@ new_chassis\comm_rec.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 new_chassis\comm_rec.o: ..\app\COMM_rec.h
 new_chassis\comm_rec.o: ../bsp/typedef.h
 new_chassis\comm_rec.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+new_chassis\comm_rec.o: ../bsp/data_transfer.h
 new_chassis\comm_rec.o: ../algorithm/crc.h
 new_chassis\comm_rec.o: ../algorithm/user_lib.h
 new_chassis\comm_rec.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h

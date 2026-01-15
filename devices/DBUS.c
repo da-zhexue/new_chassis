@@ -23,7 +23,7 @@
 
 /* ----------------------- Internal Data ----------------------------------- */
 volatile unsigned char sbus_rx_buffer[RC_FRAME_LENGTH]; // double sbus rx buffer to save data
-rc_ctrl_t RC_CtrlData;
+rc_ctrl_t* rc_ctrl_ptr;
 /* ----------------------- Function Implements ---------------------------- */
 /******************************************************************************
 * @fn RC_Init
@@ -57,21 +57,21 @@ void RemoteDataProcess(uint8_t *pData)
         return;
     }
 
-    RC_CtrlData.ch0 = ((int16_t)pData[0] | ((int16_t)pData[1] << 8)) & 0x07FF;
-    RC_CtrlData.ch1 = (((int16_t)pData[1] >> 3) | ((int16_t)pData[2] << 5)) & 0x07FF;
-    RC_CtrlData.ch2 = (((int16_t)pData[2] >> 6) | ((int16_t)pData[3] << 2) |
+    rc_ctrl_ptr->ch0 = ((int16_t)pData[0] | ((int16_t)pData[1] << 8)) & 0x07FF;
+    rc_ctrl_ptr->ch1 = (((int16_t)pData[1] >> 3) | ((int16_t)pData[2] << 5)) & 0x07FF;
+    rc_ctrl_ptr->ch2 = (((int16_t)pData[2] >> 6) | ((int16_t)pData[3] << 2) |
                           ((int16_t)pData[4] << 10)) &
                          0x07FF;
-    RC_CtrlData.ch3 = (((int16_t)pData[4] >> 1) | ((int16_t)pData[5] << 7)) &
+    rc_ctrl_ptr->ch3 = (((int16_t)pData[4] >> 1) | ((int16_t)pData[5] << 7)) &
                          0x07FF;
-	RC_CtrlData.ch0 -= RC_CH_VALUE_OFFSET;
-	RC_CtrlData.ch1 -= RC_CH_VALUE_OFFSET;
-	RC_CtrlData.ch2 -= RC_CH_VALUE_OFFSET;
-	RC_CtrlData.ch3 -= RC_CH_VALUE_OFFSET;
-		RC_CtrlData.s1 = ((pData[5] >> 4) & 0x0003);
-    RC_CtrlData.s2 = ((pData[5] >> 4) & 0x000C) >> 2;
+	rc_ctrl_ptr->ch0 -= RC_CH_VALUE_OFFSET;
+	rc_ctrl_ptr->ch1 -= RC_CH_VALUE_OFFSET;
+	rc_ctrl_ptr->ch2 -= RC_CH_VALUE_OFFSET;
+	rc_ctrl_ptr->ch3 -= RC_CH_VALUE_OFFSET;
+	rc_ctrl_ptr->s1 = ((pData[5] >> 4) & 0x0003);
+    rc_ctrl_ptr->s2 = ((pData[5] >> 4) & 0x000C) >> 2;
      // | ((int16_t)pData[15] << 8);
-    RC_CtrlData.last_online_time = DWT_GetTimeline_s();
+    rc_ctrl_ptr->last_online_time = DWT_GetTimeline_s();
 }
 /******************************************************************************
 * @fn USART2_IRQHandler
@@ -92,11 +92,11 @@ it
 #define DBUS_HUART       huart3
 uint8_t   dbus_buf[DBUS_BUFLEN];
 static int uart_receive_dma_no_it(UART_HandleTypeDef* huart, uint8_t* pData, uint32_t Size)
-{//ÓÃÓÚ½ÓÊÕÊý¾ÝµÄº¯Êý£¬Ê¹ÓÃDMA·½Ê½À´½ÓÊÕUARTÊý¾Ý
+{//ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÝµÄºï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½DMAï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½UARTï¿½ï¿½ï¿½ï¿½
   uint32_t tmp1 = 0;
   tmp1 = huart->RxState;
-	//´´½¨Ò»¸öÁÙÊ±±äÁ¿tmp1£¬²¢½«UARTµÄ½ÓÊÕ×´Ì¬¸³Öµ¸øËü
-	if (tmp1 == HAL_UART_STATE_READY)//ÅÐ¶ÏUARTÊÇ·ñ´¦ÓÚ¾ÍÐ÷×´Ì¬
+	//ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½tmp1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½UARTï¿½Ä½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½
+	if (tmp1 == HAL_UART_STATE_READY)//ï¿½Ð¶ï¿½UARTï¿½Ç·ï¿½ï¿½Ú¾ï¿½ï¿½ï¿½×´Ì¬
 	{
 		if ((pData == NULL) || (Size == 0))
 		{
@@ -108,10 +108,10 @@ static int uart_receive_dma_no_it(UART_HandleTypeDef* huart, uint8_t* pData, uin
 		huart->ErrorCode  = HAL_UART_ERROR_NONE;
  
 		HAL_DMA_Start(huart->hdmarx, (uint32_t)&huart->Instance->DR, (uint32_t)pData, Size);
-		//Æô¶¯DMA½ÓÊÕ£¬Ô´µØÖ·ÎªUARTÊý¾Ý¼Ä´æÆ÷£¬Ä¿±êµØÖ·Îª½ÓÊÕ»º³åÇø
+		//ï¿½ï¿½ï¿½ï¿½DMAï¿½ï¿½ï¿½Õ£ï¿½Ô´ï¿½ï¿½Ö·ÎªUARTï¿½ï¿½ï¿½Ý¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½Ö·Îªï¿½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½ï¿½ï¿½
 	
 		SET_BIT(huart->Instance->CR3, USART_CR3_DMAR);
-		//Ê¹ÄÜUARTµÄDMA½ÓÊÕ¹¦ÄÜ
+		//Ê¹ï¿½ï¿½UARTï¿½ï¿½DMAï¿½ï¿½ï¿½Õ¹ï¿½ï¿½ï¿½
 		return HAL_OK;
 	}
 	else
@@ -120,48 +120,45 @@ static int uart_receive_dma_no_it(UART_HandleTypeDef* huart, uint8_t* pData, uin
 	}
 }
 
-void dbus_uart_init(void)//DBUS´®¿Ú³õÊ¼»¯
+void dbus_uart_init(void)//DBUSï¿½ï¿½ï¿½Ú³ï¿½Ê¼ï¿½ï¿½
 {
-	__HAL_UART_CLEAR_IDLEFLAG(&DBUS_HUART);//ÓÃÓÚÇå³ýUARTµÄ¿ÕÏÐ±êÖ¾£¬¿ÕÏÐ±êÖ¾Ö¸Ê¾UARTÔÚ½ÓÊÕÊý¾ÝÊ±´¦ÓÚ¿ÕÏÐ×´Ì¬£¬Í¨³£ÔÚ½ÓÊÕÍê³ÉºóÉèÖÃ
-	//Çå³ýÕâ¸ö±êÖ¾ÊÇÎªÁËÈ·±£ºóÐøµÄ½ÓÊÕ²Ù×÷ÄÜ¹»ÕýÈ·¼ì²âµ½ÐÂµÄ¿ÕÏÐ×´Ì¬
-	__HAL_UART_ENABLE_IT(&DBUS_HUART, UART_IT_IDLE);//Ê¹ÄÜUARTµÄ¿ÕÏÐÖÐ¶Ï£¬µ±UART´¦ÓÚ¿ÕÏÐ×´Ì¬²¢ÇÒ½ÓÊÕ»º³åÇøÃ»ÓÐÊý¾ÝÊ±£¬»á´¥·¢Õâ¸öÖÐ¶Ï
-	//Ê¹ÄÜÕâ¸öÖÐ¶Ïºó£¬¿ÉÒÔÔÚÖÐ¶Ï·þÎñÀý³ÌÖÐ´¦Àí¿ÕÏÐ×´Ì¬
-	uart_receive_dma_no_it(&DBUS_HUART, dbus_buf, DBUS_MAX_LEN);//µ÷ÓÃÖ®Ç°µÄº¯Êý£¬ÓÃDMAÀ´½ÓÊÕ´®¿ÚÊý¾Ý
+	__HAL_UART_CLEAR_IDLEFLAG(&DBUS_HUART);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½UARTï¿½Ä¿ï¿½ï¿½Ð±ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½Ö¾Ö¸Ê¾UARTï¿½Ú½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½Í¨ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ï¿½ï¿½Éºï¿½ï¿½ï¿½ï¿½ï¿½
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾ï¿½ï¿½Îªï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä½ï¿½ï¿½Õ²ï¿½ï¿½ï¿½ï¿½Ü¹ï¿½ï¿½ï¿½È·ï¿½ï¿½âµ½ï¿½ÂµÄ¿ï¿½ï¿½ï¿½×´Ì¬
+	__HAL_UART_ENABLE_IT(&DBUS_HUART, UART_IT_IDLE);//Ê¹ï¿½ï¿½UARTï¿½Ä¿ï¿½ï¿½ï¿½ï¿½Ð¶Ï£ï¿½ï¿½ï¿½UARTï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½Ò½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½á´¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
+	//Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ïºó£¬¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
+	uart_receive_dma_no_it(&DBUS_HUART, dbus_buf, DBUS_MAX_LEN);//ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½Äºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½DMAï¿½ï¿½ï¿½ï¿½ï¿½Õ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+	rc_ctrl_ptr = get_rc_ctrl_data();
 }
 
 uint16_t dma_current_data_counter(DMA_Stream_TypeDef *dma_stream)
-{//·µ»ØDMAÔ¤¶¨ÒåµÄ»º³åÇøÊ£ÓàµÄ³¤¶È£¬·½±ãÁË½â´«Êä¹ý³ÌÖÐ»¹ÓÐ¶àÉÙÊý¾ÝÉÐÎ´´«Êä
+{//ï¿½ï¿½ï¿½ï¿½DMAÔ¤ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½Ê£ï¿½ï¿½Ä³ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë½â´«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½
   return ((uint16_t)(dma_stream->NDTR));
 }
  
 static void uart_rx_idle_callback(UART_HandleTypeDef* huart)
 {
 	__HAL_UART_CLEAR_IDLEFLAG(huart);
-	//Çå³ýUARTµÄ¿ÕÏÐ±êÖ¾£¬ÒÔ±ãÏÂÒ»´Î½ÓÊÕÊ±ÄÜ¹»ÕýÈ·¼ì²âµ½¿ÕÏÐ×´Ì¬
+	//ï¿½ï¿½ï¿½UARTï¿½Ä¿ï¿½ï¿½Ð±ï¿½Ö¾ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½Ò»ï¿½Î½ï¿½ï¿½ï¿½Ê±ï¿½Ü¹ï¿½ï¿½ï¿½È·ï¿½ï¿½âµ½ï¿½ï¿½ï¿½ï¿½×´Ì¬
 	
-	if (huart == &DBUS_HUART)//È·±£Ö»´¦ÀíDBUS´®¿Ú
+	if (huart == &DBUS_HUART)//È·ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½DBUSï¿½ï¿½ï¿½ï¿½
 	{
-		__HAL_DMA_DISABLE(huart->hdmarx);//Ê§ÄÜDMA½ÓÊÕ£¬·ÀÖ¹ÏÂÒ»´Î½ÓÊÕµÄÊý¾ÝÔÚÉÏÒ»´ÎÊý¾ÝµÄÎ²²¿£¬¶ø²»ÊÇÈ«ÐÂµÄÊý¾Ý
+		__HAL_DMA_DISABLE(huart->hdmarx);//Ê§ï¿½ï¿½DMAï¿½ï¿½ï¿½Õ£ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½Ò»ï¿½Î½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ýµï¿½Î²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È«ï¿½Âµï¿½ï¿½ï¿½ï¿½ï¿½
  
 		if ((DBUS_MAX_LEN - dma_current_data_counter(huart->hdmarx->Instance)) == DBUS_BUFLEN)
-		{//¼ÆËãµ±Ç°½ÓÊÕµÄÊý¾Ý³¤¶È£¬Èç¹û½ÓÊÕµ½µÄÊý¾Ý³¤¶ÈµÈÓÚ18×Ö½Ú£¬Ôòµ÷ÓÃ´¦ÀíÊý¾Ýº¯Êý
-            RemoteDataProcess(dbus_buf);    	//´¦Àí½ÓÊÕµÄÊý¾Ý²¢½âÂë
+		{//ï¿½ï¿½ï¿½ãµ±Ç°ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½Ý³ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý³ï¿½ï¿½Èµï¿½ï¿½ï¿½18ï¿½Ö½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýºï¿½ï¿½ï¿½
+            RemoteDataProcess(dbus_buf);    	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½Ý²ï¿½ï¿½ï¿½ï¿½ï¿½
 		}
-		__HAL_DMA_SET_COUNTER(huart->hdmarx, DBUS_MAX_LEN);//ÉèÖÃDMA½ÓÊÕÔ¤¶¨ÒåµÄ»º³åÇøµÄ³¤¶È£¬ÒÔ±ãÎªÏÂÒ»´Î½ÓÊÕ×öºÃ×¼±¸
-		__HAL_DMA_ENABLE(huart->hdmarx);//ÖØÐÂÆôÓÃDMA½ÓÊÕ£¬ÒÔ±ã¼ÌÐø½ÓÊÕÊý¾Ý
+		__HAL_DMA_SET_COUNTER(huart->hdmarx, DBUS_MAX_LEN);//ï¿½ï¿½ï¿½ï¿½DMAï¿½ï¿½ï¿½ï¿½Ô¤ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½È£ï¿½ï¿½Ô±ï¿½Îªï¿½ï¿½Ò»ï¿½Î½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¼ï¿½ï¿½
+		__HAL_DMA_ENABLE(huart->hdmarx);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½DMAï¿½ï¿½ï¿½Õ£ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	}
 }
 
 void uart_receive_handler(UART_HandleTypeDef *huart)
-{//ÓÃÓÚ¼ì²éUART½ÓÊÕ×´Ì¬²¢ÔÚ½ÓÊÕµ½¿ÕÏÐ×´Ì¬Ê±µ÷ÓÃÏàÓ¦µÄ»Øµ÷º¯Êý
-	if (__HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE) && //¼ì²éUARTÊÇ·ñÉèÖÃÁË¿ÕÏÐ±êÖ¾£¬±íÊ¾UART½ÓÊÕÍê³É²¢½øÈë¿ÕÏÐ×´Ì¬
-			__HAL_UART_GET_IT_SOURCE(huart, UART_IT_IDLE))//¼ì²éUART¿ÕÏÐÖÐ¶ÏÊÇ·ñ±»Ê¹ÄÜ£¬Ö»ÓÐÔÚÖÐ¶ÏÊ¹ÄÜµÄÇé¿öÏÂ£¬²Å»á´¦Àí¿ÕÏÐ×´Ì¬
+{//ï¿½ï¿½ï¿½Ú¼ï¿½ï¿½UARTï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½Ú½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ä»Øµï¿½ï¿½ï¿½ï¿½ï¿½
+	if (__HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE) && //ï¿½ï¿½ï¿½UARTï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¿ï¿½ï¿½Ð±ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½Ê¾UARTï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
+			__HAL_UART_GET_IT_SOURCE(huart, UART_IT_IDLE))//ï¿½ï¿½ï¿½UARTï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ç·ï¿½Ê¹ï¿½Ü£ï¿½Ö»ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½Ê¹ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½Â£ï¿½ï¿½Å»á´¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
 	{
-		uart_rx_idle_callback(huart);//µ÷ÓÃÖ®Ç°¶¨ÒåµÄº¯Êý£¬´¦Àí½ÓÊÕµ½µÄÊý¾Ý
+		uart_rx_idle_callback(huart);//ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½ï¿½ï¿½Äºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	}
-}
-
-rc_ctrl_t *get_rc_ctrl_data(void)
-{
-	return &RC_CtrlData;
 }

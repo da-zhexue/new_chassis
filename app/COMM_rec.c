@@ -4,10 +4,10 @@
 #include "user_lib.h"
 #include "bsp_dwt.h"
 #include "CAN_tx.h"
+#include "data_transfer.h"
 
-static upc_t upc;
-
-static big_gimbal_angle_t big_gimbal_angle;
+upc_t* upc = NULL;
+big_gimbal_angle_t* big_gimbal_angle_ptr = NULL;
 
 void upc_cmd_imu_handler(uint8_t* data);
 void upc_cmd_move_handler(uint8_t* data);
@@ -21,8 +21,12 @@ void upc_send_attitude_handler(void);
 
 uint8_t upc_decode(uint8_t* rx_data)
 {
-//	if(sizeof(rx_data) != UPC_TOTAL_LEN)
-//		return 1; 
+	if(upc == NULL)
+		upc = get_upc_data();
+	if(big_gimbal_angle_ptr == NULL)
+		big_gimbal_angle_ptr = get_big_gimbal_angle();
+	//	if(sizeof(rx_data) != UPC_TOTAL_LEN)
+	//		return 1;
 	// if(car.pChassis->state != STATE_UPC)
 	// 	return 0;
 	if(rx_data[0] != UPC_HEADER || rx_data[2] != 0 || rx_data[3] != 0)
@@ -64,19 +68,19 @@ uint8_t upc_decode(uint8_t* rx_data)
 
 void upc_cmd_move_handler(uint8_t* data)
 {
-	unpack_4bytes_to_floats(&data[0], &upc.vx);
-	unpack_4bytes_to_floats(&data[4], &upc.vy);
-	unpack_4bytes_to_floats(&data[8], &upc.vw);
+	unpack_4bytes_to_floats(&data[0], &upc->vx);
+	unpack_4bytes_to_floats(&data[4], &upc->vy);
+	unpack_4bytes_to_floats(&data[8], &upc->vw);
 }
 
 void upc_cmd_gimbal_handler(uint8_t* data)
 {
-	unpack_4bytes_to_floats(&data[0], &upc.gimbal_yaw);
-	unpack_4bytes_to_floats(&data[4], &upc.small_gimbal_yaw);
-	unpack_4bytes_to_floats(&data[8], &upc.small_gimbal_pitch);
+	unpack_4bytes_to_floats(&data[0], &upc->gimbal_yaw);
+	unpack_4bytes_to_floats(&data[4], &upc->small_gimbal_yaw);
+	unpack_4bytes_to_floats(&data[8], &upc->small_gimbal_pitch);
 	uint8_t send_data[8];
-	pack_float_to_4bytes(upc.small_gimbal_yaw, &send_data[0]);
-	pack_float_to_4bytes(upc.small_gimbal_pitch, &send_data[4]);
+	pack_float_to_4bytes(upc->small_gimbal_yaw, &send_data[0]);
+	pack_float_to_4bytes(upc->small_gimbal_pitch, &send_data[4]);
 	CAN_CBoard_CMD(0x222, send_data);
 }
 
@@ -106,28 +110,18 @@ void upc_cmd_mode_handler(uint8_t* data) // 暂时用于摩擦轮控制
 
 void comm_cmd_big_gimbal_imu_handler(uint8_t* data)
 {
-	unpack_4bytes_to_floats(&data[0], &big_gimbal_angle.big_gimbal_angle[0]);
-	unpack_4bytes_to_floats(&data[4], &big_gimbal_angle.big_gimbal_angle[1]);
-	unpack_4bytes_to_floats(&data[8], &big_gimbal_angle.big_gimbal_angle[2]);
-	big_gimbal_angle.big_gimbal_imu_last_online_time = DWT_GetTimeline_s();
-}
-
-big_gimbal_angle_t* get_big_gimbal_angle(void)
-{
-	return &big_gimbal_angle;
-}
-
-upc_t* get_upc_data(void)
-{
-	return &upc;
+	unpack_4bytes_to_floats(&data[0], &big_gimbal_angle_ptr->big_gimbal_angle[0]);
+	unpack_4bytes_to_floats(&data[4], &big_gimbal_angle_ptr->big_gimbal_angle[1]);
+	unpack_4bytes_to_floats(&data[8], &big_gimbal_angle_ptr->big_gimbal_angle[2]);
+	big_gimbal_angle_ptr->big_gimbal_imu_last_online_time = DWT_GetTimeline_s();
 }
 
 void temp_imu_handler(uint8_t* data)
 {
 	// if (sizeof(data) != 16)
 	// 	return;
-	unpack_4bytes_to_floats(&data[0], &big_gimbal_angle.big_gimbal_angle[0]);
-	unpack_4bytes_to_floats(&data[4], &big_gimbal_angle.big_gimbal_angle[1]);
-	unpack_4bytes_to_floats(&data[8], &big_gimbal_angle.big_gimbal_angle[2]);
-	big_gimbal_angle.big_gimbal_imu_last_online_time = DWT_GetTimeline_s();
+	unpack_4bytes_to_floats(&data[0], &big_gimbal_angle_ptr->big_gimbal_angle[0]);
+	unpack_4bytes_to_floats(&data[4], &big_gimbal_angle_ptr->big_gimbal_angle[1]);
+	unpack_4bytes_to_floats(&data[8], &big_gimbal_angle_ptr->big_gimbal_angle[2]);
+	big_gimbal_angle_ptr->big_gimbal_imu_last_online_time = DWT_GetTimeline_s();
 }

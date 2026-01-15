@@ -53,11 +53,4 @@ new_chassis\can_rx.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 new_chassis\can_rx.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 new_chassis\can_rx.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 new_chassis\can_rx.o: ../bsp/bsp_dwt.h
-new_chassis\can_rx.o: ../task/TF_task.h
-new_chassis\can_rx.o: ../devices/BMI088driver.h
-new_chassis\can_rx.o: ..\app\motor_ctrl.h
-new_chassis\can_rx.o: ../algorithm/pid.h
-new_chassis\can_rx.o: ..\app\chassis_ctrl.h
-new_chassis\can_rx.o: ../devices/DBUS.h
-new_chassis\can_rx.o: ../Core/Inc/usart.h
-new_chassis\can_rx.o: ..\app\COMM_rec.h
+new_chassis\can_rx.o: ../bsp/data_transfer.h

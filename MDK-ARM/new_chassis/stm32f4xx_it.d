@@ -38,3 +38,4 @@ new_chassis\stm32f4xx_it.o: ../devices/DBUS.h
 new_chassis\stm32f4xx_it.o: ../Core/Inc/usart.h
 new_chassis\stm32f4xx_it.o: ../bsp/typedef.h
 new_chassis\stm32f4xx_it.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+new_chassis\stm32f4xx_it.o: ../bsp/data_transfer.h

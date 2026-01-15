@@ -1,14 +1,12 @@
 #include "motor_ctrl.h"
 #include "Online_Monitor.h"
-#include "TF_task.h"
+#include "data_transfer.h"
 #include "user_lib.h"
 #include "math.h"
 #include "CAN_tx.h"
 
 motor_3508_ctrl_t motor_3508_ctrl[4];
 motor_9025_ctrl_t motor_9025_ctrl;
-static motor_9025_measure_t motor_9025_measure;
-static motor_3508_measure_t motor_3508_measure[4];
 
 static fp32 M3508_SPEED_PID[3] = {M3508_SPEED_PID_KP, M3508_SPEED_PID_KI, M3508_SPEED_PID_KD};
 static fp32 MF9025_ANGLE_PID[3] = {MF9025_ANGLE_PID_KP, MF9025_ANGLE_PID_KI, MF9025_ANGLE_PID_KD};
@@ -21,13 +19,14 @@ static fp32 MF9025_ANGLE_MULTI_PID [3][4] = {
 
 TF_t *tf_ptr;
 
+
 void motor_ctrl_init(void)
 {
     tf_ptr = get_TF();
-    motor_9025_ctrl.measure = &motor_9025_measure;
+    motor_9025_ctrl.measure = get_motor_9025_measure_data();
     for(int i = 0; i < 4; i++)
     {
-        motor_3508_ctrl[i].measure = &motor_3508_measure[i];
+        motor_3508_ctrl[i].measure = get_motor_3508_measure_data(i);
         PID_init(&motor_3508_ctrl[i].pid, PID_POSITION, M3508_SPEED_PID, M3508_SPEED_PID_OUT_MAX, M3508_SPEED_PID_IOUT_MAX,
           M3508_MAX_POSITION_ACCEL, M3508_MAX_NEGATIVE_ACCEL, M3508_DEADZONE);
     }
@@ -101,16 +100,4 @@ void motor_ctrl_update(chassis_ctrl_t* chassis_ctrl)
 //		}
 //		else 
 //				CAN_Control9025Speed(CAN_9025_M1_TX_ID, MF9025_MAX_IQ, 0);
-}
-
-motor_9025_measure_t* get_motor_9025_measure_data(void)
-{
-    return &motor_9025_measure;
-}
-
-motor_3508_measure_t* get_motor_3508_measure_data(uint8_t motor_index)
-{
-    if(motor_index < 4)
-        return &motor_3508_measure[motor_index];
-    return NULL;
 }

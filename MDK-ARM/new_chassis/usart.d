@@ -37,3 +37,4 @@ new_chassis\usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 new_chassis\usart.o: ../devices/DBUS.h
 new_chassis\usart.o: ../bsp/typedef.h
 new_chassis\usart.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+new_chassis\usart.o: ../bsp/data_transfer.h

@@ -61,3 +61,4 @@ new_chassis\main.o: ../bsp/bsp_delay.h
 new_chassis\main.o: ../bsp/bsp_dwt.h
 new_chassis\main.o: ../devices/BMI088driver.h
 new_chassis\main.o: ../devices/DBUS.h
+new_chassis\main.o: ../bsp/data_transfer.h

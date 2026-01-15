@@ -1,0 +1,45 @@
+#include "data_transfer.h"
+
+static rc_ctrl_t RC_CtrlData;
+rc_ctrl_t *get_rc_ctrl_data(void)
+{
+	return &RC_CtrlData;
+}
+
+static TF_t TF;
+TF_t* get_TF(void)
+{
+	return &TF;
+}
+
+static motor_9025_measure_t motor_9025_measure;
+static motor_3508_measure_t motor_3508_measure[4];
+
+motor_9025_measure_t* get_motor_9025_measure_data(void)
+{
+    return &motor_9025_measure;
+}
+
+motor_3508_measure_t* get_motor_3508_measure_data(uint8_t motor_index)
+{
+    if(motor_index < 4)
+        return &motor_3508_measure[motor_index];
+    return NULL;
+}
+
+static small_gimbal_angle_t small_gimbal_angle_deg;
+static big_gimbal_angle_t big_gimbal_angle_deg;
+static upc_t upc;
+
+small_gimbal_angle_t* get_small_gimbal_angle(void)
+{
+	return &small_gimbal_angle_deg;
+}
+big_gimbal_angle_t* get_big_gimbal_angle(void)
+{
+	return &big_gimbal_angle_deg;
+}
+upc_t* get_upc_data(void)
+{
+	return &upc;
+}

@@ -37,4 +37,5 @@ new_chassis\dbus.o: ..\devices\DBUS.h
 new_chassis\dbus.o: ../Core/Inc/usart.h
 new_chassis\dbus.o: ../bsp/typedef.h
 new_chassis\dbus.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+new_chassis\dbus.o: ../bsp/data_transfer.h
 new_chassis\dbus.o: ../bsp/bsp_dwt.h

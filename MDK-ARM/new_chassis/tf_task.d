@@ -56,12 +56,5 @@ new_chassis\tf_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_
 new_chassis\tf_task.o: ../algorithm/transfer_function.h
 new_chassis\tf_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdlib.h
 new_chassis\tf_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\math.h
-new_chassis\tf_task.o: ../app/COMM_rec.h
 new_chassis\tf_task.o: ../devices/Online_Monitor.h
-new_chassis\tf_task.o: ../app/motor_ctrl.h
-new_chassis\tf_task.o: ../algorithm/pid.h
-new_chassis\tf_task.o: ../app/chassis_ctrl.h
-new_chassis\tf_task.o: ../devices/DBUS.h
-new_chassis\tf_task.o: ../Core/Inc/usart.h
-new_chassis\tf_task.o: ../app/CAN_tx.h
-new_chassis\tf_task.o: ../app/CAN_rx.h
+new_chassis\tf_task.o: ../bsp/data_transfer.h

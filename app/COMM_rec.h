@@ -2,25 +2,6 @@
 #define UPC_COMMUNICATE_H
 #include "typedef.h"
 
-typedef struct 
-{
-    uint8_t start_upc_flag;
-		uint8_t mode;
-		uint8_t shoot;
-
-    float vx, vy, vw; 
-    float gimbal_yaw, chassis_yaw;
-		float small_gimbal_yaw, small_gimbal_pitch;
-    float x, y, z;
-
-} upc_t;
-
-typedef struct
-{
-    fp32 big_gimbal_angle[3];
-    fp32 big_gimbal_imu_last_online_time;
-} big_gimbal_angle_t; // 暂时将大小云台拆为两个结构体
-
 #define UPC_HEADER 0xA5
 #define UPC_HEADER_LEN 5
 #define UPC_DATA_LEN 0x0D
@@ -44,8 +25,6 @@ typedef enum
 } upc_cmd_t;
 
 uint8_t upc_decode(uint8_t* rx_data);
-big_gimbal_angle_t* get_big_gimbal_angle(void);
-upc_t* get_upc_data(void);
 void temp_imu_handler(uint8_t* data);
 
 #endif

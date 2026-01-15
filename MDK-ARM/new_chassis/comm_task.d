@@ -19,6 +19,7 @@ new_chassis\comm_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queu
 new_chassis\comm_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 new_chassis\comm_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 new_chassis\comm_task.o: ../app/COMM_rec.h
+new_chassis\comm_task.o: ../bsp/data_transfer.h
 new_chassis\comm_task.o: ..\task\TF_task.h
 new_chassis\comm_task.o: ../devices/BMI088driver.h
 new_chassis\comm_task.o: ../Core/Inc/main.h
@@ -57,4 +58,3 @@ new_chassis\comm_task.o: ../Core/Inc/usart.h
 new_chassis\comm_task.o: ../algorithm/user_lib.h
 new_chassis\comm_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 new_chassis\comm_task.o: ../algorithm/crc.h
-new_chassis\comm_task.o: ../devices/DBUS.h

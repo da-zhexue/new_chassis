@@ -33,13 +33,6 @@ typedef enum
 	CBOARD_GIMBAL_2 = 0x334,
 }can_rx_id_e;
 
-typedef struct
-{
-    fp32 small_gimbal_angle[3];
-    fp32 small_gimbal_imu_last_online_time;
-} small_gimbal_angle_t_temp; // 暂时将大小云台拆为两个结构体
-
 void CAN_Receive_Init(void);
-small_gimbal_angle_t_temp* get_small_gimbal_angle_temp(void);
 
 #endif
