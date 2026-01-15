@@ -5,6 +5,7 @@
 #include "usart.h"
 #include "user_lib.h"
 #include "crc.h"
+#include "data_transfer.h"
 
 TF_t *TF_ptr;
 
