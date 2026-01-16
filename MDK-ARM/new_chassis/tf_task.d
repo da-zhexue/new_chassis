@@ -53,8 +53,5 @@ new_chassis\tf_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/timers
 new_chassis\tf_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 new_chassis\tf_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 new_chassis\tf_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
-new_chassis\tf_task.o: ../algorithm/transfer_function.h
-new_chassis\tf_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdlib.h
-new_chassis\tf_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\math.h
 new_chassis\tf_task.o: ../devices/Online_Monitor.h
 new_chassis\tf_task.o: ../bsp/data_transfer.h

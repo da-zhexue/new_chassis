@@ -790,11 +790,6 @@
               <FilePath>..\algorithm\pid.c</FilePath>
             </File>
             <File>
-              <FileName>transfer_function.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\algorithm\transfer_function.c</FilePath>
-            </File>
-            <File>
               <FileName>user_lib.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\algorithm\user_lib.c</FilePath>

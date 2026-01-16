@@ -5,13 +5,13 @@
 #include "pid.h"
 #include "data_transfer.h"
 
-#define M3508_SPEED_PID_KP 15.0f
+#define M3508_SPEED_PID_KP 8.0f
 #define M3508_SPEED_PID_KI 0.0f
-#define M3508_SPEED_PID_KD 10.0f
+#define M3508_SPEED_PID_KD 0.0f
 #define M3508_SPEED_PID_OUT_MAX 16000.0f
 #define M3508_SPEED_PID_IOUT_MAX 3000.0f
-#define M3508_MAX_POSITION_ACCEL 10.0f
-#define M3508_MAX_NEGATIVE_ACCEL 40.0f
+#define M3508_MAX_POSITION_ACCEL 1000.0f
+#define M3508_MAX_NEGATIVE_ACCEL 4000.0f
 #define M3508_DEADZONE 0.0f
 
 #define MF9025_ANGLE_PID_KP 0.01f
@@ -35,7 +35,7 @@
 
 typedef enum 
 {
-		STOPPING = 0,
+	STOPPING = 0,
     FOLLOW_CHASSIS = 1,
     FOLLOW_GIMBAL = 2,
     SPINNING_TOP = 3

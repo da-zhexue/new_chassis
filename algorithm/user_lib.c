@@ -4,16 +4,43 @@
 #include "math.h"
 #include "main.h"
 
-#ifdef _CMSIS_OS_H
-#define user_malloc pvPortMalloc
-#else
-#define user_malloc malloc
-#endif
+/*---------------------------------------数据转换--------------------------------------- */
+/**
+  * @brief          将4位uint8_t转换为1个float
+  * @param[in]      4个uint8_t
+  * @retval         1个float
+  */
+void unpack_4bytes_to_floats(const uint8_t data[4], float* f1) {
+    uint32_t u1;
+    
+    // 小端序
+    u1 = (uint32_t)data[0] | 
+         ((uint32_t)data[1] << 8) | 
+         ((uint32_t)data[2] << 16) | 
+         ((uint32_t)data[3] << 24);
+    
+    memcpy(f1, &u1, sizeof(float));
+}
 
-uint8_t GlobalDebugMode = 7;
+/**
+ * @brief          将1个float转换为4位uint8_t
+ * @param[in]      1个float
+ * @retval         4个uint8_t
+ */
+void pack_float_to_4bytes(float f1, uint8_t data[4]) {
 
-//���ٿ���
-float Sqrt(float x)
+    uint32_t u1 = *((uint32_t*)&f1);
+    
+    data[3] = (uint8_t)((u1 >> 24) & 0xFF); 
+    data[2] = (uint8_t)((u1 >> 16) & 0xFF);
+    data[1] = (uint8_t)((u1 >> 8)  & 0xFF);
+    data[0] = (uint8_t)(u1 & 0xFF);    
+}
+/*------------------------------------------------------------------------------------- */
+
+/*-------------------------------------常用数学函数------------------------------------- */
+// 快速开方
+float q_sqrt(float x)
 {
     float y;
     float delta;
@@ -39,8 +66,7 @@ float Sqrt(float x)
     return y;
 }
 
-//������ƽ��������
-/*
+// 快速平方倒数
 float invSqrt(float num)
 {
     float halfnum = 0.5f * num;
@@ -50,49 +76,9 @@ float invSqrt(float num)
     y = *(float *)&i;
     y = y * (1.5f - (halfnum * y * y));
     return y;
-}*/
-
-/**
-  * @brief          б��������ʼ��
-  * @author         RM
-  * @param[in]      б�������ṹ��
-  * @param[in]      �����ʱ�䣬��λ s
-  * @param[in]      ���ֵ
-  * @param[in]      ��Сֵ
-  * @retval         ���ؿ�
-  */
-void ramp_init(ramp_function_source_t *ramp_source_type, float frame_period, float max, float min)
-{
-    ramp_source_type->frame_period = frame_period;
-    ramp_source_type->max_value = max;
-    ramp_source_type->min_value = min;
-    ramp_source_type->input = 0.0f;
-    ramp_source_type->out = 0.0f;
 }
 
-/**
-  * @brief          б���������㣬���������ֵ���е��ӣ� ���뵥λΪ /s ��һ������������ֵ
-  * @author         RM
-  * @param[in]      б�������ṹ��
-  * @param[in]      ����ֵ
-  * @retval         ���ؿ�
-  */
-float ramp_calc(ramp_function_source_t *ramp_source_type, float input)
-{
-    ramp_source_type->input = input;
-    ramp_source_type->out += ramp_source_type->input * ramp_source_type->frame_period;
-    if (ramp_source_type->out > ramp_source_type->max_value)
-    {
-        ramp_source_type->out = ramp_source_type->max_value;
-    }
-    else if (ramp_source_type->out < ramp_source_type->min_value)
-    {
-        ramp_source_type->out = ramp_source_type->min_value;
-    }
-    return ramp_source_type->out;
-}
-
-//����ֵ����
+// 绝对值限制
 float abs_limit(float num, float Limit)
 {
     if (num > Limit)
@@ -105,8 +91,8 @@ float abs_limit(float num, float Limit)
     }
     return num;
 }
-
-//�жϷ���λ
+    
+// 判符函数 
 float sign(float value)
 {
     if (value >= 0.0f)
@@ -119,7 +105,7 @@ float sign(float value)
     }
 }
 
-//��������
+//float死区
 float float_deadband(float Value, float minValue, float maxValue)
 {
     if (Value < maxValue && Value > minValue)
@@ -129,8 +115,8 @@ float float_deadband(float Value, float minValue, float maxValue)
     return Value;
 }
 
-//int26����
-int16_t int16_deadline(int16_t Value, int16_t minValue, int16_t maxValue)
+//int16死区
+int16_t int16_deadband(int16_t Value, int16_t minValue, int16_t maxValue)
 {
     if (Value < maxValue && Value > minValue)
     {
@@ -139,7 +125,7 @@ int16_t int16_deadline(int16_t Value, int16_t minValue, int16_t maxValue)
     return Value;
 }
 
-//�޷�����
+//float限幅
 float float_constrain(float Value, float minValue, float maxValue)
 {
     if (Value < minValue)
@@ -150,7 +136,7 @@ float float_constrain(float Value, float minValue, float maxValue)
         return Value;
 }
 
-//�޷�����
+//int16限幅
 int16_t int16_constrain(int16_t Value, int16_t minValue, int16_t maxValue)
 {
     if (Value < minValue)
@@ -161,7 +147,7 @@ int16_t int16_constrain(int16_t Value, int16_t minValue, int16_t maxValue)
         return Value;
 }
 
-//ѭ���޷�����
+//float循环限幅
 float loop_float_constrain(float Input, float minValue, float maxValue)
 {
     if (maxValue < minValue)
@@ -188,7 +174,7 @@ float loop_float_constrain(float Input, float minValue, float maxValue)
     return Input;
 }
 
-//ѭ���޷�����
+//int循环限幅
 int loop_int_constrain(int Input, int minValue, int maxValue)
 {
     if (maxValue < minValue)
@@ -215,12 +201,12 @@ int loop_int_constrain(int Input, int minValue, int maxValue)
     return Input;
 }
 
-//���ȸ�ʽ��Ϊ-PI~PI
+//弧度归一 -PI~PI
 float radian_format(float Rad)
 {
 		return loop_float_constrain(Rad, -PI, PI);
 }
-//�Ƕȸ�ʽ��Ϊ-180~180
+//角度归一 -180~180
 float theta_format(float Ang)
 {
     return loop_float_constrain(Ang, -180.0f, 180.0f);
@@ -236,12 +222,88 @@ int float_rounding(float raw)
         integer++;
     return integer;
 }
+/*------------------------------------------------------------------------------------- */
+
+/*---------------------------------------一阶滤波--------------------------------------- */
+/**
+  * @brief          一阶低通滤波初始化
+  * @author         RM
+  * @param[in]      一阶低通滤波结构体
+  * @param[in]      间隔的时间，单位 s
+  * @param[in]      滤波参数
+  * @retval         返回空
+  */
+void first_order_filter_init(first_order_filter_type_t *first_order_filter_type, fp32 frame_period, const fp32 num[1])
+{
+    first_order_filter_type->frame_period = frame_period;
+    first_order_filter_type->num[0] = num[0];
+    first_order_filter_type->input = 0.0f;
+    first_order_filter_type->out = 0.0f;
+}
 
 /**
-  * @brief          ��С���˷���ʼ��
-  * @param[in]      ��С���˷��ṹ��
-  * @param[in]      ������
-  * @retval         ���ؿ�
+  * @brief          一阶低通滤波计算
+  * @author         RM
+  * @param[in]      一阶低通滤波结构体
+  * @param[in]      间隔的时间，单位 s
+  * @retval         返回空
+  */
+void first_order_filter_cali(first_order_filter_type_t *first_order_filter_type, fp32 input)
+{
+    first_order_filter_type->input = input;
+    first_order_filter_type->out =
+        first_order_filter_type->num[0] / (first_order_filter_type->num[0] + first_order_filter_type->frame_period) * first_order_filter_type->out + first_order_filter_type->frame_period / (first_order_filter_type->num[0] + first_order_filter_type->frame_period) * first_order_filter_type->input;
+}
+/*------------------------------------------------------------------------------------- */
+
+/*---------------------------------------斜波函数--------------------------------------- */
+/**
+  * @brief          斜波函数初始化
+  * @author         RM
+  * @param[in]      ramp_source_type  斜波函数结构体指针
+  * @param[in]      frame_period      帧周期，单位 s
+  * @param[in]      max               最大值
+  * @param[in]      min               最小值
+  * @retval         空
+  */
+void ramp_init(ramp_function_source_t *ramp_source_type, float frame_period, float max, float min)
+{
+    ramp_source_type->frame_period = frame_period;
+    ramp_source_type->max_value = max;
+    ramp_source_type->min_value = min;
+    ramp_source_type->input = 0.0f;
+    ramp_source_type->out = 0.0f;
+}
+
+/**
+  * @brief          斜波函数计算，输入值在最小值和最大值之间变化，输出值在最小值和最大值之间变化
+  * @author         RM
+  * @param[in]      ramp_source_type  斜波函数结构体指针
+  * @param[in]      input             输入值
+  * @retval         输出值
+  */
+float ramp_calc(ramp_function_source_t *ramp_source_type, float input)
+{
+    ramp_source_type->input = input;
+    ramp_source_type->out += ramp_source_type->input * ramp_source_type->frame_period;
+    if (ramp_source_type->out > ramp_source_type->max_value)
+    {
+        ramp_source_type->out = ramp_source_type->max_value;
+    }
+    else if (ramp_source_type->out < ramp_source_type->min_value)
+    {
+        ramp_source_type->out = ramp_source_type->min_value;
+    }
+    return ramp_source_type->out;
+}
+/*------------------------------------------------------------------------------------- */
+
+/*--------------------------------------最小二乘法-------------------------------------- */
+/**
+  * @brief          获取最小二乘法的初始化
+  * @param[in]      最小二乘法结构体
+  * @param[in]      阶数
+  * @retval         无
   */
 void OLS_Init(Ordinary_Least_Squares_t *OLS, uint16_t order)
 {
@@ -257,10 +319,10 @@ void OLS_Init(Ordinary_Least_Squares_t *OLS, uint16_t order)
 }
 
 /**
-  * @brief          ��С���˷����
-  * @param[in]      ��С���˷��ṹ��
-  * @param[in]      �ź�����������һ������ʱ����
-  * @param[in]      �ź�ֵ
+  * @brief          获取最小二乘法的导数
+  * @param[in]      最小二乘法结构体
+  * @param[in]      输入时间增量
+  * @param[in]      输入值
   */
 void OLS_Update(Ordinary_Least_Squares_t *OLS, float deltax, float y)
 {
@@ -299,11 +361,11 @@ void OLS_Update(Ordinary_Least_Squares_t *OLS, float deltax, float y)
 }
 
 /**
-  * @brief          ��С���˷���ȡ�ź�΢��
-  * @param[in]      ��С���˷��ṹ��
-  * @param[in]      �ź�����������һ������ʱ����
-  * @param[in]      �ź�ֵ
-  * @retval         ����б��k
+  * @brief          获取最小二乘法的导数
+  * @param[in]      最小二乘法结构体
+  * @param[in]      输入时间增量
+  * @param[in]      输入值
+  * @retval         斜率k
   */
 float OLS_Derivative(Ordinary_Least_Squares_t *OLS, float deltax, float y)
 {
@@ -344,9 +406,9 @@ float OLS_Derivative(Ordinary_Least_Squares_t *OLS, float deltax, float y)
 }
 
 /**
-  * @brief          ��ȡ��С���˷���ȡ�ź�΢��
-  * @param[in]      ��С���˷��ṹ��
-  * @retval         ����б��k
+  * @brief          获取最小二乘法的导数
+  * @param[in]      最小二乘法结构体
+  * @retval         斜率k
   */
 float Get_OLS_Derivative(Ordinary_Least_Squares_t *OLS)
 {
@@ -354,11 +416,11 @@ float Get_OLS_Derivative(Ordinary_Least_Squares_t *OLS)
 }
 
 /**
-  * @brief          ��С���˷�ƽ���ź�
-  * @param[in]      ��С���˷��ṹ��
-  * @param[in]      �ź�����������һ������ʱ����
-  * @param[in]      �ź�ֵ
-  * @retval         ����ƽ�����
+  * @brief          获取最小二乘法平滑后的值
+  * @param[in]      最小二乘法结构体
+  * @param[in]      输入时间增量
+  * @param[in]      输入值
+  * @retval         平滑后的值
   */
 float OLS_Smooth(Ordinary_Least_Squares_t *OLS, float deltax, float y)
 {
@@ -400,37 +462,11 @@ float OLS_Smooth(Ordinary_Least_Squares_t *OLS, float deltax, float y)
 }
 
 /**
-  * @brief          ��ȡ��С���˷�ƽ���ź�
-  * @param[in]      ��С���˷��ṹ��
-  * @retval         ����ƽ�����
+  * @brief          获取最小二乘法平滑后的值
+  * @param[in]      最小二乘法结构体
+  * @retval         平滑后的值
   */
 float Get_OLS_Smooth(Ordinary_Least_Squares_t *OLS)
 {
     return OLS->k * OLS->x[OLS->Order - 1] + OLS->b;
-}
-
-/**
-  * @brief          ��4�ַ�����ת��Ϊ1��float
-  * @param[in]      4λuint8_t
-  * @retval         ����1��float
-  */
-void unpack_4bytes_to_floats(const uint8_t data[4], float* f1) {
-    uint32_t u1;
-    
-    // С�������
-    u1 = (uint32_t)data[0] | 
-         ((uint32_t)data[1] << 8) | 
-         ((uint32_t)data[2] << 16) | 
-         ((uint32_t)data[3] << 24);
-    
-    memcpy(f1, &u1, sizeof(float));
-}
-void pack_float_to_4bytes(float f1, uint8_t data[4]) {
-
-    uint32_t u1 = *((uint32_t*)&f1);
-    
-    data[3] = (uint8_t)((u1 >> 24) & 0xFF); // ��ȡ���8λ
-    data[2] = (uint8_t)((u1 >> 16) & 0xFF);
-    data[1] = (uint8_t)((u1 >> 8)  & 0xFF);
-    data[0] = (uint8_t)(u1 & 0xFF);         // ��ȡ���8λ
 }

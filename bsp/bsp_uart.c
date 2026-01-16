@@ -8,8 +8,6 @@ extern DMA_HandleTypeDef hdma_usart6_rx;
 uint8_t uart1_rx_buffer[COMM_MESSAGE_LEN];
 uint8_t uart6_rx_buffer[DEBUG_MESSAGE_LEN];
 
-static uint8_t decode_error = 0;
-
 void uart1_init(void) // COMMUNICATION_BOARD
 {
 	HAL_UARTEx_ReceiveToIdle_DMA(&COMM_HUART, uart1_rx_buffer, sizeof(uart1_rx_buffer));
@@ -26,7 +24,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) //DMA
 {
 	if(huart == &COMM_HUART)
 	{
-		decode_error = upc_decode(uart1_rx_buffer);
+		upc_decode(uart1_rx_buffer);
 		//uart_printf(&huart1, "error: %d\n", receive_error);
 		HAL_UARTEx_ReceiveToIdle_DMA(&COMM_HUART, uart1_rx_buffer, sizeof(uart1_rx_buffer));
 		__HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);

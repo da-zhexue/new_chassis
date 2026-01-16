@@ -53,7 +53,6 @@
 "new_chassis\comm_task.o"
 "new_chassis\adrc.o"
 "new_chassis\pid.o"
-"new_chassis\transfer_function.o"
 "new_chassis\user_lib.o"
 "new_chassis\crc.o"
 "new_chassis\chassis_ctrl.o"

@@ -1,6 +1,7 @@
 #ifndef DATA_TRANSFER_H
 #define DATA_TRANSFER_H
 #include "typedef.h"
+#define DEBUG_WITH_GLOBAL_VAR
 
 typedef struct __RC__
 {

@@ -27,8 +27,8 @@ uint8_t upc_decode(uint8_t* rx_data)
 		big_gimbal_angle_ptr = get_big_gimbal_angle();
 	//	if(sizeof(rx_data) != UPC_TOTAL_LEN)
 	//		return 1;
-	// if(car.pChassis->state != STATE_UPC)
-	// 	return 0;
+	if(!upc->start_upc_flag)
+		return 0;
 	if(rx_data[0] != UPC_HEADER || rx_data[2] != 0 || rx_data[3] != 0)
 		return 2; 
 	if(rx_data[1] != UPC_DATA_LEN)

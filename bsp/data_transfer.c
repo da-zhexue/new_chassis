@@ -1,19 +1,33 @@
 #include "data_transfer.h"
 
+#ifdef DEBUG_WITH_GLOBAL_VAR
+rc_ctrl_t RC_CtrlData;
+TF_t TF;
+motor_9025_measure_t motor_9025_measure;
+motor_3508_measure_t motor_3508_measure[4];
+small_gimbal_angle_t small_gimbal_angle_deg;
+big_gimbal_angle_t big_gimbal_angle_deg;
+upc_t upc;
+#else
 static rc_ctrl_t RC_CtrlData;
+static TF_t TF;
+static motor_9025_measure_t motor_9025_measure;
+static motor_3508_measure_t motor_3508_measure[4];
+static small_gimbal_angle_t small_gimbal_angle_deg;
+static big_gimbal_angle_t big_gimbal_angle_deg;
+static upc_t upc;
+#endif
+
 rc_ctrl_t *get_rc_ctrl_data(void)
 {
 	return &RC_CtrlData;
 }
 
-static TF_t TF;
+
 TF_t* get_TF(void)
 {
 	return &TF;
 }
-
-static motor_9025_measure_t motor_9025_measure;
-static motor_3508_measure_t motor_3508_measure[4];
 
 motor_9025_measure_t* get_motor_9025_measure_data(void)
 {
@@ -27,18 +41,16 @@ motor_3508_measure_t* get_motor_3508_measure_data(uint8_t motor_index)
     return NULL;
 }
 
-static small_gimbal_angle_t small_gimbal_angle_deg;
-static big_gimbal_angle_t big_gimbal_angle_deg;
-static upc_t upc;
-
 small_gimbal_angle_t* get_small_gimbal_angle(void)
 {
 	return &small_gimbal_angle_deg;
 }
+
 big_gimbal_angle_t* get_big_gimbal_angle(void)
 {
 	return &big_gimbal_angle_deg;
 }
+
 upc_t* get_upc_data(void)
 {
 	return &upc;

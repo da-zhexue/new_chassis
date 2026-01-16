@@ -1,33 +1,7 @@
-/**
- ******************************************************************************
- * @file	 user_lib.h
- * @author  Wang Hongxi
- * @version V1.0.0
- * @date    2021/2/18
- * @brief
- ******************************************************************************
- * @attention
- *
- ******************************************************************************
- */
 #ifndef _USER_LIB_H
 #define _USER_LIB_H
-#include "stdint.h"
-#include "main.h"
+#include "typedef.h"
 #include "cmsis_os.h"
-
-enum
-{
-    CHASSIS_DEBUG = 1,
-    GIMBAL_DEBUG,
-    INS_DEBUG,
-    RC_DEBUG,
-    IMU_HEAT_DEBUG,
-    SHOOT_DEBUG,
-    AIMASSIST_DEBUG,
-};
-
-extern uint8_t GlobalDebugMode;
 
 #ifndef user_malloc
 #ifdef _CMSIS_OS_H
@@ -89,11 +63,11 @@ extern uint8_t GlobalDebugMode;
 
 typedef struct
 {
-    float input;        //��������
-    float out;          //�������
-    float min_value;    //�޷���Сֵ
-    float max_value;    //�޷����ֵ
-    float frame_period; //ʱ����
+    float input;        //输入值
+    float out;          //输出值
+    float min_value;    //输出最小值
+    float max_value;    //输出最大值
+    float frame_period; //时间周期
 } ramp_function_source_t;
 
 typedef __packed struct
@@ -112,38 +86,31 @@ typedef __packed struct
     float t[4];
 } Ordinary_Least_Squares_t;
 
-//���ٿ���
-float Sqrt(float x);
+typedef __packed struct
+{
+    fp32 input;        //输入数据
+    fp32 out;          //滤波输出的数据
+    fp32 num[1];       //滤波参数
+    fp32 frame_period; //滤波的时间间隔 单位 s
+} first_order_filter_type_t;
 
-//б��������ʼ��
+float q_sqrt(float x);
+
 void ramp_init(ramp_function_source_t *ramp_source_type, float frame_period, float max, float min);
-//б����������
 float ramp_calc(ramp_function_source_t *ramp_source_type, float input);
 
-//��������
 float abs_limit(float num, float Limit);
-//�жϷ���λ
 float sign(float value);
-//��������
 float float_deadband(float Value, float minValue, float maxValue);
-// int26����
-int16_t int16_deadline(int16_t Value, int16_t minValue, int16_t maxValue);
-//�޷�����
+int16_t int16_deadband(int16_t Value, int16_t minValue, int16_t maxValue);
 float float_constrain(float Value, float minValue, float maxValue);
-//�޷�����
 int16_t int16_constrain(int16_t Value, int16_t minValue, int16_t maxValue);
-//ѭ���޷�����
 float loop_float_constrain(float Input, float minValue, float maxValue);
-
 int loop_int_constrain(int Input, int minValue, int maxValue);
-//�����޷� -PI~PI
 float radian_format(float Rad);
-//�Ƕ� ���޷� 180 ~ -180
 float theta_format(float Ang);
-
 int float_rounding(float raw);
 
-//���ȸ�ʽ��Ϊ-PI~PI
 #define rad_format(Ang) loop_float_constrain((Ang), -PI, PI)
 
 void OLS_Init(Ordinary_Least_Squares_t *OLS, uint16_t order);
@@ -152,10 +119,6 @@ float OLS_Derivative(Ordinary_Least_Squares_t *OLS, float deltax, float y);
 float OLS_Smooth(Ordinary_Least_Squares_t *OLS, float deltax, float y);
 float Get_OLS_Derivative(Ordinary_Least_Squares_t *OLS);
 float Get_OLS_Smooth(Ordinary_Least_Squares_t *OLS);
-
-void QuaternionUpdate(float *q, float gx, float gy, float gz, float dt);
-void QuaternionToEularAngle(float *q, float *Yaw, float *Pitch, float *Roll);
-void EularAngleToQuaternion(float Yaw, float Pitch, float Roll, float *q);
 
 void unpack_4bytes_to_floats(const uint8_t data[4], float* f1);
 void pack_float_to_4bytes(float f1, uint8_t data[4]);

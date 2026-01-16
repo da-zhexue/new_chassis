@@ -11,7 +11,6 @@ TF_t *TF_ptr;
 
 void comm_init(void);
 void upc_send_attitude_handler(void);
-void debug(void);
 
 void commTask(void const * argument)
 {
@@ -47,9 +46,4 @@ void upc_send_attitude_handler(void)
 	Append_CRC8_Check_Sum(send_data, UPC_HEADER_LEN);
 	Append_CRC16_Check_Sum(send_data, UPC_TOTAL_LEN);
 	HAL_UART_Transmit_DMA(&huart1, send_data, sizeof(send_data));
-}
-
-void debug(void)
-{
-	static uint8_t send_data[10] = {0};
 }
