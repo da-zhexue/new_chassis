@@ -9,14 +9,14 @@ extern CAN_HandleTypeDef hcan2;
 /**********************************************************************/
 motor_9025_measure_t* motor_9025_measure_ptr = NULL;
 motor_3508_measure_t* motors_3508_measure_ptr[4] = {NULL};
-small_gimbal_angle_t* small_gimbal_angle_deg = NULL;
+small_gimbal_angle_t* small_gimbal_angle_deg_ptr = NULL;
 void CAN_Receive_Init(void)
 {
     motor_9025_measure_ptr = get_motor_9025_measure_data();
     for(int i = 0; i < 4; i++){
         motors_3508_measure_ptr[i] = get_motor_3508_measure_data(i);
     }
-    small_gimbal_angle_deg = get_small_gimbal_angle();
+    small_gimbal_angle_deg_ptr = get_small_gimbal_angle();
 }
 
 void get_motor_3508_measure(motor_3508_measure_t* motor_3508_measure, uint8_t* rx_data)
@@ -99,16 +99,16 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 				{
 					case CBOARD_GIMBAL_1:
 					{
-                        unpack_4bytes_to_floats(&rx_data[0], &small_gimbal_angle_deg->small_gimbal_angle[0]);
-                        unpack_4bytes_to_floats(&rx_data[4], &small_gimbal_angle_deg->small_gimbal_angle[1]);
-                        small_gimbal_angle_deg->small_gimbal_imu_last_online_time = DWT_GetTimeline_s();
+                        unpack_4bytes_to_floats(&rx_data[0], &small_gimbal_angle_deg_ptr->small_gimbal_angle[0]);
+                        unpack_4bytes_to_floats(&rx_data[4], &small_gimbal_angle_deg_ptr->small_gimbal_angle[1]);
+                        small_gimbal_angle_deg_ptr->small_gimbal_imu_last_online_time = DWT_GetTimeline_s();
 						break;
 					}
 					
 					case CBOARD_GIMBAL_2:
 					{
-                        unpack_4bytes_to_floats(&rx_data[0], &small_gimbal_angle_deg->small_gimbal_angle[2]);
-                        small_gimbal_angle_deg->small_gimbal_imu_last_online_time = DWT_GetTimeline_s();
+                        unpack_4bytes_to_floats(&rx_data[0], &small_gimbal_angle_deg_ptr->small_gimbal_angle[2]);
+                        small_gimbal_angle_deg_ptr->small_gimbal_imu_last_online_time = DWT_GetTimeline_s();
 						break;
 					}
 					
