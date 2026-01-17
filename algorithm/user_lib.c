@@ -1,3 +1,11 @@
+/**
+ * @file user_lib.c
+ * @brief 数学函数模块
+ * 常见数学函数。
+ * @version 1.0
+ * @date 2026-01-17
+ */
+
 #include "stdlib.h"
 #include "string.h"
 #include "user_lib.h"

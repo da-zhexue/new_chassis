@@ -1,3 +1,11 @@
+/**
+ * @file motor_ctrl.c
+ * @brief 电机控制模块
+ * 处理底盘控制数据转化为电机控制数据。
+ * @version 1.0
+ * @date 2026-01-17
+ */
+
 #include "motor_ctrl.h"
 #include "Online_Monitor.h"
 #include "data_transfer.h"

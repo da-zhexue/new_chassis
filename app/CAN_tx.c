@@ -1,3 +1,11 @@
+/**
+ * @file CAN_tx.c
+ * @brief can发送模块
+ * 用于控制电机及部分与云台c板、通信板通信。
+ * @version 1.0
+ * @date 2026-01-17
+ */
+
 #include "can.h"
 #include "CAN_tx.h"
 

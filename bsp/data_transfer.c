@@ -1,3 +1,12 @@
+/**
+ * @file data_transfer.c
+ * @brief 数据中转模块
+ * 该文件用于保存需要用于多个任务的数据，并通过返回指针的方式提供给其他模块使用。
+ * 注: 使用返回指针的方式仅因为个人不喜欢extern一个全局变量。
+ * @version 1.0
+ * @date 2026-01-17
+ */
+
 #include "data_transfer.h"
 
 #ifdef DEBUG_WITH_GLOBAL_VAR

@@ -1,3 +1,12 @@
+/**
+ * @file DBUS.c
+ * @brief 遥控器模块
+ * 获取遥控器数据。
+ * 很难看，但最好别动！！！
+ * @version 1.0
+ * @date 2026-01-17
+ */
+
 #include "main.h"
 #include "DBUS.h"
 #include "bsp_dwt.h"

@@ -1,3 +1,14 @@
+/**
+ * @file chassis_ctrl.c
+ * @brief 底盘控制模块
+ * 处理遥控器或上位机控制数据转化为底盘控制数据。
+ * @version 1.2
+ * @date 2026-01-17
+ * @changelog 
+ * - 2026-01-16 增加遥控器控制云台
+ * - 2026-01-17 增加速度滤波
+ */
+
 #include "chassis_ctrl.h"
 #include "bsp_dwt.h"
 #include "pid.h"
@@ -9,6 +20,11 @@
 
 chassis_ctrl_t chassis_ctrl;
 
+static first_order_filter_type_t chassis_vx_filter, chassis_vy_filter, chassis_vw_filter;
+static float filter_vx_num[1] = {CHASSIS_FILTER_VX_BETA};
+static float filter_vy_num[1] = {CHASSIS_FILTER_VY_BETA};
+static float filter_vw_num[1] = {CHASSIS_FILTER_VW_BETA};
+
 void ctrl_data_update(rc_ctrl_t *rc_ctrl_ptr, upc_t *upc_ptr)
 {
     if(Online_Monitors(rc_ctrl_ptr->last_online_time, RC_ONLINE))
@@ -17,6 +33,7 @@ void ctrl_data_update(rc_ctrl_t *rc_ctrl_ptr, upc_t *upc_ptr)
         chassis_ctrl.ctrl = CHASSIS_RC_OFFLINE;
 
     static fp32 vx, vy, vw, yaw_delta;
+    static fp32 vx_filter, vy_filter, vw_filter;
     static fp32 norm_v;
     static fp32 small_gimbal_pitch = 0.0f, small_gimbal_yaw = 0.0f;
     if(chassis_ctrl.ctrl == CHASSIS_RC)
@@ -48,21 +65,13 @@ void ctrl_data_update(rc_ctrl_t *rc_ctrl_ptr, upc_t *upc_ptr)
         chassis_ctrl.mode = 1;//rc_ctrl_ptr->s2;
         upc_ptr->start_upc_flag = 0;
 
-        uint8_t send_data1[8] = {0};
-        send_data1[1] = 1;
-        //CAN_CBoard_CMD(0x223, send_data1);
         small_gimbal_pitch += ((fp32)rc_ctrl_ptr->ch3 * 0.05f); // small_gimbal_pitch
         small_gimbal_yaw += ((fp32)rc_ctrl_ptr->ch2 * 0.05f); // small_gimbal_yaw
-        uint8_t shoot = (rc_ctrl_ptr->ch1 > 0) ? 1 : 0;
 
         uint8_t send_data2[8];
         pack_float_to_4bytes(small_gimbal_yaw, &send_data2[0]);
         pack_float_to_4bytes(small_gimbal_pitch, &send_data2[4]);
-        //CAN_CBoard_CMD(0x222, send_data2);
-
-        uint8_t send_data3[8] = {0};
-        send_data3[0] = shoot;
-        //CAN_CBoard_CMD(0x223, send_data3);
+        CAN_CBoard_CMD(0x222, send_data2);
     }
     else
     {
@@ -74,10 +83,17 @@ void ctrl_data_update(rc_ctrl_t *rc_ctrl_ptr, upc_t *upc_ptr)
         chassis_ctrl.gimbal_shutdown_flag = 1;
     }
 
-    norm_v = (sqrt(vx * vx + vy * vy) / 660.0f) > 1.0f ? 1.0f : (sqrt(vx * vx + vy * vy) / 660.0f);
+    first_order_filter_cali(&chassis_vx_filter, vx);
+    first_order_filter_cali(&chassis_vy_filter, vy);
+    first_order_filter_cali(&chassis_vw_filter, vw);
+    vx_filter = chassis_vx_filter.out;
+    vy_filter = chassis_vy_filter.out;
+    vw_filter = chassis_vw_filter.out;
+
+    norm_v = (sqrt(vx_filter * vx_filter + vy_filter * vy_filter) / 660.0f) > 1.0f ? 1.0f : (sqrt(vx_filter * vx_filter + vy_filter * vy_filter) / 660.0f);
     chassis_ctrl.given_chassis_v[0] = norm_v * CHASSIS_MAX_V;
-    chassis_ctrl.given_chassis_v[1] = atan2(vy, vx);
-    chassis_ctrl.given_chassis_w = vw * CHASSIS_MAX_W;
+    chassis_ctrl.given_chassis_v[1] = atan2(vy_filter, vx_filter);
+    chassis_ctrl.given_chassis_w = vw_filter * CHASSIS_MAX_W;
 }
 
 void chassis_ctrl_init(void)
@@ -89,6 +105,10 @@ void chassis_ctrl_init(void)
     chassis_ctrl.mode = 1;
     chassis_ctrl.gimbal_shutdown_flag = 1;
     chassis_ctrl.last_gimbal_shutdown_flag = 1;
+
+    first_order_filter_init(&chassis_vx_filter, CHASSIS_CONTROL_TIME, filter_vx_num);
+    first_order_filter_init(&chassis_vy_filter, CHASSIS_CONTROL_TIME, filter_vy_num);
+    first_order_filter_init(&chassis_vw_filter, CHASSIS_CONTROL_TIME, filter_vw_num);
 }
 
 chassis_ctrl_t* get_chassis_ctrl_data(void)

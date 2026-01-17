@@ -1,3 +1,11 @@
+/**
+ * @file comm_task.c
+ * @brief 底盘控制任务模块
+ * 获取控制量，发送给控制函数。
+ * @version 1.0
+ * @date 2026-01-17
+ */
+
 #include "chassis_task.h"
 #include "cmsis_os.h"
 #include "data_transfer.h"

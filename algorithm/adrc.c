@@ -1,3 +1,12 @@
+/**
+ * @file adrc.c
+ * @brief 自抗扰控制器算法
+ * 一种先进的控制器，用于替代PID控制器。
+ * 目前未使用（不会用捏）
+ * @version 1.0
+ * @date 2026-01-17
+ */
+
 #include "ADRC.h"
 #include <math.h>
 #include "user_lib.h"

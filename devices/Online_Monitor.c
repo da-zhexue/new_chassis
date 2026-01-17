@@ -1,3 +1,11 @@
+/**
+ * @file Online_Monitor.c
+ * @brief 状态监测模块
+ * 通过将上次接收到数据的时间与当前时间进行对比获得电机、imu、遥控器等的在线情况，并获得错误码。
+ * @version 1.0
+ * @date 2026-01-17
+ */
+
 #include "Online_Monitor.h"
 #include "bsp_dwt.h"
 

@@ -1,3 +1,12 @@
+/**
+ * @file CAN_rx.c
+ * @brief CAN接收模块
+ * 该文件用于处理CAN总线接收到的数据，并将其解析到相应的数据结构中。
+ * 其中电机走can1，与云台c板、通信板、上位机通信走can2。
+ * @version 1.0
+ * @date 2026-01-17
+ */
+
 #include "CAN_rx.h"
 #include "can.h"
 #include "user_lib.h"

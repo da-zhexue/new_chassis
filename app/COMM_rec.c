@@ -1,3 +1,12 @@
+/**
+ * @file COMM_rec.c
+ * @brief 与通信板串口通信模块
+ * 用于处理通信板发到串口usart1的数据，并将其解析到相应的数据结构中。
+ * 具体见通信协议。
+ * @version 1.0
+ * @date 2026-01-17
+ */
+
 #include "usart.h"
 #include "COMM_rec.h"
 #include "crc.h"

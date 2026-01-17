@@ -1,3 +1,11 @@
+/**
+ * @file crc.c
+ * @brief 循环冗余校验算法
+ * 用于获得通信协议中的校验位数据
+ * @version 1.0
+ * @date 2026-01-17
+ */
+
 #include "crc.h"
 #include "typedef.h"
 uint16_t ex;

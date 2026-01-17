@@ -1,3 +1,11 @@
+/**
+ * @file led_task.c
+ * @brief LED任务模块
+ * 通过LED灯的颜色变化来显示系统状态。
+ * @version 1.0
+ * @date 2026-01-17
+ */
+
 #include "led_task.h"
 #include "bsp_led.h"
 #include "cmsis_os.h"

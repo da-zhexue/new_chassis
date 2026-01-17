@@ -1,3 +1,11 @@
+/**
+ * @file comm_task.c
+ * @brief 与通信板通信任务模块
+ * 向通信板发送数据，详见通信协议。
+ * @version 1.0
+ * @date 2026-01-17
+ */
+
 #include "comm_task.h"
 #include "cmsis_os.h"
 #include "COMM_rec.h"
