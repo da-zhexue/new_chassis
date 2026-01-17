@@ -65,8 +65,11 @@ void ctrl_data_update(rc_ctrl_t *rc_ctrl_ptr, upc_t *upc_ptr)
         chassis_ctrl.mode = 1;//rc_ctrl_ptr->s2;
         upc_ptr->start_upc_flag = 0;
 
-        small_gimbal_pitch += ((fp32)rc_ctrl_ptr->ch3 * 0.05f); // small_gimbal_pitch
-        small_gimbal_yaw += ((fp32)rc_ctrl_ptr->ch2 * 0.05f); // small_gimbal_yaw
+        small_gimbal_pitch -= ((fp32)rc_ctrl_ptr->ch3 * 0.0001f); // small_gimbal_pitch
+        small_gimbal_yaw -= ((fp32)rc_ctrl_ptr->ch2 * 0.0001f); // small_gimbal_yaw
+
+        float_constrain(&small_gimbal_pitch, -45.0f, 45.0f);
+        float_constrain(&small_gimbal_yaw, -45.0f, 45.0f);
 
         uint8_t send_data2[8];
         pack_float_to_4bytes(small_gimbal_yaw, &send_data2[0]);

@@ -30,12 +30,8 @@ void upc_send_attitude_handler(void);
 
 uint8_t upc_decode(uint8_t* rx_data)
 {
-	if(upc_ptr == NULL)
-		upc_ptr = get_upc_data();
-	if(big_gimbal_angle_ptr == NULL)
-		big_gimbal_angle_ptr = get_big_gimbal_angle();
-	//	if(sizeof(rx_data) != UPC_TOTAL_LEN)
-	//		return 1;
+	upc_ptr = get_upc_data();
+	
 	if(!upc_ptr->start_upc_flag)
 		return 0;
 	if(rx_data[0] != UPC_HEADER || rx_data[2] != 0 || rx_data[3] != 0)
@@ -129,6 +125,7 @@ void temp_imu_handler(uint8_t* data)
 {
 	// if (sizeof(data) != 16)
 	// 	return;
+	big_gimbal_angle_ptr = get_big_gimbal_angle();
 	unpack_4bytes_to_floats(&data[0], &big_gimbal_angle_ptr->big_gimbal_angle[0]);
 	unpack_4bytes_to_floats(&data[4], &big_gimbal_angle_ptr->big_gimbal_angle[1]);
 	unpack_4bytes_to_floats(&data[8], &big_gimbal_angle_ptr->big_gimbal_angle[2]);

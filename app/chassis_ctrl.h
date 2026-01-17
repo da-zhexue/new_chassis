@@ -3,13 +3,13 @@
 #include "typedef.h"
 #include "data_transfer.h"
 
-#define GIMBAL_ANGLE_DELTA_MAX 0.05f
+#define GIMBAL_ANGLE_DELTA_MAX 0.12f
 #define CHASSIS_MAX_V 7000.0f
 #define CHASSIS_MAX_W 10.0f
 
-#define CHASSIS_FILTER_VX_BETA 0.3f
-#define CHASSIS_FILTER_VY_BETA 0.3f
-#define CHASSIS_FILTER_VW_BETA 0.3f
+#define CHASSIS_FILTER_VX_BETA 0.2f
+#define CHASSIS_FILTER_VY_BETA 0.2f
+#define CHASSIS_FILTER_VW_BETA 0.2f
 #define CHASSIS_CONTROL_TIME 0.002f
 
 typedef enum

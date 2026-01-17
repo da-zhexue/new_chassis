@@ -103,8 +103,8 @@ float abs_limit(float num, float Limit);
 float sign(float value);
 float float_deadband(float Value, float minValue, float maxValue);
 int16_t int16_deadband(int16_t Value, int16_t minValue, int16_t maxValue);
-float float_constrain(float Value, float minValue, float maxValue);
-int16_t int16_constrain(int16_t Value, int16_t minValue, int16_t maxValue);
+void float_constrain(float* Value, float minValue, float maxValue);
+void int16_constrain(int16_t* Value, int16_t minValue, int16_t maxValue);
 float loop_float_constrain(float Input, float minValue, float maxValue);
 int loop_int_constrain(int Input, int minValue, int maxValue);
 float radian_format(float Rad);
@@ -112,6 +112,9 @@ float theta_format(float Ang);
 int float_rounding(float raw);
 
 #define rad_format(Ang) loop_float_constrain((Ang), -PI, PI)
+
+void first_order_filter_init(first_order_filter_type_t *first_order_filter_type, fp32 frame_period, const fp32 num[1]);
+void first_order_filter_cali(first_order_filter_type_t *first_order_filter_type, fp32 input);
 
 void OLS_Init(Ordinary_Least_Squares_t *OLS, uint16_t order);
 void OLS_Update(Ordinary_Least_Squares_t *OLS, float deltax, float y);

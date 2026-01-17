@@ -134,25 +134,21 @@ int16_t int16_deadband(int16_t Value, int16_t minValue, int16_t maxValue)
 }
 
 //float限幅
-float float_constrain(float Value, float minValue, float maxValue)
+void float_constrain(float* Value, float minValue, float maxValue)
 {
-    if (Value < minValue)
-        return minValue;
-    else if (Value > maxValue)
-        return maxValue;
-    else
-        return Value;
+    if (*Value < minValue)
+        *Value = minValue;
+    else if (*Value > maxValue)
+        *Value = maxValue;
 }
 
 //int16限幅
-int16_t int16_constrain(int16_t Value, int16_t minValue, int16_t maxValue)
+void int16_constrain(int16_t* Value, int16_t minValue, int16_t maxValue)
 {
-    if (Value < minValue)
-        return minValue;
-    else if (Value > maxValue)
-        return maxValue;
-    else
-        return Value;
+    if (*Value < minValue)
+        *Value = minValue;
+    else if (*Value > maxValue)
+        *Value = maxValue;
 }
 
 //float循环限幅
