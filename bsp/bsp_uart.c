@@ -1,6 +1,8 @@
 #include "bsp_uart.h"
 #include "COMM_rec.h"
+#include "cmsis_os.h"
 #include "DBUS.h"
+#include "comm_task.h"
 
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart1_tx;
@@ -25,7 +27,6 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) //DMA
 	if(huart == &COMM_HUART)
 	{
 		upc_decode(uart1_rx_buffer);
-		//uart_printf(&huart1, "error: %d\n", receive_error);
 		HAL_UARTEx_ReceiveToIdle_DMA(&COMM_HUART, uart1_rx_buffer, sizeof(uart1_rx_buffer));
 		__HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
 	}
@@ -36,16 +37,3 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) //DMA
 		__HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
 	}
 }
-
-//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)  //IT
-//{
-
-//	if(huart == &huart3)
-//	{
-//		dbus_data_handler();
-//	}
-//	// else if(huart == &DEBUG_HUART)
-//	// {
-//	// 	HAL_UART_Receive_IT(&DEBUG_HUART, uart6_rx_buffer, sizeof(uart6_rx_buffer));
-//	// }
-//}

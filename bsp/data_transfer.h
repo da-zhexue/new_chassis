@@ -83,13 +83,15 @@ motor_3508_measure_t* get_motor_3508_measure_data(uint8_t motor_index);
 typedef struct 
 {
     uint8_t start_upc_flag;
-		uint8_t mode;
-		uint8_t shoot;
+	uint8_t mode;
+	uint8_t shoot;
 
     float vx, vy, vw; 
     float gimbal_yaw, chassis_yaw;
-		float small_gimbal_yaw, small_gimbal_pitch;
+	float small_gimbal_yaw, small_gimbal_pitch;
     float x, y, z;
+
+    fp32 last_online;
 
 } upc_t;
 typedef struct

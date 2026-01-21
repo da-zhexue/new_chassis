@@ -14,6 +14,7 @@
 #include "user_lib.h"
 #include "crc.h"
 #include "data_transfer.h"
+#include "bsp_uart.h"
 
 TF_t *TF_ptr;
 
@@ -22,14 +23,14 @@ void upc_send_attitude_handler(void);
 
 void commTask(void const * argument)
 {
-		comm_init();
+	comm_init();
     while(1)
     {
-        while((&huart1)->gState != HAL_UART_STATE_READY)
-            ; 
-        //upc_send_attitude_handler();
-				//debug();
-        osDelay(5);
+				upc_send_attitude_handler();
+				uart1_init();
+				
+        osDelay(7);
+			
     }
 }
 
@@ -53,5 +54,5 @@ void upc_send_attitude_handler(void)
 
 	Append_CRC8_Check_Sum(send_data, UPC_HEADER_LEN);
 	Append_CRC16_Check_Sum(send_data, UPC_TOTAL_LEN);
-	HAL_UART_Transmit_DMA(&huart1, send_data, sizeof(send_data));
+	HAL_UART_Transmit(&huart1, send_data, sizeof(send_data), 100);
 }

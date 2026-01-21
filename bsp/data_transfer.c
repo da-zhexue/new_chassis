@@ -11,6 +11,7 @@
 
 #ifdef DEBUG_WITH_GLOBAL_VAR
 rc_ctrl_t RC_CtrlData;
+chassis_ctrl_t chassis_ctrl;
 TF_t TF;
 motor_9025_measure_t motor_9025_measure;
 motor_3508_measure_t motor_3508_measure[4];
@@ -32,6 +33,10 @@ rc_ctrl_t *get_rc_ctrl_data(void)
 	return &RC_CtrlData;
 }
 
+chassis_ctrl_t* get_chassis_ctrl_data(void)
+{
+    return &chassis_ctrl;
+}
 
 TF_t* get_TF(void)
 {

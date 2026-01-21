@@ -58,3 +58,4 @@ new_chassis\comm_task.o: ../algorithm/user_lib.h
 new_chassis\comm_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 new_chassis\comm_task.o: ../algorithm/crc.h
 new_chassis\comm_task.o: ../bsp/data_transfer.h
+new_chassis\comm_task.o: ../bsp/bsp_uart.h

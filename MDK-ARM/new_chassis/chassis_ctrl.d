@@ -59,3 +59,4 @@ new_chassis\chassis_ctrl.o: ../devices/Online_Monitor.h
 new_chassis\chassis_ctrl.o: ../devices/DBUS.h
 new_chassis\chassis_ctrl.o: ../Core/Inc/usart.h
 new_chassis\chassis_ctrl.o: ..\app\CAN_tx.h
+new_chassis\chassis_ctrl.o: ../bsp/bsp_uart.h

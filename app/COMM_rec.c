@@ -30,7 +30,8 @@ void upc_send_attitude_handler(void);
 
 uint8_t upc_decode(uint8_t* rx_data)
 {
-	upc_ptr = get_upc_data();
+	if(upc_ptr == NULL)
+		upc_ptr = get_upc_data();
 	
 	if(!upc_ptr->start_upc_flag)
 		return 0;
@@ -76,6 +77,7 @@ void upc_cmd_move_handler(uint8_t* data)
 	unpack_4bytes_to_floats(&data[0], &upc_ptr->vx);
 	unpack_4bytes_to_floats(&data[4], &upc_ptr->vy);
 	unpack_4bytes_to_floats(&data[8], &upc_ptr->vw);
+	upc_ptr->last_online = DWT_GetTimeline_s();
 }
 
 void upc_cmd_gimbal_handler(uint8_t* data)
@@ -87,6 +89,7 @@ void upc_cmd_gimbal_handler(uint8_t* data)
 	pack_float_to_4bytes(upc_ptr->small_gimbal_yaw, &send_data[0]);
 	pack_float_to_4bytes(upc_ptr->small_gimbal_pitch, &send_data[4]);
 	CAN_CBoard_CMD(0x222, send_data);
+	upc_ptr->last_online = DWT_GetTimeline_s();
 }
 
 void upc_cmd_shoot_handler(uint8_t* data)
@@ -95,7 +98,7 @@ void upc_cmd_shoot_handler(uint8_t* data)
 	send_data[0] = data[12];
 
 	CAN_CBoard_CMD(0x223, send_data);
-	
+	upc_ptr->last_online = DWT_GetTimeline_s();
 }
 
 void upc_cmd_mode_handler(uint8_t* data) // 暂时用于摩擦轮控制
@@ -104,6 +107,7 @@ void upc_cmd_mode_handler(uint8_t* data) // 暂时用于摩擦轮控制
 	uint8_t send_data[8] = {0};
 	send_data[1] = data[12];
 	CAN_CBoard_CMD(0x223, send_data);
+	upc_ptr->last_online = DWT_GetTimeline_s();
 }
 
 // void comm_cmd_small_gimbal_imu_handler(uint8_t* data)
@@ -125,7 +129,8 @@ void temp_imu_handler(uint8_t* data)
 {
 	// if (sizeof(data) != 16)
 	// 	return;
-	big_gimbal_angle_ptr = get_big_gimbal_angle();
+	if(big_gimbal_angle_ptr == NULL)
+		big_gimbal_angle_ptr = get_big_gimbal_angle();
 	unpack_4bytes_to_floats(&data[0], &big_gimbal_angle_ptr->big_gimbal_angle[0]);
 	unpack_4bytes_to_floats(&data[4], &big_gimbal_angle_ptr->big_gimbal_angle[1]);
 	unpack_4bytes_to_floats(&data[8], &big_gimbal_angle_ptr->big_gimbal_angle[2]);

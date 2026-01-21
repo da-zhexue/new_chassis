@@ -7,7 +7,9 @@
 #define X 0
 #define Y 1
 #define Z 2
-#define MF9025_ECD_IN_ZERO 0x128D
+#define MF9025_ECD_IN_ZERO 0x126D
+
+//#define AUTO_CORRECTION_ENABLE  // 9025编码器有问题，不能保证校准零位准确，暂时选择手动校准零位
 
 void TF_Task(void const * argurment);
 #endif
