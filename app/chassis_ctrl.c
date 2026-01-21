@@ -71,7 +71,7 @@ void ctrl_data_update(rc_ctrl_t *rc_ctrl_ptr, upc_t *upc_ptr)
             vy = 0.0f;
             vw = 0.0f;
             chassis_ctrl_ptr->gimbal_shutdown_flag = 1;
-						uart1_init();
+						//uart1_init();
         }
     }
     else if(chassis_ctrl_ptr->ctrl == GIMBAL_RC)

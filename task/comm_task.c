@@ -27,9 +27,9 @@ void commTask(void const * argument)
     while(1)
     {
 				upc_send_attitude_handler();
-				uart1_init();
+				//uart1_init();
 				
-        osDelay(7);
+        osDelay(5);
 			
     }
 }

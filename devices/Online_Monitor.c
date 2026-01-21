@@ -15,7 +15,7 @@ void online_state_set(uint16_t type, uint8_t state);
 
 uint8_t Online_Monitors(fp32 last_online, uint16_t type)
 {
-	if (DWT_GetTimeline_s() - last_online > 0.5f)
+	if (DWT_GetTimeline_s() - last_online > 1.0f)
     {
         online_state_set(type, 0);
         return 0;
