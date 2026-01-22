@@ -2,6 +2,7 @@
 #define UART_NEW
 #include "usart.h"
 
+#define COMM_BUF_LEN 44
 #define COMM_MESSAGE_LEN 22
 #define DEBUG_MESSAGE_LEN 24
 
