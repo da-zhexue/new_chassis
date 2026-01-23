@@ -1409,7 +1409,7 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h)(0x69282E57)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h)(0x69282E57)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h)(0x69282E57)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h)(0x69282E57)
-F (..\bsp\bsp_uart.c)(0x6971C5FC)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Middlewares/ST/ARM/DSP/Inc -I ../algorithm -I ../app -I ../bsp -I ../task -I ../devices-I.\RTE\_new_chassis-IE:\keil\ARM\CMSIS\5.6.0\CMSIS\Core\Include-IE:\keil\ARM\CMSIS\5.6.0\CMSIS\DSP\Include-IE:\keil\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="529" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__FPU_USED="1U" -D__FPU_PRESENT="1U" -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o new_chassis\bsp_uart.o --omf_browse new_chassis\bsp_uart.crf --depend new_chassis\bsp_uart.d)
+F (..\bsp\bsp_uart.c)(0x69733085)(--c99 -c --cpu Cortex-M4.fp.sp -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Middlewares/ST/ARM/DSP/Inc -I ../algorithm -I ../app -I ../bsp -I ../task -I ../devices-I.\RTE\_new_chassis-IE:\keil\ARM\CMSIS\5.6.0\CMSIS\Core\Include-IE:\keil\ARM\CMSIS\5.6.0\CMSIS\DSP\Include-IE:\keil\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="529" -D_RTE_ -DSTM32F407xx -DUSE_HAL_DRIVER -DSTM32F407xx -DARM_MATH_CM4 -D__FPU_USED="1U" -D__FPU_PRESENT="1U" -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING-o new_chassis\bsp_uart.o --omf_browse new_chassis\bsp_uart.crf --depend new_chassis\bsp_uart.d)
 I (..\bsp\bsp_uart.h)(0x6971C568)
 I (../Core/Inc/usart.h)(0x6961E0F3)
 I (../Core/Inc/main.h)(0x6961E4F3)
@@ -2138,5 +2138,5 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h)(0x69282EB6)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h)(0x69282EB6)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x69282EB6)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x69282EB6)
-F (E:\keil\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\ARM\arm_cortexM4lf_math.lib)(0x5D2590B6)()
 F (../Middlewares/ST/ARM/DSP/Lib/arm_cortexM4lf_math.lib)(0x69282D2A)()
+F (E:\keil\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\ARM\arm_cortexM4lf_math.lib)(0x5D2590B6)()

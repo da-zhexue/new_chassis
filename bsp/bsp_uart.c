@@ -28,7 +28,7 @@ void uart1_init(void) // COMMUNICATION_BOARD
         __HAL_DMA_DISABLE(&hdma_usart1_rx);
     }
 
-    hdma_usart1_rx.Instance->PAR = (uint32_t) & (USART3->DR);
+    hdma_usart1_rx.Instance->PAR = (uint32_t) & (USART1->DR);
     //memory buffer 1
     //内存缓冲区1
     hdma_usart1_rx.Instance->M0AR = (uint32_t)(uart1_rx_buffer[0]);
@@ -107,7 +107,7 @@ void USART1_IRQHandler(void)
 
             //set memory buffer 0
             //设定缓冲区0
-            DMA1_Stream1->CR &= ~(DMA_SxCR_CT);
+            DMA2_Stream5->CR &= ~(DMA_SxCR_CT);
             
             //enable DMA
             //使能DMA
