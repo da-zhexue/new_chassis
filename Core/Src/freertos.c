@@ -29,6 +29,7 @@
 #include "led_task.h"
 #include "comm_task.h"
 #include "chassis_task.h"
+#include "param_tuning.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,6 +53,9 @@ osThreadId tfTaskHandle;
 osThreadId chassisTaskHandle;
 osThreadId ledTaskHandle;
 osThreadId commTaskHandle;
+#ifdef DEBUG_MODE
+osThreadId debugTaskHandle;
+#endif
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 
@@ -141,6 +145,11 @@ void MX_FREERTOS_Init(void) {
 
 	osThreadDef(comm_Task, commTask, osPriorityNormal, 0, 128);
   commTaskHandle = osThreadCreate(osThread(comm_Task), NULL);
+
+#ifdef DEBUG_MODE
+  osThreadDef(debug_Task, param_tuning_Task, osPriorityNormal, 0, 128);
+  debugTaskHandle = osThreadCreate(osThread(debug_Task), NULL);
+#endif
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 

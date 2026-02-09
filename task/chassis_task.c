@@ -2,33 +2,23 @@
  * @file comm_task.c
  * @brief 底盘控制任务模块
  * 获取控制量，发送给控制函数。
- * @version 1.0
- * @date 2026-01-17
+ * @version 1.1
+ * @changelog
+ * - 2026-02-09  减少头文件引用
  */
 
 #include "chassis_task.h"
 #include "cmsis_os.h"
-#include "data_transfer.h"
-#include "COMM_rec.h"
-#include "motor_ctrl.h"
-#include "CAN_rx.h"
 #include "chassis_ctrl.h"
 
 void ChassisTask(void const * argument)
-{   
-	//dbus_uart_init();
+{
 	chassis_ctrl_init();
-	motor_ctrl_init();
-	CAN_Receive_Init();
-
-	rc_ctrl_t *rc_ctrl_ptr = get_rc_ctrl_data();
-	upc_t *upc_ptr = get_upc_data();
-	chassis_ctrl_t *chassis_ctrl_ptr = get_chassis_ctrl_data();
-
 	while(1)
 	{
-		ctrl_data_update(rc_ctrl_ptr, upc_ptr);
-		motor_ctrl_update(chassis_ctrl_ptr);
+		ctrl_data_update();
+		motor_ctrl_update();
+		motor_ctrl_send();
 		osDelay(1);
 	}
 }

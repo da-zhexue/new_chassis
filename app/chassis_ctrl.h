@@ -1,7 +1,8 @@
 #ifndef CHASSIS_CTRL_H
 #define CHASSIS_CTRL_H
 #include "typedef.h"
-#include "data_transfer.h"
+#include "DTM.h"
+#include "pid.h"
 
 #define GIMBAL_ANGLE_DELTA_MAX 0.12f
 #define CHASSIS_MAX_V 7000.0f
@@ -12,6 +13,43 @@
 #define CHASSIS_FILTER_VW_BETA 0.2f
 #define CHASSIS_CONTROL_TIME 0.002f
 
+#define M3508_SPEED_PID_KP 8.0f
+#define M3508_SPEED_PID_KI 0.0f
+#define M3508_SPEED_PID_KD 0.0f
+#define M3508_SPEED_PID_OUT_MAX 16000.0f
+#define M3508_SPEED_PID_IOUT_MAX 3000.0f
+#define M3508_MAX_POSITION_ACCEL 1000.0f
+#define M3508_MAX_NEGATIVE_ACCEL 4000.0f
+#define M3508_DEADZONE 0.0f
+
+#define MF9025_ANGLE_PID_KP 10.0f
+#define MF9025_ANGLE_PID_KI 0.0f
+#define MF9025_ANGLE_PID_KD 0.0f
+#define MF9025_ANGLE_PID_OUT_MAX 30000.0f
+#define MF9025_ANGLE_PID_IOUT_MAX 3000.0f
+#define MF9025_MAX_POSITION_ACCEL 10000.0f
+#define MF9025_MAX_NEGATIVE_ACCEL 40000.0f
+#define MF9025_DEADZONE 0.0f
+#define MF9025_MAX_IQ 2048
+
+#define MF9025_ANGLE_PID_KP2 300.0f
+#define MF9025_ANGLE_PID_KI2 0.0f
+#define MF9025_ANGLE_PID_KD2 0.0f
+#define MF9025_ANGLE_PID_KP3 1000.0f
+#define MF9025_ANGLE_PID_KI3 0.0f
+#define MF9025_ANGLE_PID_KD3 0.0f
+
+#define FOLLOW_GIMBAL_PID_KP 1.0f
+#define FOLLOW_GIMBAL_PID_KI 0.0f
+#define FOLLOW_GIMBAL_PID_KD 0.0f
+#define FOLLOW_GIMBAL_PID_OUT_MAX 3000.0f
+#define FOLLOW_GIMBAL_PID_IOUT_MAX 1000.0f
+#define FOLLOW_GIMBAL_MAX_POSITION_ACCEL 10000.0f
+#define FOLLOW_GIMBAL_MAX_NEGATIVE_ACCEL 40000.0f
+#define FOLLOW_GIMBAL_DEADZONE 0.0f
+
+#define ROOT_2 1.41421356237309504880l
+
 typedef enum
 {
     CHASSIS_RC_OFFLINE = 0,
@@ -20,7 +58,46 @@ typedef enum
     GIMBAL_RC = 3
 }CHASSIS_CTRL_STATE;
 
-void ctrl_data_update(rc_ctrl_t *rc_ctrl_ptr, upc_t *upc_ptr);
+typedef struct
+{
+    fp32 given_chassis_v[2];
+    fp32 given_chassis_w;
+    fp32 given_gimbal_l_yaw;
+    fp32 given_gimbal_s_yaw, given_gimbal_s_pitch;
+    fp32 given_chassis_yaw;
+
+    uint8_t ctrl;
+    uint8_t mode;
+
+    uint8_t gimbal_shutdown_flag;
+    uint8_t last_gimbal_shutdown_flag;
+
+}chassis_t;
+
+typedef enum
+{
+    STOPPING = 0,
+    FOLLOW_CHASSIS = 1,
+    FOLLOW_GIMBAL = 2,
+    SPINNING_TOP = 3
+} CHASSIS_CTRL_MODE;
+
+typedef struct
+{
+    pid_t pid;
+    int16_t given_speed;
+} m3508_ctrl_t;
+typedef struct
+{
+    pid_t pid;
+    fp32 given_angle;
+    fp32 cur_angle;
+    fp32 ff_speed;
+} m9025_ctrl_t;
+
+void ctrl_data_update(void);
+void motor_ctrl_update(void);
+void motor_ctrl_send(void);
 void chassis_ctrl_init(void);
 
 #endif

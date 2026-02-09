@@ -9,22 +9,20 @@
 
 typedef enum
 {
-		SNED_DEBUG_ID = 0x300,
-		SEND_ATTITUDE_ID = 0x301,
-		SNED_REFEREE_ID = 0x302,
-	
-    MSG_DEBUG_ID = 0x0400, // Debug message
-    MSG_IMU_INFO_ID = 0x0401,
-    MSG_MOVE_CMD_ID = 0x0402, // Move command
-    GIMBAL_ROTATION_ID = 0x0403, // Gimbal rotation command
-		MSG_SHOOT_CMD_ID = 0x0404, 
-		MSG_MODE_SWITCH_ID = 0x405,
+	SEND_ATTITUDE = 0x301,
+	SNED_REFEREE = 0x302,
 
-    MSG_SMALL_GIMBAL_IMU_INFO_ID = 0x101,
-    MSG_BIG_GIMBAL_IMU_INFO_ID = 0x102
+    CMD_IMU_INFO = 0x0401, // 弃用
+    CMD_MOVE = 0x0402, // Move command
+    CMD_GIMBAL_ROTATION = 0x0403, // Gimbal rotation command
+	CMD_SHOOT = 0x0404,
+	CMD_MODE_SWITCH = 0x405,
+
+    CMD_IMU_S_INFO = 0x101,
+    CMD_IMU_L_INFO = 0x102
 } upc_cmd_t;
 
 uint8_t upc_decode(uint8_t* rx_data);
-void temp_imu_handler(uint8_t* data);
+void cmd_imu_s_handler(const uint8_t* data);
 
 #endif

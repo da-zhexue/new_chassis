@@ -70,7 +70,7 @@ typedef struct
     float frame_period; //时间周期
 } ramp_function_source_t;
 
-typedef __packed struct
+typedef struct
 {
     uint16_t Order;
     uint32_t Count;
@@ -86,7 +86,7 @@ typedef __packed struct
     float t[4];
 } Ordinary_Least_Squares_t;
 
-typedef __packed struct
+typedef struct
 {
     fp32 input;        //输入数据
     fp32 out;          //滤波输出的数据

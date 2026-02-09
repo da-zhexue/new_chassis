@@ -1,6 +1,6 @@
 #ifndef BSP_LED_H
 #define BSP_LED_H
-#include "typedef.h"
+#include "stdint.h"
 
 /**
   * @brief          aRGB show

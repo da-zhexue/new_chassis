@@ -3,7 +3,6 @@
 
 #include "usart.h"
 #include "typedef.h"
-#include "data_transfer.h"
 
 void RemoteDataProcess(uint8_t *pData);
 

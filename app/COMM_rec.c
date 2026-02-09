@@ -3,136 +3,123 @@
  * @brief 与通信板串口通信模块
  * 用于处理通信板发到串口usart1的数据，并将其解析到相应的数据结构中。
  * 具体见通信协议。
- * @version 1.0
- * @date 2026-01-17
+ * @version 1.1
+ * @changelog
+ * - 2026-02-09 适配新的数据中转模块
  */
 
-#include "usart.h"
 #include "COMM_rec.h"
 #include "crc.h"
 #include "user_lib.h"
 #include "bsp_dwt.h"
 #include "CAN_tx.h"
-#include "data_transfer.h"
+#include "OMM.h"
+#include "DTM.h"
 
-upc_t* upc_ptr = NULL;
-big_gimbal_angle_t* big_gimbal_angle_ptr = NULL;
-
-void upc_cmd_imu_handler(uint8_t* data);
-void upc_cmd_move_handler(uint8_t* data);
-void upc_cmd_gimbal_handler(uint8_t* data);
-void upc_cmd_shoot_handler(uint8_t* data);
-void upc_cmd_mode_handler(uint8_t* data);
-void comm_cmd_small_gimbal_imu_handler(uint8_t* data);
-void comm_cmd_big_gimbal_imu_handler(uint8_t* data);
+void cmd_move_handler(const uint8_t* data, upc_t *upc_ptr);
+void cmd_gimbal_handler(const uint8_t* data, upc_t *upc_ptr);
+void cmd_shoot_handler(const uint8_t* data);
+void cmd_mode_handler(const uint8_t* data);
+//void cmd_imu_s_handler(const uint8_t* data);
+void cmd_imu_l_handler(const uint8_t* data);
 
 void upc_send_attitude_handler(void);
 
 uint8_t upc_decode(uint8_t* rx_data)
 {
-	if(upc_ptr == NULL)
-		upc_ptr = get_upc_data();
-	
-	if(!upc_ptr->start_upc_flag)
+	static upc_t upc_ptr;
+	if(!upc_ptr.start_upc_flag)
 		return 0;
 	if(rx_data[0] != UPC_HEADER || rx_data[2] != 0 || rx_data[3] != 0)
-		return 2; 
+		return 1;
 	if(rx_data[1] != UPC_DATA_LEN)
-		return 3; 
+		return 2;
 	if(!Verify_CRC8_Check_Sum(rx_data, UPC_HEADER_LEN) || !Verify_CRC16_Check_Sum(rx_data , UPC_TOTAL_LEN))
-		return 4;
+		return 3;
 
-	uint16_t cmd_id = (rx_data[6] << 8) | rx_data[5];
+	const uint16_t cmd_id = (rx_data[6] << 8) | rx_data[5];
 
 	switch(cmd_id)
 	{
-		case MSG_IMU_INFO_ID:
+		case CMD_IMU_INFO:
 			break;
-		case MSG_MOVE_CMD_ID:
-			upc_cmd_move_handler(&rx_data[UPC_HEADER_LEN+2]);
+		case CMD_MOVE:
+			cmd_move_handler(&rx_data[UPC_HEADER_LEN+2], &upc_ptr);
 			break;
-		case GIMBAL_ROTATION_ID:
-			upc_cmd_gimbal_handler(&rx_data[UPC_HEADER_LEN+2]);
+		case CMD_GIMBAL_ROTATION:
+			cmd_gimbal_handler(&rx_data[UPC_HEADER_LEN+2], &upc_ptr);
 			break;
-		case MSG_SHOOT_CMD_ID:
-			upc_cmd_shoot_handler(&rx_data[UPC_HEADER_LEN+2]);
+		case CMD_SHOOT:
+			cmd_shoot_handler(&rx_data[UPC_HEADER_LEN+2]);
 			break;
-		case MSG_MODE_SWITCH_ID:
-			upc_cmd_mode_handler(&rx_data[UPC_HEADER_LEN+2]);
+		case CMD_MODE_SWITCH:
+			cmd_mode_handler(&rx_data[UPC_HEADER_LEN+2]);
 			break;
-		case MSG_SMALL_GIMBAL_IMU_INFO_ID:
-			//comm_cmd_small_gimbal_imu_handler(&rx_data[UPC_HEADER_LEN+2]);
+		case CMD_IMU_S_INFO:
+			//cmd_imu_s_handler(&rx_data[UPC_HEADER_LEN+2]);
 			break;
-		case MSG_BIG_GIMBAL_IMU_INFO_ID:
-			comm_cmd_big_gimbal_imu_handler(&rx_data[UPC_HEADER_LEN+2]);
+		case CMD_IMU_L_INFO:
+			cmd_imu_l_handler(&rx_data[UPC_HEADER_LEN+2]);
 			break;
 		default:
 			break;
 	}
+	DTM_Write(UPC_DATA, &upc_ptr, sizeof(upc_t));
 	return 0; 
 }
 
-void upc_cmd_move_handler(uint8_t* data)
+void cmd_move_handler(const uint8_t* data, upc_t *upc_ptr)
 {
 	unpack_4bytes_to_floats(&data[0], &upc_ptr->vx);
 	unpack_4bytes_to_floats(&data[4], &upc_ptr->vy);
 	unpack_4bytes_to_floats(&data[8], &upc_ptr->vw);
-	upc_ptr->last_online = DWT_GetTimeline_s();
+	OMM_update(UPC_ONLINE);
 }
 
-void upc_cmd_gimbal_handler(uint8_t* data)
+void cmd_gimbal_handler(const uint8_t* data, upc_t *upc_ptr)
 {
 	unpack_4bytes_to_floats(&data[0], &upc_ptr->gimbal_yaw);
 	unpack_4bytes_to_floats(&data[4], &upc_ptr->small_gimbal_yaw);
 	unpack_4bytes_to_floats(&data[8], &upc_ptr->small_gimbal_pitch);
-	uint8_t send_data[8];
-	pack_float_to_4bytes(upc_ptr->small_gimbal_yaw, &send_data[0]);
-	pack_float_to_4bytes(upc_ptr->small_gimbal_pitch, &send_data[4]);
-	CAN_CBoard_CMD(0x222, send_data);
-	upc_ptr->last_online = DWT_GetTimeline_s();
+	OMM_update(UPC_ONLINE);
 }
 
-void upc_cmd_shoot_handler(uint8_t* data)
+void cmd_shoot_handler(const uint8_t* data)
 {
 	uint8_t send_data[8] = {0};
 	send_data[0] = data[12];
 
 	CAN_CBoard_CMD(0x223, send_data);
-	upc_ptr->last_online = DWT_GetTimeline_s();
+	OMM_update(UPC_ONLINE);
 }
 
-void upc_cmd_mode_handler(uint8_t* data) // 暂时用于摩擦轮控制
+void cmd_mode_handler(const uint8_t* data) // 暂时用于摩擦轮控制
 {
 	//upc.mode = data[12];
 	uint8_t send_data[8] = {0};
 	send_data[1] = data[12];
 	CAN_CBoard_CMD(0x223, send_data);
-	upc_ptr->last_online = DWT_GetTimeline_s();
+	OMM_update(UPC_ONLINE);
 }
 
-// void comm_cmd_small_gimbal_imu_handler(uint8_t* data)
-// {
-// 	unpack_4bytes_to_floats(&data[0], &small_gimbal_angle_deg[0]);
-// 	unpack_4bytes_to_floats(&data[4], &small_gimbal_angle_deg[1]);
-// 	unpack_4bytes_to_floats(&data[8], &small_gimbal_angle_deg[2]);
-// }
-
-void comm_cmd_big_gimbal_imu_handler(uint8_t* data)
+void cmd_imu_s_handler(const uint8_t* data)
 {
-	unpack_4bytes_to_floats(&data[0], &big_gimbal_angle_ptr->big_gimbal_angle[0]);
-	unpack_4bytes_to_floats(&data[4], &big_gimbal_angle_ptr->big_gimbal_angle[1]);
-	unpack_4bytes_to_floats(&data[8], &big_gimbal_angle_ptr->big_gimbal_angle[2]);
-	big_gimbal_angle_ptr->big_gimbal_imu_last_online_time = DWT_GetTimeline_s();
+	if (sizeof(data) >= 10)
+		return ;
+	static fp32 gimbal_s_ptr[3];
+	unpack_4bytes_to_floats(&data[0], &gimbal_s_ptr[0]);
+	unpack_4bytes_to_floats(&data[4], &gimbal_s_ptr[1]);
+	unpack_4bytes_to_floats(&data[8], &gimbal_s_ptr[2]);
+	DTM_Write(GIMBAL_S_DATA, gimbal_s_ptr, sizeof(gimbal_s_ptr));
+	OMM_update(GIMBAL_S_ONLINE);
 }
 
-void temp_imu_handler(uint8_t* data)
+void cmd_imu_l_handler(const uint8_t* data)
 {
-	// if (sizeof(data) != 16)
-	// 	return;
-	if(big_gimbal_angle_ptr == NULL)
-		big_gimbal_angle_ptr = get_big_gimbal_angle();
-	unpack_4bytes_to_floats(&data[0], &big_gimbal_angle_ptr->big_gimbal_angle[0]);
-	unpack_4bytes_to_floats(&data[4], &big_gimbal_angle_ptr->big_gimbal_angle[1]);
-	unpack_4bytes_to_floats(&data[8], &big_gimbal_angle_ptr->big_gimbal_angle[2]);
-	big_gimbal_angle_ptr->big_gimbal_imu_last_online_time = DWT_GetTimeline_s();
+	static fp32 gimbal_l_ptr[3];
+	unpack_4bytes_to_floats(&data[0], &gimbal_l_ptr[0]);
+	unpack_4bytes_to_floats(&data[4], &gimbal_l_ptr[1]);
+	unpack_4bytes_to_floats(&data[8], &gimbal_l_ptr[2]);
+	DTM_Write(GIMBAL_L_DATA, gimbal_l_ptr, sizeof(gimbal_l_ptr));
+	OMM_update(GIMBAL_L_ONLINE);
 }
