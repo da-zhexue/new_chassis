@@ -44,7 +44,7 @@ void usart1_rec_handler(void)
             hdma_usart1_rx.Instance->NDTR = COMM_BUF_LEN;
             hdma_usart1_rx.Instance->CR |= DMA_SxCR_CT;
             __HAL_DMA_ENABLE(&hdma_usart1_rx);
-            if(this_time_rx_len == COMM_MSG_LEN)
+            if(this_time_rx_len > 9)
             {
                 upc_decode(uart1_rx_buffer[0]);
             }
@@ -56,7 +56,7 @@ void usart1_rec_handler(void)
             hdma_usart1_rx.Instance->NDTR = COMM_BUF_LEN;
             DMA2_Stream5->CR &= ~(DMA_SxCR_CT);
             __HAL_DMA_ENABLE(&hdma_usart1_rx);
-            if(this_time_rx_len == COMM_MSG_LEN)
+            if(this_time_rx_len > 9)
             {
                 upc_decode(uart1_rx_buffer[1]);
             }
@@ -102,7 +102,6 @@ void usart6_rec_handler(void)
             if(this_time_rx_len == DEBUG_MSG_LEN)
             {
                 param_decode(uart6_rx_buffer[0]);
-                cmd_imu_s_handler(uart6_rx_buffer[0]);
             }
         }
         else
@@ -116,7 +115,6 @@ void usart6_rec_handler(void)
             if(this_time_rx_len == DEBUG_MSG_LEN)
             {
                 param_decode(uart6_rx_buffer[1]);
-                cmd_imu_s_handler(uart6_rx_buffer[1]);
             }
         }
     }

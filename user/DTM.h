@@ -74,6 +74,7 @@ typedef struct
 typedef struct
 {
     uint8_t start_upc_flag;
+    uint8_t game_start;
     uint8_t mode;
     uint8_t shoot;
 

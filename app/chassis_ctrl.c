@@ -49,7 +49,7 @@ void ctrl_data_update(void)
 
     DTM_Read(RC_DATA, &rc_ptr, sizeof(rc_t));
     DTM_Read(UPC_DATA, &upc_ptr, sizeof(upc_t));
-
+    if (!upc_ptr.game_start) return;
     if(OMM_detect(RC_ONLINE))
         chassis_ptr.ctrl = rc_ptr.s1;
     else

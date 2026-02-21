@@ -9,20 +9,18 @@
 
 typedef enum
 {
-	SEND_ATTITUDE = 0x301,
-	SNED_REFEREE = 0x302,
-
-    CMD_IMU_INFO = 0x0401, // 弃用
-    CMD_MOVE = 0x0402, // Move command
-    CMD_GIMBAL_ROTATION = 0x0403, // Gimbal rotation command
-	CMD_SHOOT = 0x0404,
-	CMD_MODE_SWITCH = 0x405,
+	SEND_ATTITUDE = 0x201,
+	SEND_ONLINE = 0x202,
+	SEND_START = 0x203,
 
     CMD_IMU_S_INFO = 0x101,
-    CMD_IMU_L_INFO = 0x102
+    CMD_IMU_L_INFO = 0x102,
+	CMD_MOVE = 0x103,
+	CMD_ROTATE = 0x104,
+	CMD_MODE = 0x105,
+	CMD_START = 0x106
 } upc_cmd_t;
 
 uint8_t upc_decode(uint8_t* rx_data);
-void cmd_imu_s_handler(const uint8_t* data);
 
 #endif
