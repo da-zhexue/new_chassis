@@ -1,7 +1,6 @@
 #ifndef CHASSIS_CTRL_H
 #define CHASSIS_CTRL_H
 #include "typedef.h"
-#include "DTM.h"
 #include "pid.h"
 
 #define GIMBAL_ANGLE_DELTA_MAX 0.12f
@@ -48,6 +47,9 @@
 #define FOLLOW_GIMBAL_MAX_NEGATIVE_ACCEL 40000.0f
 #define FOLLOW_GIMBAL_DEADZONE 0.0f
 
+#define REDUCTION_RATIO 19.0f // 减速比
+#define WHEEL_RADIUS 0.274f // 轮子半径，单位m，未测量
+#define LINEAR_TO_ROTATIONAL_SPEED (9.54929659f * REDUCTION_RATIO * WHEEL_RADIUS) // 轮子线速度到电机转子转速比例系数
 #define ROOT_2 1.41421356237309504880l
 
 typedef enum

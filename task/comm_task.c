@@ -18,6 +18,7 @@
 #include "crc.h"
 #include "DTM.h"
 #include "OMM.h"
+#include "ulog.h"
 
 void send_attitude_handler(const TF_t *tf_ptr);
 void send_onlinestate_handler();
@@ -55,6 +56,7 @@ void CMD_PackPacket(const uint8_t *data_in, const uint16_t data_len, const uint1
 	}
 	Append_CRC8_Check_Sum(data_out, FRAME_HEADER_LEN);
 	Append_CRC16_Check_Sum(data_out, total_len);
+
 	HAL_UART_Transmit_DMA(&huart1, data_out, sizeof(data_out));
 }
 
@@ -62,6 +64,7 @@ void send_attitude_handler(const TF_t *tf_ptr)
 {
 	static uint8_t send_yaw[4] = {0};
 	pack_float_to_4bytes(tf_ptr->Chassis_angle.yaw_deg, &send_yaw[0]);
+	LOG_INFO("send chassis yaw: %.2f", SEND_ATTITUDE, tf_ptr->Chassis_angle.yaw_deg);
 	CMD_PackPacket(send_yaw, sizeof(send_yaw), SEND_ATTITUDE);
 }
 
@@ -81,4 +84,5 @@ void send_start_handler()
 {
 	static uint8_t send_start[1] = {1};
 	CMD_PackPacket(send_start, sizeof(send_start), SEND_START);
+	LOG_INFO("START!");
 }

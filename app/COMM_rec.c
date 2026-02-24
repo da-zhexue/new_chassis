@@ -12,10 +12,9 @@
 #include "crc.h"
 #include "user_lib.h"
 #include "bsp_dwt.h"
-#include "CAN_tx.h"
 #include "OMM.h"
 #include "DTM.h"
-#include "usart.h"
+#include "ulog.h"
 
 void cmd_move_handler(const uint8_t* data, upc_t *upc_ptr);
 void cmd_rotate_handler(const uint8_t* data, upc_t *upc_ptr);
@@ -33,9 +32,9 @@ uint8_t upc_decode(uint8_t* rx_data)
 		return 0;
 	if(rx_data[0] != SOF_VALUE || rx_data[2] != 0 || rx_data[3] != 0)
 		return 1;
-	uint16_t data_len = rx_data[4];
+	const uint16_t data_len = rx_data[4];
 	if(!Verify_CRC8_Check_Sum(rx_data, SOF_VALUE) || !Verify_CRC16_Check_Sum(rx_data , data_len+9))
-		return 3;
+		return 2;
 
 	const uint16_t cmd_id = (rx_data[6] << 8) | rx_data[5];
 
@@ -62,6 +61,7 @@ uint8_t upc_decode(uint8_t* rx_data)
 		default:
 			break;
 	}
+	if (upc_ptr.mode == 0) upc_ptr.mode = 1;
 	DTM_Write(UPC_DATA, &upc_ptr, sizeof(upc_t));
 	return 0; 
 }
@@ -71,6 +71,7 @@ void cmd_move_handler(const uint8_t* data, upc_t *upc_ptr)
 	unpack_4bytes_to_floats(&data[0], &upc_ptr->vx);
 	unpack_4bytes_to_floats(&data[4], &upc_ptr->vy);
 	unpack_4bytes_to_floats(&data[8], &upc_ptr->vw);
+	LOG_INFO("Get move cmd vx: %.2f, vy: %.2f, vw: %.2f", upc_ptr->vx, upc_ptr->vy, upc_ptr->vw);
 	OMM_update(UPC_ONLINE);
 }
 
@@ -78,6 +79,7 @@ void cmd_rotate_handler(const uint8_t* data, upc_t *upc_ptr)
 {
 	unpack_4bytes_to_floats(&data[0], &upc_ptr->chassis_yaw);
 	unpack_4bytes_to_floats(&data[4], &upc_ptr->gimbal_yaw);
+	LOG_INFO("Get rotate cmd chassis: %.2f, gimbal: %.2f", upc_ptr->chassis_yaw, upc_ptr->gimbal_yaw);
 	OMM_update(UPC_ONLINE);
 }
 
@@ -94,6 +96,7 @@ void cmd_imu_s_handler(const uint8_t* data)
 	unpack_4bytes_to_floats(&data[4], &gimbal_s_ptr[1]);
 	unpack_4bytes_to_floats(&data[8], &gimbal_s_ptr[2]);
 	DTM_Write(GIMBAL_S_DATA, gimbal_s_ptr, sizeof(gimbal_s_ptr));
+	LOG_INFO("Get small imu: %.2f", gimbal_s_ptr[0]);
 	OMM_update(GIMBAL_S_ONLINE);
 }
 
@@ -104,6 +107,7 @@ void cmd_imu_l_handler(const uint8_t* data)
 	unpack_4bytes_to_floats(&data[4], &gimbal_l_ptr[1]);
 	unpack_4bytes_to_floats(&data[8], &gimbal_l_ptr[2]);
 	DTM_Write(GIMBAL_L_DATA, gimbal_l_ptr, sizeof(gimbal_l_ptr));
+	LOG_INFO("Get big imu: %.2f", gimbal_l_ptr[0]);
 	OMM_update(GIMBAL_L_ONLINE);
 }
 

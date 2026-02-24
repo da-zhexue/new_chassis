@@ -12,6 +12,7 @@
 #include "bsp_led.h"
 #include "cmsis_os.h"
 #include "OMM.h"
+#include "ulog.h"
 
 #define RGB_FLOW_COLOR_CHANGE_TIME  500
 #define RGB_FLOW_COLOR_LENGTH   6
@@ -72,6 +73,7 @@ uint8_t show_online_state(void)
 		if(!IS_ONLINE(i))
 		{
 			aRGB_led_shine(off_led_aRGB[i], off_led_Hz[i]);
+			LOG_WARN("The device is offline: %d", i);
 			osDelay(1000);
 			error_code = 1;
 		}

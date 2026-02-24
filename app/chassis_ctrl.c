@@ -14,7 +14,9 @@
 #include "math.h"
 #include "user_lib.h"
 #include "OMM.h"
+#include "DTM.h"
 #include "CAN_tx.h"
+#include "ulog.h"
 
 #ifdef DEBUG_MODE
 chassis_t chassis_ptr;
@@ -70,16 +72,16 @@ void ctrl_data_update(void)
         yaw_delta = (fp32)rc_ptr.ch0 * GIMBAL_ANGLE_DELTA_MAX / 660.0f;
         chassis_ptr.given_gimbal_l_yaw += yaw_delta;
     }
-    else if(chassis_ptr.ctrl == CHASSIS_UPC)
+    else if(chassis_ptr.ctrl == CHASSIS_UPC) // @TODO: 理论上需要做不同控制模式切换时数据不突变，但哨兵应该用不到，不想做了qwq
     {
         upc_ptr.start_upc_flag = 1;
         if(OMM_detect(UPC_ONLINE))
         {
-            chassis_ptr.mode = 1;//upc_ptr.mode;
+            chassis_ptr.mode = upc_ptr.mode;
            
-            vx = upc_ptr.vx * 300;
-            vy = upc_ptr.vy * 300;
-            vw = upc_ptr.vw * 300;
+            vx = upc_ptr.vx * LINEAR_TO_ROTATIONAL_SPEED;
+            vy = upc_ptr.vy * LINEAR_TO_ROTATIONAL_SPEED;
+            vw = upc_ptr.vw * LINEAR_TO_ROTATIONAL_SPEED;
 
             chassis_ptr.given_gimbal_s_yaw = upc_ptr.small_gimbal_yaw;
             chassis_ptr.given_gimbal_s_pitch = upc_ptr.small_gimbal_pitch;
@@ -96,7 +98,7 @@ void ctrl_data_update(void)
             chassis_ptr.gimbal_shutdown_flag = 1;
         }
     }
-    else if(chassis_ptr.ctrl == GIMBAL_RC)
+    else if(chassis_ptr.ctrl == GIMBAL_RC) // 仅测试用
     {
         chassis_ptr.mode = 1;//rc_ptr.s2;
         upc_ptr.start_upc_flag = 0;
@@ -128,6 +130,7 @@ void ctrl_data_update(void)
     chassis_ptr.given_chassis_v[0] = norm_v * CHASSIS_MAX_V;
     chassis_ptr.given_chassis_v[1] = atan2f(vy_filter, vx_filter);
     chassis_ptr.given_chassis_w = vw_filter * CHASSIS_MAX_W;
+    LOG_INFO("given vx: %.2f, vy: %.2f, vw: %.2f", vx_filter, vy_filter, vw_filter);
 }
 
 void motor_ctrl_update(void)
@@ -143,7 +146,7 @@ void motor_ctrl_update(void)
     {
         case SPINNING_TOP:
             chassis_w = 4000.0f; // case穿透，将转速设为定值后继续执行跟随底盘模式逻辑
-		    // Case penetration, set the speed to a constant value and continue to execute the logic of FOLLOW_CHASSIS mode
+		    // 要不要把固定速度改为随机速度或者由上位机传入
         case FOLLOW_CHASSIS:
         {
             const fp32 sin_yaw = sinf(radian_format(tf_ptr.Chassis_angle.yaw_rad - tf_ptr.Small_Gimbal_angle.yaw_rad));
@@ -161,7 +164,7 @@ void motor_ctrl_update(void)
             m9025_ctrl.given_angle = chassis_ptr.given_gimbal_l_yaw;
             break;
         }
-        case FOLLOW_GIMBAL:
+        case FOLLOW_GIMBAL: // 上位机好像不用
             m9025_ctrl.given_angle = chassis_ptr.given_gimbal_l_yaw;
             chassis_w = PID_calc(&follow_gimbal_pid, -tf_ptr.Chassis_angle.yaw_total_angle, chassis_ptr.given_gimbal_l_yaw);
             m3508_ctrl[0].given_speed = (int16_t)chassis_w;
@@ -178,6 +181,7 @@ void motor_ctrl_update(void)
 
             break;
     }
+    LOG_INFO("given speed: %d %d %d %d, given angle: %.2f", m3508_ctrl[0].given_speed, m3508_ctrl[1].given_speed, m3508_ctrl[2].given_speed, m3508_ctrl[3].given_speed, m9025_ctrl.given_angle);
 }
 
 void motor_ctrl_send(void)

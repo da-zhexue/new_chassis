@@ -92,25 +92,25 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 	}
 	else if (hcan -> Instance == CAN2)
 	{
-		static fp32 gimbal_s_ptr[3];
+		//static fp32 gimbal_s_ptr[3];
 		switch (rx_header.StdId)
 		{
-			case CBOARD_GIMBAL_1:
-			{
-				unpack_4bytes_to_floats(&rx_data[0], &gimbal_s_ptr[0]);
-				unpack_4bytes_to_floats(&rx_data[4], &gimbal_s_ptr[1]);
-				DTM_Write(GIMBAL_S_DATA, gimbal_s_ptr, sizeof(gimbal_s_ptr));
-				OMM_update(GIMBAL_S_DATA);
-				break;
-			}
-
-			case CBOARD_GIMBAL_2:
-			{
-                unpack_4bytes_to_floats(&rx_data[0], &gimbal_s_ptr[2]);
-				DTM_Write(GIMBAL_S_DATA, gimbal_s_ptr, sizeof(gimbal_s_ptr));
-                OMM_update(GIMBAL_S_DATA);
-				break;
-			}
+			// case CBOARD_GIMBAL_1:
+			// {
+			// 	unpack_4bytes_to_floats(&rx_data[0], &gimbal_s_ptr[0]);
+			// 	unpack_4bytes_to_floats(&rx_data[4], &gimbal_s_ptr[1]);
+			// 	DTM_Write(GIMBAL_S_DATA, gimbal_s_ptr, sizeof(gimbal_s_ptr));
+			// 	OMM_update(GIMBAL_S_DATA);
+			// 	break;
+			// }
+   //
+			// case CBOARD_GIMBAL_2:
+			// {
+   //              unpack_4bytes_to_floats(&rx_data[0], &gimbal_s_ptr[2]);
+			// 	DTM_Write(GIMBAL_S_DATA, gimbal_s_ptr, sizeof(gimbal_s_ptr));
+   //              OMM_update(GIMBAL_S_DATA);
+			// 	break;
+			// }
 
 			default:
 				break;
