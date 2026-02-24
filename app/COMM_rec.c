@@ -31,10 +31,10 @@ uint8_t upc_decode(uint8_t* rx_data)
 	static upc_t upc_ptr;
 	if(!upc_ptr.start_upc_flag)
 		return 0;
-	if(rx_data[0] != UPC_HEADER || rx_data[2] != 0 || rx_data[3] != 0)
+	if(rx_data[0] != SOF_VALUE || rx_data[2] != 0 || rx_data[3] != 0)
 		return 1;
 	uint16_t data_len = rx_data[4];
-	if(!Verify_CRC8_Check_Sum(rx_data, UPC_HEADER_LEN) || !Verify_CRC16_Check_Sum(rx_data , data_len+9))
+	if(!Verify_CRC8_Check_Sum(rx_data, SOF_VALUE) || !Verify_CRC16_Check_Sum(rx_data , data_len+9))
 		return 3;
 
 	const uint16_t cmd_id = (rx_data[6] << 8) | rx_data[5];
@@ -42,22 +42,22 @@ uint8_t upc_decode(uint8_t* rx_data)
 	switch(cmd_id)
 	{
 		case CMD_MOVE:
-			cmd_move_handler(&rx_data[UPC_HEADER_LEN+2], &upc_ptr);
+			cmd_move_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN], &upc_ptr);
 			break;
 		case CMD_ROTATE:
-			cmd_rotate_handler(&rx_data[UPC_HEADER_LEN+2], &upc_ptr);
+			cmd_rotate_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN], &upc_ptr);
 			break;
 		case CMD_START:
-			cmd_shart_handler(&rx_data[UPC_HEADER_LEN+2], &upc_ptr);
+			cmd_shart_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN], &upc_ptr);
 			break;
 		case CMD_MODE:
-			cmd_mode_handler(&rx_data[UPC_HEADER_LEN+2], &upc_ptr);
+			cmd_mode_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN], &upc_ptr);
 			break;
 		case CMD_IMU_S_INFO:
-			cmd_imu_s_handler(&rx_data[UPC_HEADER_LEN+2]);
+			cmd_imu_s_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN]);
 			break;
 		case CMD_IMU_L_INFO:
-			cmd_imu_l_handler(&rx_data[UPC_HEADER_LEN+2]);
+			cmd_imu_l_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN]);
 			break;
 		default:
 			break;
@@ -107,21 +107,7 @@ void cmd_imu_l_handler(const uint8_t* data)
 	OMM_update(GIMBAL_L_ONLINE);
 }
 
-void send_start_handler()
-{
-	static uint8_t send_data[13] = {0};
-	send_data[0] = UPC_HEADER;
-	send_data[1] = 8;
-	send_data[2] = 0;send_data[3] = 0;
-	send_data[5] = SEND_START & 0xFF;
-	send_data[6] = (SEND_START >> 8) & 0xFF;
-	send_data[7] = 1;
-
-	Append_CRC8_Check_Sum(send_data, UPC_HEADER_LEN);
-	Append_CRC16_Check_Sum(send_data, 13);
-	HAL_UART_Transmit_DMA(&huart1, send_data, sizeof(send_data));
-}
-
+extern void send_start_handler();
 void cmd_shart_handler(const uint8_t* data, upc_t *upc_ptr)
 {
 	send_start_handler();

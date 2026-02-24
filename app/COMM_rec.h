@@ -2,10 +2,10 @@
 #define UPC_COMMUNICATE_H
 #include "typedef.h"
 
-#define UPC_HEADER 0xA5
-#define UPC_HEADER_LEN 5
-#define UPC_DATA_LEN 0x0D
-#define UPC_TOTAL_LEN (UPC_DATA_LEN + 9) 
+#define SOF_VALUE       0xA5
+#define FRAME_HEADER_LEN  5
+#define CMD_ID_LEN        2
+#define CRC16_LEN         2
 
 typedef enum
 {

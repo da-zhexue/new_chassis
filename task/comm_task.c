@@ -8,6 +8,9 @@
  */
 
 #include "comm_task.h"
+
+#include <string.h>
+
 #include "cmsis_os.h"
 #include "COMM_rec.h"
 #include "usart.h"
@@ -33,38 +36,49 @@ void commTask(void const * argument)
     }
 }
 
+void CMD_PackPacket(const uint8_t *data_in, const uint16_t data_len, const uint16_t cmd_id) //, uint8_t *data_out)
+{
+	const uint16_t total_len = FRAME_HEADER_LEN + CMD_ID_LEN + data_len + 2;
+	uint8_t data_out[total_len];
+	uint32_t offset = 0;
+	data_out[offset++] = SOF_VALUE;
+	data_out[offset++] = data_len & 0xFF;
+	data_out[offset++] = (data_len >> 8) & 0xFF;
+
+	data_out[offset++] = 0;
+	data_out[offset++] = 0;
+	data_out[offset++] = cmd_id & 0xFF;
+	data_out[offset++] = (cmd_id >> 8) & 0xFF;
+	if (data_in != NULL && data_len > 0) {
+		memcpy(&data_out[offset], data_in, data_len);
+		offset += data_len;
+	}
+	Append_CRC8_Check_Sum(data_out, FRAME_HEADER_LEN);
+	Append_CRC16_Check_Sum(data_out, total_len);
+	HAL_UART_Transmit_DMA(&huart1, data_out, sizeof(data_out));
+}
+
 void send_attitude_handler(const TF_t *tf_ptr)
 {
-	static uint8_t send_data[13] = {0};
-	send_data[0] = UPC_HEADER;
-	send_data[1] = 4;
-	send_data[2] = 0;send_data[3] = 0;
-	send_data[5] = SEND_ATTITUDE & 0xFF;
-	send_data[6] = (SEND_ATTITUDE >> 8) & 0xFF;
-
-	pack_float_to_4bytes(tf_ptr->Chassis_angle.yaw_deg, &send_data[7]);
-
-	Append_CRC8_Check_Sum(send_data, UPC_HEADER_LEN);
-	Append_CRC16_Check_Sum(send_data, 13);
-	HAL_UART_Transmit_DMA(&huart1, send_data, sizeof(send_data));
+	static uint8_t send_yaw[4] = {0};
+	pack_float_to_4bytes(tf_ptr->Chassis_angle.yaw_deg, &send_yaw[0]);
+	CMD_PackPacket(send_yaw, sizeof(send_yaw), SEND_ATTITUDE);
 }
 
 void send_onlinestate_handler()
 {
-	static uint8_t send_data[17] = {0};
-	send_data[0] = UPC_HEADER;
-	send_data[1] = 8;
-	send_data[2] = 0;send_data[3] = 0;
-	send_data[5] = SEND_ONLINE & 0xFF;
-	send_data[6] = (SEND_ONLINE >> 8) & 0xFF;
-	send_data[7] = IS_ONLINE(M3508_0_ONLINE);
-	send_data[8] = IS_ONLINE(M3508_1_ONLINE);
-	send_data[9] = IS_ONLINE(M3508_2_ONLINE);
-	send_data[10] = IS_ONLINE(M3508_3_ONLINE);
-	send_data[11] = IS_ONLINE(M9025_ONLINE);
+	static uint8_t send_online[1] = {0};
+	send_online[0] |= IS_ONLINE(M3508_0_ONLINE) < 0;
+	send_online[0] |= IS_ONLINE(M3508_1_ONLINE) < 1;
+	send_online[0] |= IS_ONLINE(M3508_2_ONLINE) < 2;
+	send_online[0] |= IS_ONLINE(M3508_3_ONLINE) < 3;
+	send_online[0] |= IS_ONLINE(M9025_ONLINE) < 4;
 
-	Append_CRC8_Check_Sum(send_data, UPC_HEADER_LEN);
-	Append_CRC16_Check_Sum(send_data, 17);
-	HAL_UART_Transmit_DMA(&huart1, send_data, sizeof(send_data));
+	CMD_PackPacket(send_online, sizeof(send_online), SEND_ONLINE);
 }
 
+void send_start_handler()
+{
+	static uint8_t send_start[1] = {1};
+	CMD_PackPacket(send_start, sizeof(send_start), SEND_START);
+}
