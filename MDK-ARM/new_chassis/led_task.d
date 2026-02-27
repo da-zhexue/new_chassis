@@ -2,11 +2,11 @@ new_chassis\led_task.o: ..\task\led_task.c
 new_chassis\led_task.o: ..\task\led_task.h
 new_chassis\led_task.o: ../bsp/typedef.h
 new_chassis\led_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+new_chassis\led_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 new_chassis\led_task.o: ../bsp/bsp_led.h
 new_chassis\led_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 new_chassis\led_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 new_chassis\led_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
-new_chassis\led_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 new_chassis\led_task.o: ../Core/Inc/FreeRTOSConfig.h
 new_chassis\led_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 new_chassis\led_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
@@ -19,4 +19,5 @@ new_chassis\led_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/timer
 new_chassis\led_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 new_chassis\led_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 new_chassis\led_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
-new_chassis\led_task.o: ../devices/Online_Monitor.h
+new_chassis\led_task.o: ../user/OMM.h
+new_chassis\led_task.o: ../user/ulog.h

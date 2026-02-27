@@ -9,7 +9,6 @@
 
 #include "DTM.h"
 #include <string.h>
-
 #ifdef DEBUG_MODE
 rc_t rc;
 TF_t tf;
@@ -50,9 +49,10 @@ static const DTM_Info_t DTM_Map[] = {
 }; // 在此处存储要用于不同任务的数据
 
 static int DTM_GetInfo(const DTM_DataID_t data_id, void **ptr, size_t *size) {
-    if (data_id < DTM_DATA_COUNT) {
-        *ptr = DTM_Map[data_id].ptr;
-        *size = DTM_Map[data_id].size;
+    const volatile DTM_DataID_t dtm_data_id = data_id;
+    if (dtm_data_id < DTM_DATA_COUNT) {
+        *ptr = DTM_Map[dtm_data_id].ptr;
+        *size = DTM_Map[dtm_data_id].size;
         return 1;
     }
     return 0;

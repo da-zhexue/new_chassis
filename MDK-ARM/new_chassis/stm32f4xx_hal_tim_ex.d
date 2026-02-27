@@ -32,3 +32,6 @@ new_chassis\stm32f4xx_hal_tim_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4x
 new_chassis\stm32f4xx_hal_tim_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 new_chassis\stm32f4xx_hal_tim_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 new_chassis\stm32f4xx_hal_tim_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+new_chassis\stm32f4xx_hal_tim_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
+new_chassis\stm32f4xx_hal_tim_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
+new_chassis\stm32f4xx_hal_tim_ex.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h

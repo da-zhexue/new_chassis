@@ -21,13 +21,22 @@ Target DLL:      CMSIS_AGDI.dll V1.32.0.0
 Dialog DLL:      TCM.DLL V1.36.5.0
  
 <h2>Project:</h2>
-E:\Download\RM\new_chassis - ¸±±¾\MDK-ARM\new_chassis.uvprojx
-Project File Date:  01/23/2026
+E:\Download\RM\chassis_v2\MDK-ARM\new_chassis.uvprojx
+Project File Date:  02/27/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\keil5\ARM\ARMCC\Bin'
 Build target 'new_chassis'
-"new_chassis\new_chassis.axf" - 0 Error(s), 0 Warning(s).
+compiling chassis_task.c...
+compiling chassis_ctrl.c...
+compiling param_tuning.c...
+..\user\param_tuning.c(75): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\user\param_tuning.c: 1 warning, 0 errors
+linking...
+Program Size: Code=54012 RO-data=1588 RW-data=780 ZI-data=59972  
+FromELF: creating hex file...
+"new_chassis\new_chassis.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -56,7 +65,7 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:DSP:Library:1.7.0
       Library file:  CMSIS\DSP\Lib\ARM\arm_cortexM4lf_math.lib
       Include file:  CMSIS\DSP\Include\arm_math.h
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>

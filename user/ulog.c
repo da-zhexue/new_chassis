@@ -15,6 +15,7 @@
 #include <string.h>
 #include "cmsis_os.h"
 #include "stream_buffer.h"
+
 static StreamBufferHandle_t xStreamBuffer = NULL;
 
 void ulogTask(void const *argument)
@@ -24,7 +25,12 @@ void ulogTask(void const *argument)
     while(1) {
         const size_t received = xStreamBufferReceive(xStreamBuffer, rx_buf, LOG_BUFFER_SIZE, portMAX_DELAY);
         if (received > 0) {
-            HAL_UART_Transmit(&LOG_HUART, rx_buf, received, 100);
+            while (LOG_HUART.gState != HAL_UART_STATE_READY) {
+                osDelay(1);
+            }
+            HAL_UART_Transmit_DMA(&LOG_HUART, rx_buf, received);
+            //CDC_Transmit_FS(rx_buf, received);
+            memset(rx_buf, 0, LOG_BUFFER_SIZE);
         }
         else {
             osDelay(10);
@@ -32,7 +38,7 @@ void ulogTask(void const *argument)
     }
 }
 
-void log_write(log_level_t level, const char *file, int line, const char *fmt, ...)
+void log_write(log_level_t level, const char *fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
@@ -50,7 +56,7 @@ void log_write(log_level_t level, const char *file, int line, const char *fmt, .
         default:              level_str = "UNKNOWN"; break;
     }
 
-    const int header_len = snprintf(buffer_ptr, remaining_size, "[%s] %s:%d: ", level_str, file, line);
+    const int header_len = snprintf(buffer_ptr, remaining_size, "[%s]: ", level_str);
     if (header_len > 0 && header_len < remaining_size) {
         buffer_ptr += header_len;
         remaining_size -= header_len;

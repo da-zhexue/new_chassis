@@ -8,6 +8,9 @@
  */
 
 #include "TF_task.h"
+
+#include <string.h>
+
 #include "user_lib.h"
 #include "OMM.h"
 #include "DTM.h"
@@ -18,6 +21,9 @@ void TF_Task(void const * argurment)
 {
 		static float Yaw_diff = 0.0f;
 		static float chassis_angle_temp[3] = {0.0f, 0.0f, 0.0f};
+		static float gimbal_s_offset[3] = {0.0f, 0.0f, 0.0f};
+		static float gimbal_l_offset[3] = {0.0f, 0.0f, 0.0f};
+		static uint8_t gimbal_s_get_offset = 0, gimbal_l_get_offset = 0;
 		static TF_t tf_ptr;
 		static fp32 gimbal_l_ptr[3], gimbal_s_ptr[3];
 		static m9025_t m9025_ptr;
@@ -27,7 +33,18 @@ void TF_Task(void const * argurment)
 			{
 				DTM_Read(GIMBAL_L_DATA, gimbal_l_ptr, sizeof(gimbal_l_ptr));
 				DTM_Read(M9025_DATA, &m9025_ptr, sizeof(m9025_ptr));
-				if(m9025_ptr.ecd_offset == 0) m9025_ptr.ecd_offset = m9025_ptr.ecd;
+				if (!gimbal_l_get_offset){
+					gimbal_l_get_offset = 1;
+					memcpy(gimbal_l_offset, gimbal_l_ptr, sizeof(gimbal_l_ptr));
+				}
+				else
+					for (int i = 0; i < 3; i++) gimbal_l_ptr[i] -= gimbal_l_offset[i];
+				if (!gimbal_s_get_offset){
+					gimbal_s_get_offset = 1;
+					memcpy(gimbal_s_offset, gimbal_s_ptr, sizeof(gimbal_s_ptr));
+				}
+				else
+					for (int i = 0; i < 3; i++) gimbal_s_ptr[i] -= gimbal_s_offset[i];
 				Yaw_diff = theta_format((fp32)(m9025_ptr.ecd - m9025_ptr.ecd_offset)/ 32768.0f * 180.0f); // -PI~PI
 				#ifdef AUTO_CORRECTION_ENABLE
 					if(m9025_ptr.imu_yaw_offset == 0)
@@ -48,9 +65,10 @@ void TF_Task(void const * argurment)
 			
 			BMI088_Read(&BMI088);
 			tf_ptr.Gyro[Z] = BMI088.Gyro[Z]; // 读取底盘yaw轴角速度用于旋转时大云台前馈补偿
-
+			DTM_Write(TF_DATA, &tf_ptr, sizeof(tf_ptr));
 			osDelay(1);
 		}
+
 }
 
 void TF_Update(angle_t *angle, const float new_angle_deg[3])

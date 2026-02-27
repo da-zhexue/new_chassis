@@ -21,7 +21,7 @@
 #define M3508_MAX_NEGATIVE_ACCEL 4000.0f
 #define M3508_DEADZONE 0.0f
 
-#define MF9025_ANGLE_PID_KP 10.0f
+#define MF9025_ANGLE_PID_KP 8.0f
 #define MF9025_ANGLE_PID_KI 0.0f
 #define MF9025_ANGLE_PID_KD 0.0f
 #define MF9025_ANGLE_PID_OUT_MAX 30000.0f
@@ -31,7 +31,7 @@
 #define MF9025_DEADZONE 0.0f
 #define MF9025_MAX_IQ 2048
 
-#define MF9025_ANGLE_PID_KP2 300.0f
+#define MF9025_ANGLE_PID_KP2 250.0f
 #define MF9025_ANGLE_PID_KI2 0.0f
 #define MF9025_ANGLE_PID_KD2 0.0f
 #define MF9025_ANGLE_PID_KP3 1000.0f
@@ -48,8 +48,8 @@
 #define FOLLOW_GIMBAL_DEADZONE 0.0f
 
 #define REDUCTION_RATIO 19.0f // 减速比
-#define WHEEL_RADIUS 0.274f // 轮子半径，单位m，未测量
-#define LINEAR_TO_ROTATIONAL_SPEED (9.54929659f * REDUCTION_RATIO * WHEEL_RADIUS) // 轮子线速度到电机转子转速比例系数
+#define WHEEL_RADIUS 0.08f // 轮子半径，单位m，未测量
+#define LINEAR_TO_ROTATIONAL_SPEED (95.4929659f * REDUCTION_RATIO * WHEEL_RADIUS) // 轮子线速度到电机转子转速比例系数
 #define ROOT_2 1.41421356237309504880l
 
 typedef enum
@@ -65,7 +65,6 @@ typedef struct
     fp32 given_chassis_v[2];
     fp32 given_chassis_w;
     fp32 given_gimbal_l_yaw;
-    fp32 given_gimbal_s_yaw, given_gimbal_s_pitch;
     fp32 given_chassis_yaw;
 
     uint8_t ctrl;

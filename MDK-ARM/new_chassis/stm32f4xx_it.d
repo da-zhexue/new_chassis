@@ -33,10 +33,12 @@ new_chassis\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_sp
 new_chassis\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 new_chassis\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 new_chassis\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+new_chassis\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
+new_chassis\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
+new_chassis\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
 new_chassis\stm32f4xx_it.o: ../Core/Inc/stm32f4xx_it.h
 new_chassis\stm32f4xx_it.o: ../devices/DBUS.h
 new_chassis\stm32f4xx_it.o: ../Core/Inc/usart.h
 new_chassis\stm32f4xx_it.o: ../bsp/typedef.h
 new_chassis\stm32f4xx_it.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
-new_chassis\stm32f4xx_it.o: ../bsp/data_transfer.h
 new_chassis\stm32f4xx_it.o: ../bsp/bsp_uart.h

@@ -30,6 +30,7 @@
 #include "comm_task.h"
 #include "chassis_task.h"
 #include "param_tuning.h"
+#include "ulog.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,6 +54,7 @@ osThreadId tfTaskHandle;
 osThreadId chassisTaskHandle;
 osThreadId ledTaskHandle;
 osThreadId commTaskHandle;
+osThreadId logTaskHandle;
 #ifdef DEBUG_MODE
 osThreadId debugTaskHandle;
 #endif
@@ -66,6 +68,7 @@ osThreadId defaultTaskHandle;
 
 void StartDefaultTask(void const * argument);
 
+extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* GetIdleTaskMemory prototype (linked to static allocation support) */
@@ -146,6 +149,9 @@ void MX_FREERTOS_Init(void) {
 	osThreadDef(comm_Task, commTask, osPriorityNormal, 0, 128);
   commTaskHandle = osThreadCreate(osThread(comm_Task), NULL);
 
+  // osThreadDef(log_task, ulogTask, osPriorityNormal, 0, 512);
+  // logTaskHandle = osThreadCreate(osThread(log_task), NULL);
+
 #ifdef DEBUG_MODE
   osThreadDef(debug_Task, param_tuning_Task, osPriorityNormal, 0, 128);
   debugTaskHandle = osThreadCreate(osThread(debug_Task), NULL);
@@ -164,6 +170,8 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void const * argument)
 {
+  /* init code for USB_DEVICE */
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
   for(;;)

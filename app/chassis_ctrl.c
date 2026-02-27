@@ -51,7 +51,7 @@ void ctrl_data_update(void)
 
     DTM_Read(RC_DATA, &rc_ptr, sizeof(rc_t));
     DTM_Read(UPC_DATA, &upc_ptr, sizeof(upc_t));
-    if (!upc_ptr.game_start) return;
+    //if (!upc_ptr.game_start) return;
     if(OMM_detect(RC_ONLINE))
         chassis_ptr.ctrl = rc_ptr.s1;
     else
@@ -83,9 +83,6 @@ void ctrl_data_update(void)
             vy = upc_ptr.vy * LINEAR_TO_ROTATIONAL_SPEED;
             vw = upc_ptr.vw * LINEAR_TO_ROTATIONAL_SPEED;
 
-            chassis_ptr.given_gimbal_s_yaw = upc_ptr.small_gimbal_yaw;
-            chassis_ptr.given_gimbal_s_pitch = upc_ptr.small_gimbal_pitch;
-
             chassis_ptr.gimbal_shutdown_flag = 0;
             chassis_ptr.given_gimbal_l_yaw = upc_ptr.gimbal_yaw;
         }
@@ -97,17 +94,6 @@ void ctrl_data_update(void)
             vw = 0.0f;
             chassis_ptr.gimbal_shutdown_flag = 1;
         }
-    }
-    else if(chassis_ptr.ctrl == GIMBAL_RC) // 仅测试用
-    {
-        chassis_ptr.mode = 1;//rc_ptr.s2;
-        upc_ptr.start_upc_flag = 0;
-
-        chassis_ptr.given_gimbal_s_pitch -= ((fp32)rc_ptr.ch3 * 0.0001f);
-        chassis_ptr.given_gimbal_s_yaw -= ((fp32)rc_ptr.ch2 * 0.0001f);
-
-        float_constrain(&chassis_ptr.given_gimbal_s_pitch, -45.0f, 45.0f);
-        float_constrain(&chassis_ptr.given_gimbal_s_yaw, -45.0f, 45.0f);
     }
     else
     {
@@ -193,6 +179,7 @@ void motor_ctrl_send(void)
             for(int j = 0; j < 4; j++)
                 m3508_ctrl[j].given_speed = 0;
     }
+    //CAN_Get9025Measure(CAN_9025_M1_TX_ID);
     OMM_detect(M9025_ONLINE);
     if((!OMM_detect(GIMBAL_L_ONLINE)))// || motor_9025_ctrl.measure->ecd_offset == 0)
         chassis_ptr.gimbal_shutdown_flag = 1;
@@ -208,11 +195,6 @@ void motor_ctrl_send(void)
     }
     else
         CAN_Control9025Speed(CAN_9025_M1_TX_ID, MF9025_MAX_IQ, 0);
-
-    uint8_t send_data[8];
-    pack_float_to_4bytes(chassis_ptr.given_gimbal_s_yaw, &send_data[0]);
-    pack_float_to_4bytes(chassis_ptr.given_gimbal_s_pitch, &send_data[4]);
-    CAN_CBoard_CMD(0x222, send_data);
 }
 
 void chassis_ctrl_init(void)

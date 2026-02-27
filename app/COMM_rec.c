@@ -28,12 +28,12 @@ void upc_send_attitude_handler(void);
 uint8_t upc_decode(uint8_t* rx_data)
 {
 	static upc_t upc_ptr;
-	if(!upc_ptr.start_upc_flag)
-		return 0;
-	if(rx_data[0] != SOF_VALUE || rx_data[2] != 0 || rx_data[3] != 0)
+	// if(!upc_ptr.start_upc_flag)
+	// 	return 0;
+	if(rx_data[0] != SOF_VALUE || rx_data[3] != 0)
 		return 1;
-	const uint16_t data_len = rx_data[4];
-	if(!Verify_CRC8_Check_Sum(rx_data, SOF_VALUE) || !Verify_CRC16_Check_Sum(rx_data , data_len+9))
+	const uint16_t data_len = (rx_data[2] << 8) | rx_data[1];
+	if(!Verify_CRC8_Check_Sum(rx_data, FRAME_HEADER_LEN) || !Verify_CRC16_Check_Sum(rx_data , data_len+9))
 		return 2;
 
 	const uint16_t cmd_id = (rx_data[6] << 8) | rx_data[5];

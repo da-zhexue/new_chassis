@@ -88,7 +88,7 @@ void CAN_Read9025CircleAngle(uint32_t id)
 }
 
 // CMD_9025_READ_ENCODER CMD_9025_READ_MEASURE CMD_9025_READ_CONTROL_PARAM
-void CAN_Get9025Measure(uint32_t id, uint8_t CMD)
+void CAN_Get9025Measure(const uint32_t id)
 {
     uint32_t send_mail_box;
     motor_9025_tx_message.StdId = id;
@@ -96,7 +96,7 @@ void CAN_Get9025Measure(uint32_t id, uint8_t CMD)
     motor_9025_tx_message.RTR   = CAN_RTR_DATA;
     motor_9025_tx_message.DLC   = 0x08;
 
-    motor_9025_can_tx_data[0] = CMD;
+    motor_9025_can_tx_data[0] = CMD_9025_READ_MEASURE;
     motor_9025_can_tx_data[1] = 0x00;
     motor_9025_can_tx_data[2] = 0x00;
     motor_9025_can_tx_data[3] = 0x00;

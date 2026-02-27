@@ -14,8 +14,7 @@ typedef enum
     M3508_2_ONLINE = 6,
     M3508_3_ONLINE = 7,
     M9025_ONLINE = 8,
-    REFEREE_ONLINE = 9,
-    ONLINE_COUNT = 10
+    ONLINE_COUNT = 9
 } online_online_type;
 
 extern uint16_t on_code;

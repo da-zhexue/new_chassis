@@ -32,7 +32,7 @@ typedef enum
 
 void CAN_Control3508Current(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
 void CAN_Manage9025State(uint32_t id,uint8_t CMD);
-void CAN_Get9025Measure(uint32_t id, uint8_t CMD);
+void CAN_Get9025Measure(uint32_t id);
 void CAN_Read9025CircleAngle(uint32_t id);
 void CAN_Control9025CircleAngle(uint32_t id, uint8_t spinDirection, uint32_t maxSpeed, uint32_t angleControl);
 void CAN_Control9025IncrementAngle(uint32_t id, uint32_t maxSpeed, int32_t angleControl);

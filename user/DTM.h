@@ -76,11 +76,9 @@ typedef struct
     uint8_t start_upc_flag;
     uint8_t game_start;
     uint8_t mode;
-    uint8_t shoot;
 
     float vx, vy, vw;
     float gimbal_yaw, chassis_yaw;
-    float small_gimbal_yaw, small_gimbal_pitch;
     float x, y, z;
 
 } upc_t;

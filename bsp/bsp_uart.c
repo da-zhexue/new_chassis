@@ -9,6 +9,9 @@ extern DMA_HandleTypeDef hdma_usart6_rx;
 extern DMA_HandleTypeDef hdma_usart6_tx;
 static uint8_t uart1_rx_buffer[2][COMM_BUF_LEN];
 static uint8_t uart6_rx_buffer[2][DEBUG_BUF_LEN];
+
+int find_frame_header(const uint8_t *buf, uint16_t len);
+
 void uart1_init(void) // COMMUNICATION_BOARD
 {
     SET_BIT(huart1.Instance->CR3, USART_CR3_DMAR);
@@ -83,7 +86,7 @@ void uart6_init(void) // DEBUG
 
 void usart6_rec_handler(void)
 {
-    if(huart6.Instance->SR & UART_FLAG_RXNE)//���յ�����
+    if(huart6.Instance->SR & UART_FLAG_RXNE)
     {
         __HAL_UART_CLEAR_PEFLAG(&huart6);
     }
@@ -95,27 +98,42 @@ void usart6_rec_handler(void)
         if ((hdma_usart6_rx.Instance->CR & DMA_SxCR_CT) == RESET)
         {
             __HAL_DMA_DISABLE(&hdma_usart6_rx);
+            while((hdma_usart6_rx.Instance->CR & DMA_SxCR_EN) != 0) {
+            }
             this_time_rx_len = DEBUG_BUF_LEN - hdma_usart6_rx.Instance->NDTR;
             hdma_usart6_rx.Instance->NDTR = DEBUG_BUF_LEN;
             hdma_usart6_rx.Instance->CR |= DMA_SxCR_CT;
-            __HAL_DMA_ENABLE(&hdma_usart6_rx);
-            if(this_time_rx_len == DEBUG_MSG_LEN)
+
+            if(this_time_rx_len > 9)
             {
-                param_decode(uart6_rx_buffer[0]);
+                //param_decode(uart6_rx_buffer[0]);
+                upc_decode(uart6_rx_buffer[0]);
             }
+            __HAL_DMA_ENABLE(&hdma_usart6_rx);
         }
         else
         {
             __HAL_DMA_DISABLE(&hdma_usart6_rx);
+            while((hdma_usart6_rx.Instance->CR & DMA_SxCR_EN) != 0) {
+            }
             this_time_rx_len = DEBUG_BUF_LEN - hdma_usart6_rx.Instance->NDTR;
             hdma_usart6_rx.Instance->NDTR = DEBUG_BUF_LEN;
             DMA2_Stream1->CR &= ~(DMA_SxCR_CT);
-            __HAL_DMA_ENABLE(&hdma_usart6_rx);
-
-            if(this_time_rx_len == DEBUG_MSG_LEN)
+            if(this_time_rx_len > 9)
             {
-                param_decode(uart6_rx_buffer[1]);
+                //param_decode(uart6_rx_buffer[1]);
+                upc_decode(uart6_rx_buffer[1]);
             }
+            __HAL_DMA_ENABLE(&hdma_usart6_rx);
         }
     }
+}
+
+int find_frame_header(const uint8_t *buf, const uint16_t len) {
+    for (uint16_t i = 0; i < len; i++) {
+        if (buf[i] == 0xA5) {
+            return i;
+        }
+    }
+    return 0;
 }

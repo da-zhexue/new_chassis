@@ -2,8 +2,8 @@ new_chassis\tf_task.o: ..\task\TF_task.c
 new_chassis\tf_task.o: ..\task\TF_task.h
 new_chassis\tf_task.o: ../bsp/typedef.h
 new_chassis\tf_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
-new_chassis\tf_task.o: ../devices/BMI088driver.h
 new_chassis\tf_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
+new_chassis\tf_task.o: ../devices/BMI088driver.h
 new_chassis\tf_task.o: ../Core/Inc/main.h
 new_chassis\tf_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 new_chassis\tf_task.o: ../Core/Inc/stm32f4xx_hal_conf.h
@@ -37,7 +37,9 @@ new_chassis\tf_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
 new_chassis\tf_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 new_chassis\tf_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 new_chassis\tf_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
-new_chassis\tf_task.o: ../bsp/bsp_dwt.h
+new_chassis\tf_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
+new_chassis\tf_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
+new_chassis\tf_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
 new_chassis\tf_task.o: ../algorithm/user_lib.h
 new_chassis\tf_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 new_chassis\tf_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
@@ -53,5 +55,5 @@ new_chassis\tf_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/timers
 new_chassis\tf_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 new_chassis\tf_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 new_chassis\tf_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
-new_chassis\tf_task.o: ../devices/Online_Monitor.h
-new_chassis\tf_task.o: ../bsp/data_transfer.h
+new_chassis\tf_task.o: ../user/OMM.h
+new_chassis\tf_task.o: ../user/DTM.h

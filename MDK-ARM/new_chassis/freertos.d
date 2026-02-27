@@ -42,6 +42,9 @@ new_chassis\freertos.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
 new_chassis\freertos.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 new_chassis\freertos.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 new_chassis\freertos.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+new_chassis\freertos.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
+new_chassis\freertos.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
+new_chassis\freertos.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
 new_chassis\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 new_chassis\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h
 new_chassis\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
@@ -54,3 +57,5 @@ new_chassis\freertos.o: ../devices/BMI088driver.h
 new_chassis\freertos.o: ../task/led_task.h
 new_chassis\freertos.o: ../task/comm_task.h
 new_chassis\freertos.o: ../task/chassis_task.h
+new_chassis\freertos.o: ../user/param_tuning.h
+new_chassis\freertos.o: ../user/ulog.h

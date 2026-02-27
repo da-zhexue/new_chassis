@@ -45,6 +45,7 @@ void CAN_9025_MeasureProcess(const uint8_t* rx_data)
             motor_9025_measure.iq        = (int16_t)  ((rx_data)[3]<<8 | (rx_data)[2]);
             motor_9025_measure.speed     = (int16_t)  ((rx_data)[5]<<8 | (rx_data)[4]);
             motor_9025_measure.ecd       = (uint16_t) ((rx_data)[7]<<8 | (rx_data)[6]);
+    		if (motor_9025_measure.ecd_offset == 0) motor_9025_measure.ecd_offset = motor_9025_measure.ecd;
             OMM_update(M9025_ONLINE);
             break;
         case CMD_9025_READ_ENCODER: //read encoder

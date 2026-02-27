@@ -1,7 +1,6 @@
 new_chassis\bsp_led.o: ..\bsp\bsp_led.c
 new_chassis\bsp_led.o: ..\bsp\bsp_led.h
-new_chassis\bsp_led.o: ..\bsp\typedef.h
-new_chassis\bsp_led.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+new_chassis\bsp_led.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 new_chassis\bsp_led.o: ../Core/Inc/main.h
 new_chassis\bsp_led.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 new_chassis\bsp_led.o: ../Core/Inc/stm32f4xx_hal_conf.h
@@ -10,7 +9,6 @@ new_chassis\bsp_led.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h
 new_chassis\bsp_led.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
 new_chassis\bsp_led.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h
 new_chassis\bsp_led.o: ../Drivers/CMSIS/Include/core_cm4.h
-new_chassis\bsp_led.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 new_chassis\bsp_led.o: ../Drivers/CMSIS/Include/cmsis_version.h
 new_chassis\bsp_led.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
 new_chassis\bsp_led.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
@@ -36,6 +34,9 @@ new_chassis\bsp_led.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
 new_chassis\bsp_led.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 new_chassis\bsp_led.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 new_chassis\bsp_led.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+new_chassis\bsp_led.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
+new_chassis\bsp_led.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
+new_chassis\bsp_led.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
 new_chassis\bsp_led.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 new_chassis\bsp_led.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 new_chassis\bsp_led.o: ../Core/Inc/FreeRTOSConfig.h

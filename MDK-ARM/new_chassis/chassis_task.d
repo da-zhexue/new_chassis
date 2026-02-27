@@ -2,10 +2,10 @@ new_chassis\chassis_task.o: ..\task\chassis_task.c
 new_chassis\chassis_task.o: ..\task\chassis_task.h
 new_chassis\chassis_task.o: ../bsp/typedef.h
 new_chassis\chassis_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+new_chassis\chassis_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 new_chassis\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 new_chassis\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 new_chassis\chassis_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
-new_chassis\chassis_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 new_chassis\chassis_task.o: ../Core/Inc/FreeRTOSConfig.h
 new_chassis\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 new_chassis\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
@@ -18,9 +18,5 @@ new_chassis\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/t
 new_chassis\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 new_chassis\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 new_chassis\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
-new_chassis\chassis_task.o: ../bsp/data_transfer.h
-new_chassis\chassis_task.o: ../app/COMM_rec.h
-new_chassis\chassis_task.o: ../app/motor_ctrl.h
-new_chassis\chassis_task.o: ../algorithm/pid.h
-new_chassis\chassis_task.o: ../app/CAN_rx.h
 new_chassis\chassis_task.o: ../app/chassis_ctrl.h
+new_chassis\chassis_task.o: ../algorithm/pid.h
