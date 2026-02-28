@@ -19,6 +19,6 @@ void ChassisTask(void const * argument)
 		ctrl_data_update();
 		motor_ctrl_update();
 		motor_ctrl_send();
-		osDelay(1);
+		osDelay(3);
 	}
 }

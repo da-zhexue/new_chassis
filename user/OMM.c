@@ -10,18 +10,18 @@
 #include "OMM.h"
 #include "bsp_dwt.h"
 
-static fp32 last_on[ONLINE_COUNT];
+static uint64_t last_on[ONLINE_COUNT];
 uint16_t on_code = 0;
 
 void OMM_update(const uint16_t type)
 {
-    last_on[type] = DWT_GetTimeline_s();
+    last_on[type] = DWT_GetTimeline_us();
 	SET_ONLINE(type);
 }
 
 uint8_t OMM_detect(const uint16_t type)
 {
-	if (DWT_GetTimeline_s() - last_on[type] > 1.0f)
+	if (DWT_GetTimeline_us() - last_on[type] > 1000000)
     {
 		SET_OFFLINE(type);
         return 0;

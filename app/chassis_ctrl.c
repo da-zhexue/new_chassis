@@ -88,7 +88,7 @@ void ctrl_data_update(void)
         }
         else
         {
-            chassis_ptr.mode = 0;
+            // chassis_ptr.mode = 0;
             vx = 0.0f;
             vy = 0.0f;
             vw = 0.0f;
@@ -97,7 +97,7 @@ void ctrl_data_update(void)
     }
     else
     {
-		chassis_ptr.mode = 0;
+		// chassis_ptr.mode = 0;
         upc_ptr.start_upc_flag = 0;
         vx = 0.0f;
         vy = 0.0f;
