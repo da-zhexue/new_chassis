@@ -70,6 +70,7 @@ typedef struct
     uint16_t ecd;
     uint16_t ecd_offset;
     fp32 imu_yaw_offset;
+    uint8_t get_imu_offset;
 }m9025_t;
 typedef struct
 {

@@ -150,15 +150,6 @@ void motor_ctrl_update(void)
             m9025_ctrl.given_angle = chassis_ptr.given_gimbal_l_yaw;
             break;
         }
-        case FOLLOW_GIMBAL: // 上位机好像不用
-            m9025_ctrl.given_angle = chassis_ptr.given_gimbal_l_yaw;
-            chassis_w = PID_calc(&follow_gimbal_pid, -tf_ptr.Chassis_angle.yaw_total_angle, chassis_ptr.given_gimbal_l_yaw);
-            m3508_ctrl[0].given_speed = (int16_t)chassis_w;
-            m3508_ctrl[1].given_speed = (int16_t)chassis_w;
-            m3508_ctrl[2].given_speed = (int16_t)chassis_w;
-            m3508_ctrl[3].given_speed = (int16_t)chassis_w;
-            break;
-        case STOPPING:
         default:
 			m3508_ctrl[0].given_speed = 0;
             m3508_ctrl[1].given_speed = 0;

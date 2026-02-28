@@ -61,7 +61,6 @@ uint8_t upc_decode(uint8_t* rx_data)
 		default:
 			break;
 	}
-	if (upc_ptr.mode == 0) upc_ptr.mode = 1;
 	DTM_Write(UPC_DATA, &upc_ptr, sizeof(upc_t));
 	return 0; 
 }

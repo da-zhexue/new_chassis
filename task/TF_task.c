@@ -47,8 +47,6 @@ void TF_Task(void const * argurment)
 					for (int i = 0; i < 3; i++) gimbal_s_ptr[i] -= gimbal_s_offset[i];
 				Yaw_diff = theta_format((fp32)(m9025_ptr.ecd - m9025_ptr.ecd_offset)/ 32768.0f * 180.0f); // -PI~PI
 				#ifdef AUTO_CORRECTION_ENABLE
-					if(m9025_ptr.imu_yaw_offset == 0)
-						m9025_ptr.imu_yaw_offset = theta_format((fp32)(m9025_ptr.ecd - MF9025_ECD_IN_ZERO)/ 32768.0f * 180.0f);
 					chassis_angle_temp[0] = theta_format(Yaw_diff + gimbal_l_ptr[0] + m9025_ptr.imu_yaw_offset);
 				#else
 					chassis_angle_temp[0] = theta_format(Yaw_diff + gimbal_l_ptr[0]);

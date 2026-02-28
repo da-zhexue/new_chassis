@@ -20,6 +20,8 @@
 
 #define GIMBAL_CAN hcan2
 
+#define MF9025_ECD_IN_ZERO 0x028E
+
 typedef enum
 {	
 	CAN_3508_M1_ID = 0x201,

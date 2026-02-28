@@ -77,10 +77,8 @@ typedef struct
 
 typedef enum
 {
-    STOPPING = 0,
-    FOLLOW_CHASSIS = 1,
-    FOLLOW_GIMBAL = 2,
-    SPINNING_TOP = 3
+    FOLLOW_CHASSIS = 0,
+    SPINNING_TOP = 1
 } CHASSIS_CTRL_MODE;
 
 typedef struct
