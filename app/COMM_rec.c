@@ -114,7 +114,5 @@ extern void send_start_handler();
 void cmd_shart_handler(const uint8_t* data, upc_t *upc_ptr)
 {
 	send_start_handler();
-	fp32 flag_temp = 0.0f;
-	unpack_4bytes_to_floats(&data[0], &flag_temp);
-	upc_ptr->game_start = (flag_temp > 0.01f ? 1 : 0);
+	upc_ptr->game_start = 1;
 }

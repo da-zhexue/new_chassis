@@ -21,6 +21,7 @@
 #include "cmsis_os.h"
 #include "can.h"
 #include "dma.h"
+#include "rng.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -108,6 +109,7 @@ int main(void)
   MX_TIM4_Init();
   MX_TIM5_Init();
   MX_SPI1_Init();
+  MX_RNG_Init();
   /* USER CODE BEGIN 2 */
 	DWT_Init(168);
 	while (BMI088_init(&hspi1, 1) != BMI088_NO_ERROR)

@@ -10,6 +10,8 @@
  */
 
 #include "chassis_ctrl.h"
+
+#include "bsp_dwt.h"
 #include "pid.h"
 #include "math.h"
 #include "user_lib.h"
@@ -17,6 +19,7 @@
 #include "DTM.h"
 #include "CAN_tx.h"
 #include "ulog.h"
+#include "bsp_rng.h"
 
 #ifdef DEBUG_MODE
 chassis_t chassis_ptr;
@@ -33,8 +36,6 @@ static float filter_vx_num[1] = {CHASSIS_FILTER_VX_BETA};
 static float filter_vy_num[1] = {CHASSIS_FILTER_VY_BETA};
 static float filter_vw_num[1] = {CHASSIS_FILTER_VW_BETA};
 
-static pid_t follow_gimbal_pid;
-
 static fp32 M3508_SPEED_PID[3] = {M3508_SPEED_PID_KP, M3508_SPEED_PID_KI, M3508_SPEED_PID_KD};
 static fp32 MF9025_ANGLE_PID[3] = {MF9025_ANGLE_PID_KP, MF9025_ANGLE_PID_KI, MF9025_ANGLE_PID_KD};
 static fp32 MF9025_ANGLE_MULTI_PID [3][4] = {
@@ -42,7 +43,6 @@ static fp32 MF9025_ANGLE_MULTI_PID [3][4] = {
     {180,MF9025_ANGLE_PID_KP2, MF9025_ANGLE_PID_KI2, MF9025_ANGLE_PID_KD2},
     {14400,MF9025_ANGLE_PID_KP3, MF9025_ANGLE_PID_KI3, MF9025_ANGLE_PID_KD3}
 };
-static fp32 FOLLOW_GIMBAL_PID[3] = {FOLLOW_GIMBAL_PID_KP, FOLLOW_GIMBAL_PID_KI, FOLLOW_GIMBAL_PID_KD};
 
 void ctrl_data_update(void)
 {
@@ -62,7 +62,7 @@ void ctrl_data_update(void)
     static fp32 norm_v;
     if(chassis_ptr.ctrl == CHASSIS_RC)
     {
-        chassis_ptr.mode = 1;//rc_ptr.s2;
+        chassis_ptr.mode = 0;
         upc_ptr.start_upc_flag = 0;
         vx = (fp32)rc_ptr.ch3;
         vy = (fp32)rc_ptr.ch2;
@@ -88,7 +88,7 @@ void ctrl_data_update(void)
         }
         else
         {
-            // chassis_ptr.mode = 0;
+            //chassis_ptr.mode = 0;
             vx = 0.0f;
             vy = 0.0f;
             vw = 0.0f;
@@ -97,7 +97,7 @@ void ctrl_data_update(void)
     }
     else
     {
-		// chassis_ptr.mode = 0;
+		chassis_ptr.mode = 0;
         upc_ptr.start_upc_flag = 0;
         vx = 0.0f;
         vy = 0.0f;
@@ -122,6 +122,8 @@ void ctrl_data_update(void)
 void motor_ctrl_update(void)
 {
     static TF_t tf_ptr;
+    static uint64_t last_change_vw;
+    static fp32 topping_vw;
     DTM_Read(TF_DATA, &tf_ptr, sizeof(tf_ptr));
     const fp32 chassis_v = chassis_ptr.given_chassis_v[0];
     const fp32 theta = chassis_ptr.given_chassis_v[1];
@@ -131,8 +133,12 @@ void motor_ctrl_update(void)
     switch(chassis_ptr.mode)
     {
         case SPINNING_TOP:
-            chassis_w = 4000.0f; // case穿透，将转速设为定值后继续执行跟随底盘模式逻辑
-		    // 要不要把固定速度改为随机速度或者由上位机传入
+            if (DWT_GetTimeline_us() - last_change_vw > 200000)
+            {
+                last_change_vw = DWT_GetTimeline_us();
+                topping_vw = (fp32)(rng_smooth_rand() % 500 + 1000); // case穿透，将转速设为定值后继续执行跟随底盘模式逻辑
+            }
+            chassis_w = topping_vw;
         case FOLLOW_CHASSIS:
         {
             const fp32 sin_yaw = sinf(radian_format(tf_ptr.Chassis_angle.yaw_rad - tf_ptr.Small_Gimbal_angle.yaw_rad));
@@ -194,7 +200,7 @@ void chassis_ctrl_init(void)
     chassis_ptr.given_chassis_v[1] = 0.0f;
     chassis_ptr.given_chassis_w = 0.0f;
     chassis_ptr.ctrl = CHASSIS_RC_OFFLINE;
-    chassis_ptr.mode = 1;
+    chassis_ptr.mode = 0;
     chassis_ptr.gimbal_shutdown_flag = 1;
     chassis_ptr.last_gimbal_shutdown_flag = 1;
 
@@ -202,6 +208,7 @@ void chassis_ctrl_init(void)
     first_order_filter_init(&chassis_vy_filter, CHASSIS_CONTROL_TIME, filter_vy_num);
     first_order_filter_init(&chassis_vw_filter, CHASSIS_CONTROL_TIME, filter_vw_num);
 
+    rng_init(0.98f);
 
     #ifdef DEBUG_MODE
     static uint8_t debug_ready = 0;
@@ -225,7 +232,5 @@ void chassis_ctrl_init(void)
       MF9025_MAX_POSITION_ACCEL, MF9025_MAX_NEGATIVE_ACCEL, MF9025_DEADZONE);
     fp32 (*multi_Kpid_ptr)[4] = MF9025_ANGLE_MULTI_PID;
     PID_multi_Kp_init(&m9025_ctrl.pid,multi_Kpid_ptr,3);
-    PID_init(&follow_gimbal_pid, PID_POSITION, FOLLOW_GIMBAL_PID, FOLLOW_GIMBAL_PID_OUT_MAX, FOLLOW_GIMBAL_PID_IOUT_MAX,
-        FOLLOW_GIMBAL_MAX_POSITION_ACCEL, FOLLOW_GIMBAL_MAX_NEGATIVE_ACCEL, FOLLOW_GIMBAL_DEADZONE);
 
 }
