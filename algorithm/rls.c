@@ -59,9 +59,9 @@ static void Matrix2x2_Add(Matrix2x2* a, const Matrix2x2* b) {
 void RLS_Init(RLS_Handle* handle, float delta, float lambda, const float* initParams) {
     if(handle == NULL)
         return;
-    if(lambda > 0.0f && lambda <= 1.0f)
+    if(lambda < 0.0f && lambda > 1.0f)
         return;
-    if(delta > 0.0f)
+    if(delta <= 0.0f)
         return;
 
     // 初始化参数

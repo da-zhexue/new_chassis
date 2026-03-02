@@ -3,6 +3,7 @@ new_chassis\bsp_delay.o: ..\bsp\bsp_delay.h
 new_chassis\bsp_delay.o: ..\bsp\typedef.h
 new_chassis\bsp_delay.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 new_chassis\bsp_delay.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
+new_chassis\bsp_delay.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdbool.h
 new_chassis\bsp_delay.o: ../Core/Inc/main.h
 new_chassis\bsp_delay.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 new_chassis\bsp_delay.o: ../Core/Inc/stm32f4xx_hal_conf.h
@@ -32,6 +33,7 @@ new_chassis\bsp_delay.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash
 new_chassis\bsp_delay.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
 new_chassis\bsp_delay.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 new_chassis\bsp_delay.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+new_chassis\bsp_delay.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rng.h
 new_chassis\bsp_delay.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
 new_chassis\bsp_delay.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 new_chassis\bsp_delay.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h

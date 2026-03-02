@@ -21,6 +21,7 @@
 #include "ulog.h"
 #include "bsp_rng.h"
 #include "power_ctrl.h"
+#include "power_ctrl_param_get.h"
 
 #ifdef DEBUG_MODE
 chassis_t chassis_ptr;
@@ -31,6 +32,7 @@ static chassis_t chassis_ptr;
 static m3508_ctrl_t m3508_ctrl[4];
 static m9025_ctrl_t m9025_ctrl;
 static PowerControllerConfig power_ctrl_config;
+PowerControlParam ctx;
 #endif
 
 static first_order_filter_type_t chassis_vx_filter, chassis_vy_filter, chassis_vw_filter;
@@ -171,7 +173,8 @@ void motor_ctrl_update(void)
     LOG_INFO("given speed: %d %d %d %d, given angle: %.2f", m3508_ctrl[0].given_speed, m3508_ctrl[1].given_speed, m3508_ctrl[2].given_speed, m3508_ctrl[3].given_speed, m9025_ctrl.given_angle);
 
 }
-
+MotorPowerObj motorpower[4];
+PowerAllocationResult result;
 void motor_ctrl_send(void)
 {
     static m3508_t m3508_ptr[4];
@@ -196,40 +199,38 @@ void motor_ctrl_send(void)
     else
         CAN_Control9025Speed(CAN_9025_M1_TX_ID, MF9025_MAX_IQ, 0);
 
-    // CAN_Control3508Current((int16_t)*m3508_ctrl[0].pid.out, (int16_t)*m3508_ctrl[1].pid.out,
-    //                        (int16_t)*m3508_ctrl[2].pid.out, (int16_t)*m3508_ctrl[3].pid.out);
+//    CAN_Control3508Current((int16_t)*m3508_ctrl[0].pid.out, (int16_t)*m3508_ctrl[1].pid.out,
+//                             (int16_t)*m3508_ctrl[2].pid.out, (int16_t)*m3508_ctrl[3].pid.out);
 
     // 功率控制
-    static MotorPowerObj motorpower[4];
+
     for (int i = 0; i < 4; i++)
     {
-        motorpower[i].curAv = m3508_ptr[i].speed;
-        motorpower[i].setAv = m3508_ctrl[i].given_speed;
+        motorpower[i].curAv = m3508_ptr[i].speed / 9.55f;
+        motorpower[i].setAv = m3508_ctrl[i].given_speed / 9.55f;
         motorpower[i].pidOutput = m3508_ctrl[i].pid.out[0];
         motorpower[i].pidMaxOutput = m3508_ctrl[i].pid.max_out;
     }
     MotorPowerObj *motors[4] = {&motorpower[0], &motorpower[1], &motorpower[2], &motorpower[3]};
-    PowerAllocationResult result;
+
     allocatePowerWithLimit(motors, &power_ctrl_config, &result);
-    CAN_Control3508Current((int16_t)result.newTorqueCurrent[0], (int16_t)result.newTorqueCurrent[1], (int16_t)result.newTorqueCurrent[2], (int16_t)result.newTorqueCurrent[3]);
+    CAN_Control3508Current((int16_t)result.newTorqueCurrent[0], (int16_t)result.newTorqueCurrent[1] , 
+			(int16_t)result.newTorqueCurrent[2], (int16_t)result.newTorqueCurrent[3]);
 }
 
-//#ifdef DEBUG_MODE
-#include "power_ctrl_param_get.h"
-static PowerControlParam ctx;
 void motor_param_get()
 {
     static m3508_t m3508_ptr[4];
-    static float measuredpower_ptr;
+    static float measuredpower_ptr = 100.0f;
     static float param_ptr[2];
     DTM_Read(M3508_DATA, m3508_ptr, sizeof(m3508_ptr));
-    DTM_Read(POWER_DATA, &measuredpower_ptr, sizeof(measuredpower_ptr));
+    //DTM_Read(POWER_DATA, &measuredpower_ptr, sizeof(measuredpower_ptr));
 
     float torqueFeedback[4];
     float rpmFeedback[4];
 
     for (int i = 0; i < 4; i++) {
-        torqueFeedback[i] = (float)m3508_ptr[i].current * 0.3f; // m3508的力矩与电流比例大致等于0.3
+        torqueFeedback[i] = (float)m3508_ptr[i].current * 20.0f / 16384.0f * 0.3f; // m3508的力矩与电流比例大致等于0.3
         rpmFeedback[i] = m3508_ptr[i].speed;
     }
 
@@ -243,9 +244,8 @@ void motor_param_get()
     PowerControl_Update(&ctx, effectivePower);
     param_ptr[0] = ctx.k1;
     param_ptr[1] = ctx.k2;
-    DTM_Write(PARAM_DATA, param_ptr, sizeof(param_ptr));
+    //DTM_Write(PARAM_DATA, param_ptr, sizeof(param_ptr));
 }
-//#endif
 
 void chassis_ctrl_init(void)
 {
@@ -288,5 +288,5 @@ void chassis_ctrl_init(void)
 
     initPowerControllerConfig(&power_ctrl_config, M3508_TORQUE_CONST, M3508_CURRENT_LIMIT, M3508_OUTPUT_LIMIT,
         K1_CONST,  K2_CONST, K3_CONST, SENTINEL_MAXPOWER);
-
+    PowerControl_Init(&ctx);
 }

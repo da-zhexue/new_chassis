@@ -29,6 +29,7 @@ new_chassis\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
 new_chassis\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
 new_chassis\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 new_chassis\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+new_chassis\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rng.h
 new_chassis\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
 new_chassis\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 new_chassis\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
@@ -52,6 +53,7 @@ new_chassis\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 new_chassis\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 new_chassis\main.o: ../Core/Inc/can.h
 new_chassis\main.o: ../Core/Inc/dma.h
+new_chassis\main.o: ../Core/Inc/rng.h
 new_chassis\main.o: ../Core/Inc/spi.h
 new_chassis\main.o: ../Core/Inc/tim.h
 new_chassis\main.o: ../Core/Inc/usart.h
@@ -65,6 +67,7 @@ new_chassis\main.o: ../Core/Inc/gpio.h
 new_chassis\main.o: ../bsp/bsp_uart.h
 new_chassis\main.o: ../bsp/bsp_can.h
 new_chassis\main.o: ../bsp/typedef.h
+new_chassis\main.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdbool.h
 new_chassis\main.o: ../bsp/bsp_delay.h
 new_chassis\main.o: ../bsp/bsp_dwt.h
 new_chassis\main.o: ../devices/BMI088driver.h

@@ -3,6 +3,7 @@ new_chassis\bsp_buzzer.o: ..\bsp\bsp_buzzer.h
 new_chassis\bsp_buzzer.o: ..\bsp\typedef.h
 new_chassis\bsp_buzzer.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 new_chassis\bsp_buzzer.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
+new_chassis\bsp_buzzer.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdbool.h
 new_chassis\bsp_buzzer.o: ../Core/Inc/main.h
 new_chassis\bsp_buzzer.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 new_chassis\bsp_buzzer.o: ../Core/Inc/stm32f4xx_hal_conf.h
@@ -32,6 +33,7 @@ new_chassis\bsp_buzzer.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flas
 new_chassis\bsp_buzzer.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
 new_chassis\bsp_buzzer.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 new_chassis\bsp_buzzer.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+new_chassis\bsp_buzzer.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rng.h
 new_chassis\bsp_buzzer.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
 new_chassis\bsp_buzzer.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 new_chassis\bsp_buzzer.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h

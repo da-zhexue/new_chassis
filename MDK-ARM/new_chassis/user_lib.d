@@ -5,6 +5,7 @@ new_chassis\user_lib.o: ..\algorithm\user_lib.h
 new_chassis\user_lib.o: ../bsp/typedef.h
 new_chassis\user_lib.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 new_chassis\user_lib.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
+new_chassis\user_lib.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdbool.h
 new_chassis\user_lib.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 new_chassis\user_lib.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 new_chassis\user_lib.o: D:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
@@ -49,6 +50,7 @@ new_chassis\user_lib.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_
 new_chassis\user_lib.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
 new_chassis\user_lib.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 new_chassis\user_lib.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+new_chassis\user_lib.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rng.h
 new_chassis\user_lib.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
 new_chassis\user_lib.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 new_chassis\user_lib.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h

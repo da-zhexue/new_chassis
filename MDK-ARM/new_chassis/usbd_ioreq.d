@@ -35,6 +35,7 @@ new_chassis\usbd_ioreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flas
 new_chassis\usbd_ioreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
 new_chassis\usbd_ioreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 new_chassis\usbd_ioreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+new_chassis\usbd_ioreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rng.h
 new_chassis\usbd_ioreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
 new_chassis\usbd_ioreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 new_chassis\usbd_ioreq.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h

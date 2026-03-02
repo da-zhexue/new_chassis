@@ -106,13 +106,8 @@ void allocatePowerWithLimit(MotorPowerObj *objs[4], const PowerControllerConfig 
             float powerWeight_Prop = 0.0f;
             float powerWeight = 0.0f;
 
-            if (sumError > 0) {
-                powerWeight_Error = error[i] / sumError;
-            }
-
-            if (sumPowerRequired > 0) {
-                powerWeight_Prop = cmdPower[i] / sumPowerRequired;
-            }
+						powerWeight_Error = error[i] / sumError;
+						powerWeight_Prop = cmdPower[i] / sumPowerRequired;
 
             // 混合权重
             powerWeight = errorConfidence * powerWeight_Error +
@@ -175,13 +170,13 @@ static float calculateAllocatedPower(const float k0, const float k1, const float
         // 两个实根，选择与原始输出同号的解
         const float sqrtDelta = sqrtf(discriminant);
         if (pidOutput > 0) {
-            newOutput = (-b + sqrtDelta) / (2.0f * a) / k0;
+            newOutput = (-b + sqrtDelta) / (2.0f * a);
         } else {
-            newOutput = (-b - sqrtDelta) / (2.0f * a) / k0;
+            newOutput = (-b - sqrtDelta) / (2.0f * a);
         }
     } else {
         // 无实根，取对称轴位置
-        newOutput = -b / (2.0f * a) / k0;
+        newOutput = -b / (2.0f * a);
     }
 
     return newOutput;

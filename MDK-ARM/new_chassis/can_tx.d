@@ -30,6 +30,7 @@ new_chassis\can_tx.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex
 new_chassis\can_tx.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
 new_chassis\can_tx.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 new_chassis\can_tx.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+new_chassis\can_tx.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rng.h
 new_chassis\can_tx.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
 new_chassis\can_tx.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 new_chassis\can_tx.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
@@ -40,3 +41,4 @@ new_chassis\can_tx.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
 new_chassis\can_tx.o: ..\app\CAN_tx.h
 new_chassis\can_tx.o: ../bsp/typedef.h
 new_chassis\can_tx.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+new_chassis\can_tx.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdbool.h

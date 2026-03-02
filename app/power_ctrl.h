@@ -9,12 +9,12 @@
 #define POWER_DISTRIBUTION_COEFF 0.85f
 
 #define M3508_TORQUE_CONST 0.3f // M3508转矩常数 N·m/A
-#define M3508_CURRENT_LIMIT 20.0f // M3508最大电流 C620说明书给出最大输出20A，M3508说明书给出额定电流10A，不知道选哪个qwq
-#define M3508_OUTPUT_LIMIT 1.0f // 归一化输出上限
+#define M3508_CURRENT_LIMIT 10.0f // M3508最大电流 C620说明书给出最大输出20A，M3508说明书给出额定电流10A，不知道选哪个qwq
+#define M3508_OUTPUT_LIMIT 16384.0f // 归一化输出上限
 
 #define K1_CONST 0.22f
 #define K2_CONST 1.2f
-#define K3_CONST 2.78f
+#define K3_CONST 4.081f//2.78f
 
 #define SENTINEL_MAXPOWER 100.0f
 #define SENTINEL_POWERBUFFER 60.0f

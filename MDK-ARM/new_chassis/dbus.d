@@ -29,6 +29,7 @@ new_chassis\dbus.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
 new_chassis\dbus.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
 new_chassis\dbus.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 new_chassis\dbus.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+new_chassis\dbus.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rng.h
 new_chassis\dbus.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
 new_chassis\dbus.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 new_chassis\dbus.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
@@ -40,5 +41,6 @@ new_chassis\dbus.o: ..\devices\DBUS.h
 new_chassis\dbus.o: ../Core/Inc/usart.h
 new_chassis\dbus.o: ../bsp/typedef.h
 new_chassis\dbus.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+new_chassis\dbus.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdbool.h
 new_chassis\dbus.o: ../user/DTM.h
 new_chassis\dbus.o: ../user/OMM.h

@@ -3,6 +3,7 @@ new_chassis\chassis_task.o: ..\task\chassis_task.h
 new_chassis\chassis_task.o: ../bsp/typedef.h
 new_chassis\chassis_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 new_chassis\chassis_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
+new_chassis\chassis_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdbool.h
 new_chassis\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 new_chassis\chassis_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 new_chassis\chassis_task.o: D:\keil5\ARM\ARMCC\Bin\..\include\stddef.h

@@ -174,7 +174,7 @@ void send_power_ctrl_param_handler()
 {
 	static float power_ctrl_param_ptr[2] = {0.0f, 0.0f};
 	DTM_Read(PARAM_DATA, power_ctrl_param_ptr, sizeof(power_ctrl_param_ptr));
-	static uint8_t send_power_ctrl_param[8] = {};
+	static uint8_t send_power_ctrl_param[8] = {0};
 	pack_float_to_4bytes(power_ctrl_param_ptr[0], &send_power_ctrl_param[0]);
 	pack_float_to_4bytes(power_ctrl_param_ptr[1], &send_power_ctrl_param[4]);
 

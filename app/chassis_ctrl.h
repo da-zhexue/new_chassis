@@ -97,6 +97,7 @@ typedef struct
 void ctrl_data_update(void);
 void motor_ctrl_update(void);
 void motor_ctrl_send(void);
+void motor_param_get(void);
 void chassis_ctrl_init(void);
 
 #endif
