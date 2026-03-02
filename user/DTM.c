@@ -17,8 +17,8 @@ m3508_t m3508[4];
 fp32 gimbal_s_deg[3];
 fp32 gimbal_l_deg[3];
 upc_t upc;
-fp32 pid_debug[3];
-uint8_t debug_ready_flag;
+fp32 power_ctrl_param[3];
+fp32 measuredpower;
 #else
 static rc_t rc;
 static TF_t tf;
@@ -43,8 +43,8 @@ static const DTM_Info_t DTM_Map[] = {
     [GIMBAL_L_DATA] = {gimbal_l_deg, sizeof(gimbal_l_deg)},
     [UPC_DATA] = {&upc, sizeof(upc)},
 #ifdef DEBUG_MODE
-    [PARAM_DATA] = {pid_debug, sizeof(pid_debug)},
-    [DEBUG_READY] = {&debug_ready_flag, sizeof(debug_ready_flag)}
+    [PARAM_DATA] = {power_ctrl_param, sizeof(power_ctrl_param)},
+    [POWER_DATA] = {measuredpower, sizeof(measuredpower)};
 #endif
 }; // 在此处存储要用于不同任务的数据
 

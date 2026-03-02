@@ -3,6 +3,7 @@
 
 #include "stdio.h"
 #include "stdint.h"
+#include "stdbool.h"
 
 //#define __PACKED __attribute__((packed))
 #define __COUNT(arr) sizeof(arr)/sizeof(arr[0])

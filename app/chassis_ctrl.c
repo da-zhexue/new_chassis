@@ -20,6 +20,7 @@
 #include "CAN_tx.h"
 #include "ulog.h"
 #include "bsp_rng.h"
+#include "power_ctrl.h"
 
 #ifdef DEBUG_MODE
 chassis_t chassis_ptr;
@@ -29,6 +30,7 @@ m9025_ctrl_t m9025_ctrl;
 static chassis_t chassis_ptr;
 static m3508_ctrl_t m3508_ctrl[4];
 static m9025_ctrl_t m9025_ctrl;
+static PowerControllerConfig power_ctrl_config;
 #endif
 
 static first_order_filter_type_t chassis_vx_filter, chassis_vy_filter, chassis_vw_filter;
@@ -79,9 +81,9 @@ void ctrl_data_update(void)
         {
             chassis_ptr.mode = upc_ptr.mode;
            
-            vx = upc_ptr.vx * LINEAR_TO_ROTATIONAL_SPEED;
-            vy = upc_ptr.vy * LINEAR_TO_ROTATIONAL_SPEED;
-            vw = upc_ptr.vw * LINEAR_TO_ROTATIONAL_SPEED;
+            vx = loop_float_constrain(upc_ptr.vx, -2.0f, 2.0f) * LINEAR_TO_ROTATIONAL_SPEED;
+            vy = loop_float_constrain(upc_ptr.vy, -2.0f, 2.0f) * LINEAR_TO_ROTATIONAL_SPEED;
+            vw = loop_float_constrain(upc_ptr.vw, -2.0f, 2.0f) * LINEAR_TO_ROTATIONAL_SPEED;
 
             chassis_ptr.gimbal_shutdown_flag = 0;
             chassis_ptr.given_gimbal_l_yaw = upc_ptr.gimbal_yaw;
@@ -105,6 +107,7 @@ void ctrl_data_update(void)
         chassis_ptr.gimbal_shutdown_flag = 1;
     }
 
+    // 速度滤波
     first_order_filter_cali(&chassis_vx_filter, vx);
     first_order_filter_cali(&chassis_vy_filter, vy);
     first_order_filter_cali(&chassis_vw_filter, vw);
@@ -136,9 +139,10 @@ void motor_ctrl_update(void)
             if (DWT_GetTimeline_us() - last_change_vw > 200000)
             {
                 last_change_vw = DWT_GetTimeline_us();
-                topping_vw = (fp32)(rng_smooth_rand() % 500 + 1000); // case穿透，将转速设为定值后继续执行跟随底盘模式逻辑
+                topping_vw = (fp32)(rng_smooth_rand() % 500 + 1000); // 每0.2秒随机变换一次小陀螺转速
             }
             chassis_w = topping_vw;
+            // case穿透，将转速设为定值后继续执行跟随底盘模式逻辑
         case FOLLOW_CHASSIS:
         {
             const fp32 sin_yaw = sinf(radian_format(tf_ptr.Chassis_angle.yaw_rad - tf_ptr.Small_Gimbal_angle.yaw_rad));
@@ -165,6 +169,7 @@ void motor_ctrl_update(void)
             break;
     }
     LOG_INFO("given speed: %d %d %d %d, given angle: %.2f", m3508_ctrl[0].given_speed, m3508_ctrl[1].given_speed, m3508_ctrl[2].given_speed, m3508_ctrl[3].given_speed, m9025_ctrl.given_angle);
+
 }
 
 void motor_ctrl_send(void)
@@ -183,8 +188,6 @@ void motor_ctrl_send(void)
     for(int i = 0; i < 4; i++){
         PID_calc(&m3508_ctrl[i].pid, m3508_ptr[i].speed, m3508_ctrl[i].given_speed);
     }
-    CAN_Control3508Current((int16_t)*m3508_ctrl[0].pid.out, (int16_t)*m3508_ctrl[1].pid.out, (int16_t)*m3508_ctrl[2].pid.out, (int16_t)*m3508_ctrl[3].pid.out);
-    // 其实就是取pid.out[0]
     if(!chassis_ptr.gimbal_shutdown_flag)
     {
         PID_calc(&m9025_ctrl.pid, m9025_ctrl.cur_angle, m9025_ctrl.given_angle);
@@ -192,7 +195,57 @@ void motor_ctrl_send(void)
     }
     else
         CAN_Control9025Speed(CAN_9025_M1_TX_ID, MF9025_MAX_IQ, 0);
+
+    // CAN_Control3508Current((int16_t)*m3508_ctrl[0].pid.out, (int16_t)*m3508_ctrl[1].pid.out,
+    //                        (int16_t)*m3508_ctrl[2].pid.out, (int16_t)*m3508_ctrl[3].pid.out);
+
+    // 功率控制
+    static MotorPowerObj motorpower[4];
+    for (int i = 0; i < 4; i++)
+    {
+        motorpower[i].curAv = m3508_ptr[i].speed;
+        motorpower[i].setAv = m3508_ctrl[i].given_speed;
+        motorpower[i].pidOutput = m3508_ctrl[i].pid.out[0];
+        motorpower[i].pidMaxOutput = m3508_ctrl[i].pid.max_out;
+    }
+    MotorPowerObj *motors[4] = {&motorpower[0], &motorpower[1], &motorpower[2], &motorpower[3]};
+    PowerAllocationResult result;
+    allocatePowerWithLimit(motors, &power_ctrl_config, &result);
+    CAN_Control3508Current((int16_t)result.newTorqueCurrent[0], (int16_t)result.newTorqueCurrent[1], (int16_t)result.newTorqueCurrent[2], (int16_t)result.newTorqueCurrent[3]);
 }
+
+//#ifdef DEBUG_MODE
+#include "power_ctrl_param_get.h"
+static PowerControlParam ctx;
+void motor_param_get()
+{
+    static m3508_t m3508_ptr[4];
+    static float measuredpower_ptr;
+    static float param_ptr[2];
+    DTM_Read(M3508_DATA, m3508_ptr, sizeof(m3508_ptr));
+    DTM_Read(POWER_DATA, &measuredpower_ptr, sizeof(measuredpower_ptr));
+
+    float torqueFeedback[4];
+    float rpmFeedback[4];
+
+    for (int i = 0; i < 4; i++) {
+        torqueFeedback[i] = (float)m3508_ptr[i].current * 0.3f; // m3508的力矩与电流比例大致等于0.3
+        rpmFeedback[i] = m3508_ptr[i].speed;
+    }
+
+    float effectivePower = 0.0f;
+    for (int i = 0; i < 4; i++) {
+        const float angularVelocity = rpmFeedback[i] * (3.1415926535f / 30.0f);
+        effectivePower += torqueFeedback[i] * angularVelocity;
+    }
+
+    PowerControl_CollectMotorData(&ctx, torqueFeedback, rpmFeedback, measuredpower_ptr, 4);
+    PowerControl_Update(&ctx, effectivePower);
+    param_ptr[0] = ctx.k1;
+    param_ptr[1] = ctx.k2;
+    DTM_Write(PARAM_DATA, param_ptr, sizeof(param_ptr));
+}
+//#endif
 
 void chassis_ctrl_init(void)
 {
@@ -232,5 +285,8 @@ void chassis_ctrl_init(void)
       MF9025_MAX_POSITION_ACCEL, MF9025_MAX_NEGATIVE_ACCEL, MF9025_DEADZONE);
     fp32 (*multi_Kpid_ptr)[4] = MF9025_ANGLE_MULTI_PID;
     PID_multi_Kp_init(&m9025_ctrl.pid,multi_Kpid_ptr,3);
+
+    initPowerControllerConfig(&power_ctrl_config, M3508_TORQUE_CONST, M3508_CURRENT_LIMIT, M3508_OUTPUT_LIMIT,
+        K1_CONST,  K2_CONST, K3_CONST, SENTINEL_MAXPOWER);
 
 }

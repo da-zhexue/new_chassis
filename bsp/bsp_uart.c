@@ -1,5 +1,5 @@
 #include "bsp_uart.h"
-#include "COMM_rec.h"
+#include "comm.h"
 #include "DBUS.h"
 #include "param_tuning.h"
 

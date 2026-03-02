@@ -34,8 +34,7 @@ enable_language(C ASM)
 
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
-        bsp/bsp_rng.c
-        bsp/bsp_rng.h)
+)
 
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
@@ -55,12 +54,40 @@ file(GLOB_RECURSE USER_SOURCE "user/*.c")
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
-        ${ALGORITHM_SOURCE}
-        ${APP_SOURCE}
-        ${BSP_SOURCE}
-        ${DEVICES_SOURCE}
-        ${TASK_SOURCE}
-        ${USER_SOURCE}
+        #algorithm/adrc.c
+        algorithm/crc.c
+        algorithm/pid.c
+        algorithm/rls.c
+        algorithm/user_lib.c
+
+        app/CAN_rx.c
+        app/CAN_tx.c
+        app/chassis_ctrl.c
+        app/comm.c
+        app/power_ctrl.c
+        app/power_ctrl_param_get.c
+
+        #bsp/bsp_buzzer.c
+        bsp/bsp_can.c
+        bsp/bsp_delay.c
+        bsp/bsp_dwt.c
+        bsp/bsp_led.c
+        bsp/bsp_rng.c
+        bsp/bsp_uart.c
+
+        devices/BMI088driver.c
+        devices/BMI088Middleware.c
+        devices/DBUS.c
+
+        task/chassis_task.c
+        task/comm_task.c
+        task/led_task.c
+        task/TF_task.c
+
+        user/DTM.c
+        user/OMM.c
+        user/param_tuning.c
+        user/ulog.c
 )
 
 # Add include paths

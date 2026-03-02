@@ -17,7 +17,7 @@ typedef enum {
     GIMBAL_L_DATA,
     UPC_DATA,
     PARAM_DATA,
-    DEBUG_READY,
+    POWER_DATA,
     DTM_DATA_COUNT        
 } DTM_DataID_t;
 
