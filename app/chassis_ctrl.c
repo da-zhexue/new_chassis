@@ -68,12 +68,12 @@ void ctrl_data_update(void)
     {
         chassis_ptr.mode = 0;
         upc_ptr.start_upc_flag = 0;
-        vx = (fp32)rc_ptr.ch3;
-        vy = (fp32)rc_ptr.ch2;
-        vw = (fp32)(rc_ptr.ch1);
+        vx = (fp32)rc_ptr.ch3 * CHASSIS_MAX_V / RC_VAL_MAX;
+        vy = (fp32)rc_ptr.ch2 * CHASSIS_MAX_V / RC_VAL_MAX;
+        vw = (fp32)rc_ptr.ch1 * CHASSIS_MAX_W / RC_VAL_MAX;
 
         chassis_ptr.gimbal_shutdown_flag = 0;
-        yaw_delta = (fp32)rc_ptr.ch0 * GIMBAL_ANGLE_DELTA_MAX / 660.0f;
+        yaw_delta = (fp32)rc_ptr.ch0 * GIMBAL_ANGLE_DELTA_MAX / RC_VAL_MAX;
         chassis_ptr.given_gimbal_l_yaw += yaw_delta;
     }
     else if(chassis_ptr.ctrl == CHASSIS_UPC) // @TODO: 理论上需要做不同控制模式切换时数据不突变，但哨兵应该用不到，不想做了qwq
@@ -83,9 +83,9 @@ void ctrl_data_update(void)
         {
             chassis_ptr.mode = upc_ptr.mode;
            
-            vx = loop_float_constrain(upc_ptr.vx, -2.0f, 2.0f) * LINEAR_TO_ROTATIONAL_SPEED;
-            vy = loop_float_constrain(upc_ptr.vy, -2.0f, 2.0f) * LINEAR_TO_ROTATIONAL_SPEED;
-            vw = loop_float_constrain(upc_ptr.vw, -2.0f, 2.0f) * LINEAR_TO_ROTATIONAL_SPEED;
+            vx = loop_float_constrain(upc_ptr.vx, -CHASSIS_MAX_V, CHASSIS_MAX_V);
+            vy = loop_float_constrain(upc_ptr.vy, -CHASSIS_MAX_V, CHASSIS_MAX_V);
+            vw = loop_float_constrain(upc_ptr.vw, -CHASSIS_MAX_W, CHASSIS_MAX_W);
 
             chassis_ptr.gimbal_shutdown_flag = 0;
             chassis_ptr.given_gimbal_l_yaw = upc_ptr.gimbal_yaw;
@@ -110,18 +110,24 @@ void ctrl_data_update(void)
     }
 
     // 速度滤波
-    first_order_filter_cali(&chassis_vx_filter, vx);
-    first_order_filter_cali(&chassis_vy_filter, vy);
-    first_order_filter_cali(&chassis_vw_filter, vw);
-    vx_filter = chassis_vx_filter.out;
-    vy_filter = chassis_vy_filter.out;
-    vw_filter = chassis_vw_filter.out;
+//    first_order_filter_cali(&chassis_vx_filter, vx);
+//    first_order_filter_cali(&chassis_vy_filter, vy);
+//    first_order_filter_cali(&chassis_vw_filter, vw);
+//    vx_filter = chassis_vx_filter.out;
+//    vy_filter = chassis_vy_filter.out;
+//    vw_filter = chassis_vw_filter.out;
 
-    norm_v = (sqrt(vx_filter * vx_filter + vy_filter * vy_filter) / 660.0f) > 1.0f ? 1.0f : sqrtf(vx_filter * vx_filter + vy_filter * vy_filter) / 660.0f;
-    chassis_ptr.given_chassis_v[0] = norm_v * CHASSIS_MAX_V;
-    chassis_ptr.given_chassis_v[1] = atan2f(vy_filter, vx_filter);
-    chassis_ptr.given_chassis_w = vw_filter * CHASSIS_MAX_W;
-    LOG_INFO("given vx: %.2f, vy: %.2f, vw: %.2f", vx_filter, vy_filter, vw_filter);
+//    norm_v = sqrtf(vx_filter * vx_filter + vy_filter * vy_filter);
+//    chassis_ptr.given_chassis_v[0] = norm_v * LINEAR_TO_RPM;
+//    chassis_ptr.given_chassis_v[1] = atan2f(vy_filter, vx_filter);
+//    chassis_ptr.given_chassis_w = vw_filter * LINEAR_TO_RPM;
+//    LOG_INFO("given vx: %.2f, vy: %.2f, vw: %.2f", vx_filter, vy_filter, vw_filter);
+		
+		norm_v = sqrtf(vx * vx + vy * vy);
+    chassis_ptr.given_chassis_v[0] = norm_v * LINEAR_TO_RPM;
+    chassis_ptr.given_chassis_v[1] = atan2f(vy, vx);
+    chassis_ptr.given_chassis_w = vw * LINEAR_TO_RPM;
+			
 }
 
 void motor_ctrl_update(void)
@@ -206,8 +212,8 @@ void motor_ctrl_send(void)
 
     for (int i = 0; i < 4; i++)
     {
-        motorpower[i].curAv = m3508_ptr[i].speed / 9.55f;
-        motorpower[i].setAv = m3508_ctrl[i].given_speed / 9.55f;
+        motorpower[i].curAv = (float)m3508_ptr[i].speed * RPM_TO_RADS;
+        motorpower[i].setAv = (float)m3508_ctrl[i].given_speed * RPM_TO_RADS;
         motorpower[i].pidOutput = m3508_ctrl[i].pid.out[0];
         motorpower[i].pidMaxOutput = m3508_ctrl[i].pid.max_out;
     }
@@ -221,7 +227,7 @@ void motor_ctrl_send(void)
 void motor_param_get()
 {
     static m3508_t m3508_ptr[4];
-    static float measuredpower_ptr = 100.0f;
+    static float measuredpower_ptr = 160.0f;
     static float param_ptr[2];
     DTM_Read(M3508_DATA, m3508_ptr, sizeof(m3508_ptr));
     //DTM_Read(POWER_DATA, &measuredpower_ptr, sizeof(measuredpower_ptr));

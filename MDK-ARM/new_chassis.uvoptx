@@ -258,27 +258,12 @@
         <Ww>
           <count>20</count>
           <WinNumber>1</WinNumber>
-          <ItemText>mat</ItemText>
+          <ItemText>motor_3508_measure</ItemText>
         </Ww>
         <Ww>
           <count>21</count>
           <WinNumber>1</WinNumber>
-          <ItemText>samples</ItemText>
-        </Ww>
-        <Ww>
-          <count>22</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>-b + sqrtDelta</ItemText>
-        </Ww>
-        <Ww>
-          <count>23</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>2.0f * a / k0</ItemText>
-        </Ww>
-        <Ww>
-          <count>24</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>(-b + sqrtDelta) / (2.0f * a / k0)</ItemText>
+          <ItemText>updatedParams</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>

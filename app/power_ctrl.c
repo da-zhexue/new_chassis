@@ -39,10 +39,12 @@ void allocatePowerWithLimit(MotorPowerObj *objs[4], const PowerControllerConfig 
         // 计算电机功率需求: P = τ·ω + k₁·|ω| + k₂·τ² + k₃/4
         // 其中 τ = k₀ * pidOutput
         const float torque = config->k0 * p->pidOutput;
+				result->Torque[i] = torque;
         // cmdPower[i] = torque * p->curAv + fabsf(p->curAv) * config->k1 +
         //               torque * torque * config->k2 + config->k3 / 4.0f;
         cmdPower[i] = calculateMotorPower(torque, p->curAv, config->k1, config->k2, config->k3, 4);
-
+				result->PowerRequired[i] = cmdPower[i];
+				result->PowerEfficient[i] = torque * p->curAv;
         sumCmdPower += cmdPower[i];
 
         // 计算速度跟随误差
@@ -237,27 +239,20 @@ uint8_t limitMaxPower(PowerControllerConfig * config, const float buffer)
 /**
  * @brief 示例使用代码
  */
-void exampleUsage(void) {
-    // 1. 定义电机对象
-    MotorPowerObj motor1 = {10.0f, 12.0f, 0.8f, 1.0f};  // curAv, setAv, pidOutput, pidMaxOutput
-    MotorPowerObj motor2 = {8.0f, 10.0f, 0.7f, 1.0f};
-    MotorPowerObj motor3 = {9.0f, 11.0f, 0.75f, 1.0f};
-    MotorPowerObj motor4 = {11.0f, 13.0f, 0.85f, 1.0f};
+// void exampleUsage(void) {
+//      for(int i = 0; i < 4; i++){
+//         PID_calc(&m3508_ctrl[i].pid, m3508_ptr[i].speed, m3508_ctrl[i].given_speed);
+//     }
+//     for (int i = 0; i < 4; i++)
+//     {
+//         motorpower[i].curAv = m3508_ptr[i].speed / 9.55f;
+//         motorpower[i].setAv = m3508_ctrl[i].given_speed / 9.55f;
+//         motorpower[i].pidOutput = m3508_ctrl[i].pid.out[0];
+//         motorpower[i].pidMaxOutput = m3508_ctrl[i].pid.max_out;
+//     }
+//     MotorPowerObj *motors[4] = {&motorpower[0], &motorpower[1], &motorpower[2], &motorpower[3]};
 
-    MotorPowerObj *motors[4] = {&motor1, &motor2, &motor3, &motor4};
-
-    // 2. 配置功率控制器
-    PowerControllerConfig config;
-    initPowerControllerConfig(&config, M3508_TORQUE_CONST, M3508_CURRENT_LIMIT, M3508_OUTPUT_LIMIT,
-        K1_CONST,  K2_CONST, K3_CONST, SENTINEL_MAXPOWER);
-
-    // 3. 执行功率分配
-    PowerAllocationResult result;
-    allocatePowerWithLimit(motors, &config, &result);
-
-    // 4. 使用分配结果
-    for (int i = 0; i < 4; i++) {
-        // 将新的输出值应用到电机
-        // motorSetOutput(i, result.newTorqueCurrent[i]);
-    }
-}
+//     allocatePowerWithLimit(motors, &power_ctrl_config, &result);
+//     CAN_Control3508Current((int16_t)result.newTorqueCurrent[0], (int16_t)result.newTorqueCurrent[1] , 
+// 			(int16_t)result.newTorqueCurrent[2], (int16_t)result.newTorqueCurrent[3]);
+// }

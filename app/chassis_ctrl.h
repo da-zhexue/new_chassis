@@ -3,16 +3,17 @@
 #include "typedef.h"
 #include "pid.h"
 
+#define RC_VAL_MAX 660.0f
 #define GIMBAL_ANGLE_DELTA_MAX 0.12f
-#define CHASSIS_MAX_V 7000.0f
-#define CHASSIS_MAX_W 10.0f
+#define CHASSIS_MAX_V 3.0f
+#define CHASSIS_MAX_W 3.0f
 
 #define CHASSIS_FILTER_VX_BETA 0.2f
 #define CHASSIS_FILTER_VY_BETA 0.2f
 #define CHASSIS_FILTER_VW_BETA 0.2f
 #define CHASSIS_CONTROL_TIME 0.002f
 
-#define M3508_SPEED_PID_KP 8.0f
+#define M3508_SPEED_PID_KP 16.0f
 #define M3508_SPEED_PID_KI 0.0f
 #define M3508_SPEED_PID_KD 0.0f
 #define M3508_SPEED_PID_OUT_MAX 16000.0f
@@ -48,8 +49,8 @@
 #define FOLLOW_GIMBAL_DEADZONE 0.0f
 
 #define REDUCTION_RATIO 19.0f // 减速比
-#define WHEEL_RADIUS 0.08f // 轮子半径，单位m，未测量
-#define LINEAR_TO_ROTATIONAL_SPEED (95.4929659f * REDUCTION_RATIO * WHEEL_RADIUS) // 轮子线速度到电机转子转速比例系数
+#define WHEEL_RADIUS 0.08f // 轮子半径，单位m
+#define LINEAR_TO_RPM (PI * 2.0f / WHEEL_RADIUS * REDUCTION_RATIO) // 轮子线速度到电机转子转速比例系数
 #define ROOT_2 1.41421356237309504880l
 
 typedef enum

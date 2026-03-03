@@ -28,9 +28,9 @@ Project File Date:  03/02/2026
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\keil5\ARM\ARMCC\Bin'
 Build target 'new_chassis'
 compiling power_ctrl.c...
-..\app\power_ctrl.h(53): warning:  #1-D: last line of file ends without a newline
+..\app\power_ctrl.h(57): warning:  #1-D: last line of file ends without a newline
   #endif //NEW_CHASSIS_POWER_CTRL_H
-..\app\power_ctrl.c(229): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\app\power_ctrl.c(231): warning:  #1035-D: single-precision operand implicitly converted to double-precision
       if (buffer - SENTINEL_POWERBUFFER > 1e-5)
 ..\app\power_ctrl.c: 2 warnings, 0 errors
 compiling chassis_ctrl.c...
@@ -38,19 +38,25 @@ compiling chassis_ctrl.c...
   uint32_t rng_smooth_rand();
 ../bsp/bsp_rng.h(11): warning:  #1-D: last line of file ends without a newline
   #endif //NEW_CHASSIS_BSP_RNG_H
-..\app\power_ctrl.h(53): warning:  #1-D: last line of file ends without a newline
+..\app\power_ctrl.h(57): warning:  #1-D: last line of file ends without a newline
   #endif //NEW_CHASSIS_POWER_CTRL_H
 ../algorithm/rls.h(106): warning:  #1-D: last line of file ends without a newline
   #endif //NEW_CHASSIS_RLS_H
 ..\app\power_ctrl_param_get.h(30): warning:  #1-D: last line of file ends without a newline
   #endif //NEW_CHASSIS_POWER_CTRL_PARAM_GET_H
-..\app\chassis_ctrl.c(225): warning:  #550-D: variable "param_ptr"  was set but never used
+..\app\chassis_ctrl.c(65): warning:  #177-D: variable "vx_filter"  was declared but never referenced
+      static fp32 vx_filter, vy_filter, vw_filter;
+..\app\chassis_ctrl.c(65): warning:  #177-D: variable "vy_filter"  was declared but never referenced
+      static fp32 vx_filter, vy_filter, vw_filter;
+..\app\chassis_ctrl.c(65): warning:  #177-D: variable "vw_filter"  was declared but never referenced
+      static fp32 vx_filter, vy_filter, vw_filter;
+..\app\chassis_ctrl.c(231): warning:  #550-D: variable "param_ptr"  was set but never used
       static float param_ptr[2];
-..\app\chassis_ctrl.c: 6 warnings, 0 errors
+..\app\chassis_ctrl.c: 9 warnings, 0 errors
 linking...
-Program Size: Code=57352 RO-data=1588 RW-data=824 ZI-data=60208  
+Program Size: Code=56436 RO-data=1588 RW-data=824 ZI-data=60256  
 FromELF: creating hex file...
-"new_chassis\new_chassis.axf" - 0 Error(s), 8 Warning(s).
+"new_chassis\new_chassis.axf" - 0 Error(s), 11 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -77,9 +83,9 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.3.0
 
    * Component: ARM::CMSIS:DSP:Library:1.7.0
-      Include file:  CMSIS\DSP\Include\arm_math.h
       Library file:  CMSIS\DSP\Lib\ARM\arm_cortexM4lf_math.lib
-Build Time Elapsed:  00:00:08
+      Include file:  CMSIS\DSP\Include\arm_math.h
+Build Time Elapsed:  00:00:07
 </pre>
 </body>
 </html>

@@ -8,12 +8,13 @@
 #define MIN_OUTPUT 1e-5f
 #define POWER_DISTRIBUTION_COEFF 0.85f
 
+#define RPM_TO_RADS 0.104719755f // PI/30
 #define M3508_TORQUE_CONST 0.3f // M3508转矩常数 N·m/A
-#define M3508_CURRENT_LIMIT 10.0f // M3508最大电流 C620说明书给出最大输出20A，M3508说明书给出额定电流10A，不知道选哪个qwq
-#define M3508_OUTPUT_LIMIT 16384.0f // 归一化输出上限
+#define M3508_CURRENT_LIMIT 20.0f // M3508最大电流 C620说明书给出最大输出20A
+#define M3508_OUTPUT_LIMIT 16384.0f // 归一化输出上限 -16384~16384 -> -20A~20A
 
-#define K1_CONST 0.22f
-#define K2_CONST 1.2f
+#define K1_CONST 0.02f
+#define K2_CONST 0.02f
 #define K3_CONST 4.081f//2.78f
 
 #define SENTINEL_MAXPOWER 100.0f
@@ -38,6 +39,9 @@ typedef struct {
 
 // 功率分配结果
 typedef struct {
+		float Torque[4]; // debug
+		float PowerRequired[4]; // debug
+		float PowerEfficient[4]; // debug
     float newTorqueCurrent[4];  // 重新分配后的电机输出
     float sumPowerRequired;     // 总需求功率
     float sumPowerAfterAlloc;   // 重新分配后总功率
