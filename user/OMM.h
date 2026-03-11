@@ -7,14 +7,13 @@ typedef enum
 {
     RC_ONLINE = 0,
     UPC_ONLINE = 1,
-    GIMBAL_S_ONLINE = 2,
-    GIMBAL_L_ONLINE = 3,
-    M3508_0_ONLINE = 4,
-    M3508_1_ONLINE = 5,
-    M3508_2_ONLINE = 6,
-    M3508_3_ONLINE = 7,
-    M9025_ONLINE = 8,
-    ONLINE_COUNT = 9
+    GIMBAL_L_ONLINE = 2,
+    M3508_0_ONLINE = 3,
+    M3508_1_ONLINE = 4,
+    M3508_2_ONLINE = 5,
+    M3508_3_ONLINE = 6,
+    M9025_ONLINE = 7,
+    ONLINE_COUNT = 8
 } online_online_type;
 
 extern uint16_t on_code;

@@ -58,9 +58,6 @@ uint8_t upc_decode(uint8_t* rx_data)
 		case CMD_MODE:
 			cmd_mode_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN], &upc_ptr);
 			break;
-		case CMD_IMU_S_INFO:
-			cmd_imu_s_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN]);
-			break;
 		case CMD_IMU_L_INFO:
 			cmd_imu_l_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN]);
 		case CMD_ONLINECB:
@@ -114,17 +111,6 @@ void cmd_mode_handler(const uint8_t* data, upc_t *upc_ptr)
 {
 	upc_ptr->mode = data[12];
 	OMM_update(UPC_ONLINE);
-}
-
-void cmd_imu_s_handler(const uint8_t* data)
-{
-	static fp32 gimbal_s_ptr[3];
-	unpack_4bytes_to_floats(&data[0], &gimbal_s_ptr[0]);
-	unpack_4bytes_to_floats(&data[4], &gimbal_s_ptr[1]);
-	unpack_4bytes_to_floats(&data[8], &gimbal_s_ptr[2]);
-	DTM_Write(GIMBAL_S_DATA, gimbal_s_ptr, sizeof(gimbal_s_ptr));
-	//LOG_INFO("Get small imu: %.2f", gimbal_s_ptr[0]);
-	OMM_update(GIMBAL_S_ONLINE);
 }
 
 void cmd_imu_l_handler(const uint8_t* data)

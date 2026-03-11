@@ -21,11 +21,10 @@ void TF_Task(void const * argurment)
 {
 		static float Yaw_diff = 0.0f;
 		static float chassis_angle_temp[3] = {0.0f, 0.0f, 0.0f};
-		static float gimbal_s_offset[3] = {0.0f, 0.0f, 0.0f};
 		static float gimbal_l_offset[3] = {0.0f, 0.0f, 0.0f};
-		static uint8_t gimbal_s_get_offset = 0, gimbal_l_get_offset = 0;
+		static uint8_t gimbal_l_get_offset = 0;
 		static TF_t tf_ptr;
-		static fp32 gimbal_l_ptr[3], gimbal_s_ptr[3];
+		static fp32 gimbal_l_ptr[3];
 		static m9025_t m9025_ptr;
 		while(1)
 		{
@@ -39,12 +38,6 @@ void TF_Task(void const * argurment)
 				}
 				else
 					for (int i = 0; i < 3; i++) gimbal_l_ptr[i] -= gimbal_l_offset[i];
-				if (!gimbal_s_get_offset){
-					gimbal_s_get_offset = 1;
-					memcpy(gimbal_s_offset, gimbal_s_ptr, sizeof(gimbal_s_ptr));
-				}
-				else
-					for (int i = 0; i < 3; i++) gimbal_s_ptr[i] -= gimbal_s_offset[i];
 				Yaw_diff = theta_format((fp32)(m9025_ptr.ecd - m9025_ptr.ecd_offset)/ 32768.0f * 180.0f); // -PI~PI
 				#ifdef AUTO_CORRECTION_ENABLE
 					chassis_angle_temp[0] = theta_format(Yaw_diff + gimbal_l_ptr[0] + m9025_ptr.imu_yaw_offset);
@@ -54,11 +47,6 @@ void TF_Task(void const * argurment)
 
 				TF_Update(&tf_ptr.Big_Gimbal_angle, gimbal_l_ptr);
 				TF_Update(&tf_ptr.Chassis_angle, chassis_angle_temp);
-			}
-			if(OMM_detect(GIMBAL_S_ONLINE))
-			{
-				DTM_Read(GIMBAL_S_DATA, gimbal_s_ptr, sizeof(gimbal_s_ptr));
-				TF_Update(&tf_ptr.Small_Gimbal_angle, gimbal_s_ptr);
 			}
 			
 			BMI088_Read(&BMI088);

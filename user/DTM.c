@@ -24,7 +24,6 @@ static rc_t rc;
 static TF_t tf;
 static m9025_t m9025;
 static m3508_t m3508[4];
-static float gimbal_s_deg[3];
 static float gimbal_l_deg[3];
 static upc_t upc;
 static float power_buffer;
@@ -41,7 +40,6 @@ static const DTM_Info_t DTM_Map[] = {
     [TF_DATA] = {&tf, sizeof(tf)},
     [M9025_DATA] = {&m9025, sizeof(m9025)},
     [M3508_DATA] = {m3508, sizeof(m3508)},
-    [GIMBAL_S_DATA] = {gimbal_s_deg, sizeof(gimbal_s_deg)},
     [GIMBAL_L_DATA] = {gimbal_l_deg, sizeof(gimbal_l_deg)},
     [UPC_DATA] = {&upc, sizeof(upc)},
     [BUFFER_DATA] = {&power_buffer, sizeof(power_buffer)},

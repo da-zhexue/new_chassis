@@ -13,7 +13,6 @@ typedef enum {
     TF_DATA,
     M9025_DATA,
     M3508_DATA,
-    GIMBAL_S_DATA,
     GIMBAL_L_DATA,
     UPC_DATA,
     BUFFER_DATA,
@@ -52,7 +51,6 @@ typedef struct
     float Accel[3];
 
     angle_t Chassis_angle;
-    angle_t Small_Gimbal_angle;
     angle_t Big_Gimbal_angle;
 
 } TF_t;

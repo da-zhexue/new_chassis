@@ -18,7 +18,7 @@ typedef enum
 	SEND_SUPERCAP = 0x208,
 	SEDN_DEBUG = 0x233,
 
-    CMD_IMU_S_INFO = 0x101,
+    // CMD_IMU_S_INFO = 0x101,
     CMD_IMU_L_INFO = 0x102,
 	CMD_MOVE = 0x103,
 	CMD_ROTATE = 0x104,

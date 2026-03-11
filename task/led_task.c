@@ -62,9 +62,9 @@ void LedTask(void const * argument)
 	}
 }
 
-const uint32_t off_led_aRGB[ONLINE_COUNT] = {0xFFFF0000, 0xFFFF0000, 0xFF00FF00, 0xFF00FF00,
+const uint32_t off_led_aRGB[ONLINE_COUNT] = {0xFFFF0000, 0xFFFF0000, 0xFF00FF00,
 	0xFF00FFFF, 0xFF00FFFF, 0xFF00FFFF, 0xFF00FFFF, 0xFF00FFFF};
-const uint16_t off_led_Hz[ONLINE_COUNT] = {1, 2, 1, 2, 1, 2, 3, 4, 5};
+const uint16_t off_led_Hz[ONLINE_COUNT] = {1, 2, 1, 1, 2, 3, 4, 5};
 uint8_t show_online_state(void)
 {
 	uint8_t error_code = 0;

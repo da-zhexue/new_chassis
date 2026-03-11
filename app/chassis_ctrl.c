@@ -153,8 +153,8 @@ void motor_ctrl_update(void)
             // case穿透，将转速设为定值后继续执行跟随底盘模式逻辑
         case FOLLOW_CHASSIS:
         {
-            const fp32 sin_yaw = sinf(radian_format(tf_ptr.Chassis_angle.yaw_rad - tf_ptr.Small_Gimbal_angle.yaw_rad));
-            const fp32 cos_yaw = cosf(radian_format(tf_ptr.Chassis_angle.yaw_rad - tf_ptr.Small_Gimbal_angle.yaw_rad));
+            const fp32 sin_yaw = sinf(radian_format(tf_ptr.Chassis_angle.yaw_rad - tf_ptr.Big_Gimbal_angle.yaw_rad));
+            const fp32 cos_yaw = cosf(radian_format(tf_ptr.Chassis_angle.yaw_rad - tf_ptr.Big_Gimbal_angle.yaw_rad));
             const fp32 vx = chassis_v * cosf(theta);
 			const fp32 vy = chassis_v * sinf(theta);
             const fp32 vx_set = vx * cos_yaw - vy * sin_yaw;
