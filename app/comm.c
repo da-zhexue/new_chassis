@@ -26,6 +26,8 @@ void cmd_shart_handler(const uint8_t* data, upc_t *upc_ptr);
 void cmd_mode_handler(const uint8_t* data, upc_t *upc_ptr);
 void cmd_imu_s_handler(const uint8_t* data);
 void cmd_imu_l_handler(const uint8_t* data);
+void cmd_buffer_handler(const uint8_t* data);
+void cmd_debug_handler(const uint8_t* data);
 
 void upc_send_attitude_handler(void);
 
@@ -61,7 +63,14 @@ uint8_t upc_decode(uint8_t* rx_data)
 			break;
 		case CMD_IMU_L_INFO:
 			cmd_imu_l_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN]);
+		case CMD_ONLINECB:
+			cmd_onlinecb_handler(1);
+		case CMD_POWER:
+			cmd_buffer_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN]);
 			break;
+//		case CMD_DEBUG:
+//			cmd_debug_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN]);
+//			break;
 		default:
 			break;
 	}
@@ -69,20 +78,35 @@ uint8_t upc_decode(uint8_t* rx_data)
 	return 0; 
 }
 
+uint16_t last_bag = 0;
+uint16_t loss_bag = 0;
+float loss_rate = 0.0f;
+void cmd_debug_handler(const uint8_t* data)
+{
+	uint16_t bag = (data[0] << 8) | data[1];
+	loss_bag += (bag - last_bag - 1);
+	loss_rate = (float)loss_bag / (float)bag * 1.0f;
+	last_bag = bag;
+}
+
 void cmd_move_handler(const uint8_t* data, upc_t *upc_ptr)
 {
 	unpack_4bytes_to_floats(&data[0], &upc_ptr->vx);
 	unpack_4bytes_to_floats(&data[4], &upc_ptr->vy);
 	unpack_4bytes_to_floats(&data[8], &upc_ptr->vw);
-	LOG_INFO("Get move cmd vx: %.2f, vy: %.2f, vw: %.2f", upc_ptr->vx, upc_ptr->vy, upc_ptr->vw);
+	//LOG_INFO("Get move cmd vx: %.2f, vy: %.2f, vw: %.2f", upc_ptr->vx, upc_ptr->vy, upc_ptr->vw);
 	OMM_update(UPC_ONLINE);
+	// uint16_t bag = (data[0] << 8) | data[1];
+	// loss_bag += (bag - last_bag - 1);
+	// loss_rate = (float)loss_bag / (float)bag * 1.0f;
+	// last_bag = bag;
 }
 
 void cmd_rotate_handler(const uint8_t* data, upc_t *upc_ptr)
 {
 	unpack_4bytes_to_floats(&data[0], &upc_ptr->chassis_yaw);
 	unpack_4bytes_to_floats(&data[4], &upc_ptr->gimbal_yaw);
-	LOG_INFO("Get rotate cmd chassis: %.2f, gimbal: %.2f", upc_ptr->chassis_yaw, upc_ptr->gimbal_yaw);
+	//LOG_INFO("Get rotate cmd chassis: %.2f, gimbal: %.2f", upc_ptr->chassis_yaw, upc_ptr->gimbal_yaw);
 	OMM_update(UPC_ONLINE);
 }
 
@@ -99,7 +123,7 @@ void cmd_imu_s_handler(const uint8_t* data)
 	unpack_4bytes_to_floats(&data[4], &gimbal_s_ptr[1]);
 	unpack_4bytes_to_floats(&data[8], &gimbal_s_ptr[2]);
 	DTM_Write(GIMBAL_S_DATA, gimbal_s_ptr, sizeof(gimbal_s_ptr));
-	LOG_INFO("Get small imu: %.2f", gimbal_s_ptr[0]);
+	//LOG_INFO("Get small imu: %.2f", gimbal_s_ptr[0]);
 	OMM_update(GIMBAL_S_ONLINE);
 }
 
@@ -110,8 +134,39 @@ void cmd_imu_l_handler(const uint8_t* data)
 	unpack_4bytes_to_floats(&data[4], &gimbal_l_ptr[1]);
 	unpack_4bytes_to_floats(&data[8], &gimbal_l_ptr[2]);
 	DTM_Write(GIMBAL_L_DATA, gimbal_l_ptr, sizeof(gimbal_l_ptr));
-	LOG_INFO("Get big imu: %.2f", gimbal_l_ptr[0]);
+	//LOG_INFO("Get big imu: %.2f", gimbal_l_ptr[0]);
 	OMM_update(GIMBAL_L_ONLINE);
+}
+
+void cmd_shart_handler(const uint8_t* data, upc_t *upc_ptr)
+{
+	//send_start_handler();
+	upc_ptr->game_start = 1;
+}
+
+uint8_t cmd_onlinecb_handler(const uint8_t on)
+{
+	static uint8_t onlinecb = 0;
+	if (on == 1)
+	{
+		onlinecb = 1;
+		return 0;
+	}
+	if (onlinecb == 1)
+	{
+		onlinecb = 0;
+		return 1;
+	}
+	return 0;
+}
+
+void cmd_buffer_handler(const uint8_t* data)
+{
+	static fp32 buffer_ptr, power_max;
+	unpack_4bytes_to_floats(&data[0], &buffer_ptr);
+	unpack_4bytes_to_floats(&data[4], &power_max);
+	DTM_Write(BUFFER_DATA, &buffer_ptr, sizeof(buffer_ptr));
+	DTM_Write(POWERMAX_DATA, &power_max, sizeof(power_max));
 }
 
 void CMD_PackPacket(const uint8_t *data_in, const uint16_t data_len, const uint16_t cmd_id)
@@ -134,20 +189,14 @@ void CMD_PackPacket(const uint8_t *data_in, const uint16_t data_len, const uint1
 	Append_CRC8_Check_Sum(data_out, FRAME_HEADER_LEN);
 	Append_CRC16_Check_Sum(data_out, total_len);
 
-	HAL_UART_Transmit_DMA(&huart1, data_out, sizeof(data_out));
-}
-
-void cmd_shart_handler(const uint8_t* data, upc_t *upc_ptr)
-{
-	//send_start_handler();
-	upc_ptr->game_start = 1;
+	HAL_UART_Transmit(&huart6, data_out, sizeof(data_out), 100);
 }
 
 void send_attitude_handler(const TF_t *tf_ptr)
 {
 	static uint8_t send_yaw[4] = {0};
 	pack_float_to_4bytes(tf_ptr->Chassis_angle.yaw_deg, &send_yaw[0]);
-	LOG_INFO("send chassis yaw: %.2f", SEND_ATTITUDE, tf_ptr->Chassis_angle.yaw_deg);
+	//LOG_INFO("send chassis yaw: %.2f", SEND_ATTITUDE, tf_ptr->Chassis_angle.yaw_deg);
 	CMD_PackPacket(send_yaw, sizeof(send_yaw), SEND_ATTITUDE);
 }
 
@@ -167,7 +216,19 @@ void send_start_handler()
 {
 	static uint8_t send_start[1] = {1};
 	CMD_PackPacket(send_start, sizeof(send_start), SEND_START);
-	LOG_INFO("START!");
+	//LOG_INFO("START!");
+}
+
+void send_onlinecb_handler()
+{
+	static uint8_t send_onlinecb[1] = {1};
+	CMD_PackPacket(send_onlinecb, sizeof(send_onlinecb), SEND_ONLINECB);
+}
+
+void send_cap_handler()
+{
+	static uint8_t send_cap[12]; // 未完成
+	CMD_PackPacket(send_cap, sizeof(send_cap), SEND_SUPERCAP);
 }
 
 void send_power_ctrl_param_handler()

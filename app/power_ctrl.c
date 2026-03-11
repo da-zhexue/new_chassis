@@ -39,7 +39,8 @@ void allocatePowerWithLimit(MotorPowerObj *objs[4], const PowerControllerConfig 
         // 计算电机功率需求: P = τ·ω + k₁·|ω| + k₂·τ² + k₃/4
         // 其中 τ = k₀ * pidOutput
         const float torque = config->k0 * p->pidOutput;
-				result->Torque[i] = torque;
+        //const float torque = config->k0 * p->Current;
+        result->Torque[i] = torque;
         // cmdPower[i] = torque * p->curAv + fabsf(p->curAv) * config->k1 +
         //               torque * torque * config->k2 + config->k3 / 4.0f;
         cmdPower[i] = calculateMotorPower(torque, p->curAv, config->k1, config->k2, config->k3, 4);
@@ -104,15 +105,9 @@ void allocatePowerWithLimit(MotorPowerObj *objs[4], const PowerControllerConfig 
             result->newTorqueCurrent[i] = p->pidOutput;
         } else {
             // 计算分配权重
-            float powerWeight_Error = 0.0f;
-            float powerWeight_Prop = 0.0f;
-            float powerWeight = 0.0f;
-
-						powerWeight_Error = error[i] / sumError;
-						powerWeight_Prop = cmdPower[i] / sumPowerRequired;
-
-            // 混合权重
-            powerWeight = errorConfidence * powerWeight_Error +
+            const float powerWeight_Error = error[i] / sumError;
+            const float powerWeight_Prop = cmdPower[i] / sumPowerRequired;
+            const float powerWeight = errorConfidence * powerWeight_Error +
                          (1.0f - errorConfidence) * powerWeight_Prop;
 
             // 计算该电机分配到的功率
@@ -148,6 +143,7 @@ void allocatePowerWithLimit(MotorPowerObj *objs[4], const PowerControllerConfig 
     } else {
         result->efficiency = 0.0f;
     }
+
 }
 
 /**
@@ -245,8 +241,8 @@ uint8_t limitMaxPower(PowerControllerConfig * config, const float buffer)
 //     }
 //     for (int i = 0; i < 4; i++)
 //     {
-//         motorpower[i].curAv = m3508_ptr[i].speed / 9.55f;
-//         motorpower[i].setAv = m3508_ctrl[i].given_speed / 9.55f;
+//         motorpower[i].curAv = m3508_ptr[i].speed / 9.55f / 19.2f; // 9.55f是将rpm转为rad/s  19.2f是减速比
+//         motorpower[i].setAv = m3508_ctrl[i].given_speed / 9.55f / 19.2f;
 //         motorpower[i].pidOutput = m3508_ctrl[i].pid.out[0];
 //         motorpower[i].pidMaxOutput = m3508_ctrl[i].pid.max_out;
 //     }

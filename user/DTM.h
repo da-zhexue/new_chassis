@@ -16,6 +16,8 @@ typedef enum {
     GIMBAL_S_DATA,
     GIMBAL_L_DATA,
     UPC_DATA,
+    BUFFER_DATA,
+    POWERMAX_DATA,
     PARAM_DATA,
     POWER_DATA,
     DTM_DATA_COUNT        

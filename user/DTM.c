@@ -27,6 +27,8 @@ static m3508_t m3508[4];
 static float gimbal_s_deg[3];
 static float gimbal_l_deg[3];
 static upc_t upc;
+static float power_buffer;
+static float powermax;
 #endif
 
 typedef struct {
@@ -42,9 +44,11 @@ static const DTM_Info_t DTM_Map[] = {
     [GIMBAL_S_DATA] = {gimbal_s_deg, sizeof(gimbal_s_deg)},
     [GIMBAL_L_DATA] = {gimbal_l_deg, sizeof(gimbal_l_deg)},
     [UPC_DATA] = {&upc, sizeof(upc)},
+    [BUFFER_DATA] = {&power_buffer, sizeof(power_buffer)},
+    [POWERMAX_DATA] = {&powermax, sizeof(powermax)},
 #ifdef DEBUG_MODE
     [PARAM_DATA] = {power_ctrl_param, sizeof(power_ctrl_param)},
-    [POWER_DATA] = {measuredpower, sizeof(measuredpower)};
+    [POWER_DATA] = {measuredpower, sizeof(measuredpower)},
 #endif
 }; // 在此处存储要用于不同任务的数据
 

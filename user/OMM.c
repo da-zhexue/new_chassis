@@ -21,7 +21,7 @@ void OMM_update(const uint16_t type)
 
 uint8_t OMM_detect(const uint16_t type)
 {
-	if (DWT_GetTimeline_us() - last_on[type] > 1000000)
+	if (DWT_GetTimeline_us() - last_on[type] > 2000000)
     {
 		SET_OFFLINE(type);
         return 0;

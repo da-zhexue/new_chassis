@@ -149,8 +149,8 @@ void MX_FREERTOS_Init(void) {
 	osThreadDef(comm_Task, commTask, osPriorityNormal, 0, 128);
   commTaskHandle = osThreadCreate(osThread(comm_Task), NULL);
 
-  // osThreadDef(log_task, ulogTask, osPriorityNormal, 0, 512);
-  // logTaskHandle = osThreadCreate(osThread(log_task), NULL);
+  osThreadDef(log_task, ulogTask, osPriorityBelowNormal, 0, 256);
+  logTaskHandle = osThreadCreate(osThread(log_task), NULL);
 
 #ifdef DEBUG_MODE
   osThreadDef(debug_Task, param_tuning_Task, osPriorityNormal, 0, 128);

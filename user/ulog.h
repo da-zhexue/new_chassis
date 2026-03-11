@@ -11,7 +11,7 @@ typedef enum {
     LOG_LEVEL_DEBUG,
 } log_level_t;
 
-#define LOG_BUFFER_SIZE 128
+#define LOG_BUFFER_SIZE 64
 
 void log_write(log_level_t level, const char *fmt, ...);
 void ulogTask(void const *argument);

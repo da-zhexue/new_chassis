@@ -26,11 +26,14 @@ void commTask(void const * argument)
     	send_onlinestate_handler();
     	if (upc_ptr.game_start)
     		send_start_handler();
+    	if (cmd_onlinecb_handler(0))
+    		send_onlinecb_handler();
+    	send_cap_handler();
 
 #ifdef DEBUG_MODE
     	send_power_ctrl_param_handler();
 #endif
-        osDelay(2);
+        osDelay(5);
 			
     }
 }

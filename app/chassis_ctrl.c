@@ -110,23 +110,23 @@ void ctrl_data_update(void)
     }
 
     // 速度滤波
-//    first_order_filter_cali(&chassis_vx_filter, vx);
-//    first_order_filter_cali(&chassis_vy_filter, vy);
-//    first_order_filter_cali(&chassis_vw_filter, vw);
-//    vx_filter = chassis_vx_filter.out;
-//    vy_filter = chassis_vy_filter.out;
-//    vw_filter = chassis_vw_filter.out;
+    first_order_filter_cali(&chassis_vx_filter, vx);
+    first_order_filter_cali(&chassis_vy_filter, vy);
+    first_order_filter_cali(&chassis_vw_filter, vw);
+    vx_filter = chassis_vx_filter.out;
+    vy_filter = chassis_vy_filter.out;
+    vw_filter = chassis_vw_filter.out;
 
-//    norm_v = sqrtf(vx_filter * vx_filter + vy_filter * vy_filter);
-//    chassis_ptr.given_chassis_v[0] = norm_v * LINEAR_TO_RPM;
-//    chassis_ptr.given_chassis_v[1] = atan2f(vy_filter, vx_filter);
-//    chassis_ptr.given_chassis_w = vw_filter * LINEAR_TO_RPM;
+    norm_v = sqrtf(vx_filter * vx_filter + vy_filter * vy_filter);
+    chassis_ptr.given_chassis_v[0] = norm_v * LINEAR_TO_RPM;
+    chassis_ptr.given_chassis_v[1] = atan2f(vy_filter, vx_filter);
+    chassis_ptr.given_chassis_w = vw_filter * LINEAR_TO_RPM;
 //    LOG_INFO("given vx: %.2f, vy: %.2f, vw: %.2f", vx_filter, vy_filter, vw_filter);
 		
-		norm_v = sqrtf(vx * vx + vy * vy);
-    chassis_ptr.given_chassis_v[0] = norm_v * LINEAR_TO_RPM;
-    chassis_ptr.given_chassis_v[1] = atan2f(vy, vx);
-    chassis_ptr.given_chassis_w = vw * LINEAR_TO_RPM;
+		// norm_v = sqrtf(vx * vx + vy * vy);
+    // chassis_ptr.given_chassis_v[0] = norm_v * LINEAR_TO_RPM;
+    // chassis_ptr.given_chassis_v[1] = atan2f(vy, vx);
+    // chassis_ptr.given_chassis_w = vw * LINEAR_TO_RPM;
 			
 }
 
@@ -176,7 +176,14 @@ void motor_ctrl_update(void)
 
             break;
     }
-    LOG_INFO("given speed: %d %d %d %d, given angle: %.2f", m3508_ctrl[0].given_speed, m3508_ctrl[1].given_speed, m3508_ctrl[2].given_speed, m3508_ctrl[3].given_speed, m9025_ctrl.given_angle);
+    static uint8_t log_num = 0;
+    if (log_num > 100)
+    {
+        LOG_INFO("given speed: %d %d %d %d, given angle: %.2f", m3508_ctrl[0].given_speed, m3508_ctrl[1].given_speed, m3508_ctrl[2].given_speed, m3508_ctrl[3].given_speed, m9025_ctrl.given_angle);
+        log_num = 0;
+    }
+    log_num++;
+
 
 }
 MotorPowerObj motorpower[4];
@@ -205,23 +212,24 @@ void motor_ctrl_send(void)
     else
         CAN_Control9025Speed(CAN_9025_M1_TX_ID, MF9025_MAX_IQ, 0);
 
-//    CAN_Control3508Current((int16_t)*m3508_ctrl[0].pid.out, (int16_t)*m3508_ctrl[1].pid.out,
-//                             (int16_t)*m3508_ctrl[2].pid.out, (int16_t)*m3508_ctrl[3].pid.out);
+    CAN_Control3508Current((int16_t)*m3508_ctrl[0].pid.out, (int16_t)*m3508_ctrl[1].pid.out,
+                             (int16_t)*m3508_ctrl[2].pid.out, (int16_t)*m3508_ctrl[3].pid.out);
 
     // 功率控制
 
     for (int i = 0; i < 4; i++)
     {
-        motorpower[i].curAv = (float)m3508_ptr[i].speed * RPM_TO_RADS;
-        motorpower[i].setAv = (float)m3508_ctrl[i].given_speed * RPM_TO_RADS;
+        motorpower[i].curAv = (float)m3508_ptr[i].speed * RPM_TO_RADS / REDUCTION_RATIO;
+        motorpower[i].setAv = (float)m3508_ctrl[i].given_speed * RPM_TO_RADS / REDUCTION_RATIO;
         motorpower[i].pidOutput = m3508_ctrl[i].pid.out[0];
         motorpower[i].pidMaxOutput = m3508_ctrl[i].pid.max_out;
+        motorpower[i].Current = m3508_ptr[i].current;
     }
     MotorPowerObj *motors[4] = {&motorpower[0], &motorpower[1], &motorpower[2], &motorpower[3]};
 
     allocatePowerWithLimit(motors, &power_ctrl_config, &result);
-    CAN_Control3508Current((int16_t)result.newTorqueCurrent[0], (int16_t)result.newTorqueCurrent[1] , 
-			(int16_t)result.newTorqueCurrent[2], (int16_t)result.newTorqueCurrent[3]);
+   //  CAN_Control3508Current((int16_t)result.newTorqueCurrent[0], (int16_t)result.newTorqueCurrent[1] ,
+			// (int16_t)result.newTorqueCurrent[2], (int16_t)result.newTorqueCurrent[3]);
 }
 
 void motor_param_get()

@@ -13,9 +13,9 @@
 #define M3508_CURRENT_LIMIT 20.0f // M3508最大电流 C620说明书给出最大输出20A
 #define M3508_OUTPUT_LIMIT 16384.0f // 归一化输出上限 -16384~16384 -> -20A~20A
 
-#define K1_CONST 0.02f
-#define K2_CONST 0.02f
-#define K3_CONST 4.081f//2.78f
+#define K1_CONST 0.2f
+#define K2_CONST 1.2f
+#define K3_CONST 7.0f
 
 #define SENTINEL_MAXPOWER 100.0f
 #define SENTINEL_POWERBUFFER 60.0f
@@ -26,6 +26,7 @@ typedef struct {
     float setAv;        // 目标角速度 (rad/s)
     float pidOutput;    // PID原始输出
     float pidMaxOutput; // PID输出限制
+    float Current;      // 当前电流 (-16384~16384)
 } MotorPowerObj;
 
 // 功率控制器配置

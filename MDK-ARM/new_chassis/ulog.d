@@ -58,4 +58,3 @@ new_chassis\ulog.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h
 new_chassis\ulog.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 new_chassis\ulog.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 new_chassis\ulog.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
-new_chassis\ulog.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/stream_buffer.h
