@@ -18,7 +18,7 @@ typedef enum {
     BUFFER_DATA,
     POWERMAX_DATA,
     PARAM_DATA,
-    POWER_DATA,
+    FLAG_DATA,
     DTM_DATA_COUNT        
 } DTM_DataID_t;
 
@@ -77,6 +77,7 @@ typedef struct
     uint8_t start_upc_flag;
     uint8_t game_start;
     uint8_t mode;
+    uint8_t auto_rotate;
 
     float vx, vy, vw;
     float gimbal_yaw, chassis_yaw;

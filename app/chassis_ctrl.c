@@ -31,9 +31,10 @@ m9025_ctrl_t m9025_ctrl;
 static chassis_t chassis_ptr;
 static m3508_ctrl_t m3508_ctrl[4];
 static m9025_ctrl_t m9025_ctrl;
+#endif
+
 static PowerControllerConfig power_ctrl_config;
 PowerControlParam ctx;
-#endif
 
 static first_order_filter_type_t chassis_vx_filter, chassis_vy_filter, chassis_vw_filter;
 static float filter_vx_num[1] = {CHASSIS_FILTER_VX_BETA};
@@ -89,6 +90,7 @@ void ctrl_data_update(void)
 
             chassis_ptr.gimbal_shutdown_flag = 0;
             chassis_ptr.given_gimbal_l_yaw = upc_ptr.gimbal_yaw;
+            chassis_ptr.gimbal_auto_rotate = upc_ptr.auto_rotate;
         }
         else
         {
@@ -140,7 +142,7 @@ void motor_ctrl_update(void)
     const fp32 theta = chassis_ptr.given_chassis_v[1];
     fp32 chassis_w = chassis_ptr.given_chassis_w + tf_ptr.Chassis_angle.yaw_rad;
     m9025_ctrl.cur_angle = -tf_ptr.Big_Gimbal_angle.yaw_total_angle;
-    m9025_ctrl.ff_speed = (5729.5779513f * tf_ptr.Gyro[2]);
+    m9025_ctrl.ff_speed = (5729.5779513f * tf_ptr.Gyro[2] + (fp32)chassis_ptr.gimbal_auto_rotate * 300.0f);
     switch(chassis_ptr.mode)
     {
         case SPINNING_TOP:
@@ -268,6 +270,7 @@ void chassis_ctrl_init(void)
     chassis_ptr.given_chassis_w = 0.0f;
     chassis_ptr.ctrl = CHASSIS_RC_OFFLINE;
     chassis_ptr.mode = 0;
+    chassis_ptr.gimbal_auto_rotate = 0;
     chassis_ptr.gimbal_shutdown_flag = 1;
     chassis_ptr.last_gimbal_shutdown_flag = 1;
 
@@ -282,13 +285,13 @@ void chassis_ctrl_init(void)
     static fp32 debug_param[3];
     while(!debug_ready)
     {
-        DTM_Read(DEBUG_READY, &debug_ready, sizeof(debug_ready));
+        DTM_Read(FLAG_DATA, &debug_ready, sizeof(debug_ready));
         osDelay(2);
     }
     DTM_Read(PARAM_DATA, debug_param, sizeof(debug_param));
-    M3508_SPEED_PID[0] = debug_param[0];
-    M3508_SPEED_PID[1] = debug_param[1];
-    M3508_SPEED_PID[2] = debug_param[2];
+    MF9025_ANGLE_PID[0] = debug_param[0];
+    MF9025_ANGLE_PID[1] = debug_param[1];
+    MF9025_ANGLE_PID[2] = debug_param[2];
     #endif
     for(int i = 0; i < 4; i++)
     {
@@ -297,8 +300,8 @@ void chassis_ctrl_init(void)
     }
     PID_init(&m9025_ctrl.pid, PID_POSITION, MF9025_ANGLE_PID, MF9025_ANGLE_PID_OUT_MAX, MF9025_ANGLE_PID_IOUT_MAX,
       MF9025_MAX_POSITION_ACCEL, MF9025_MAX_NEGATIVE_ACCEL, MF9025_DEADZONE);
-    fp32 (*multi_Kpid_ptr)[4] = MF9025_ANGLE_MULTI_PID;
-    PID_multi_Kp_init(&m9025_ctrl.pid,multi_Kpid_ptr,3);
+    // fp32 (*multi_Kpid_ptr)[4] = MF9025_ANGLE_MULTI_PID;
+    // PID_multi_Kp_init(&m9025_ctrl.pid,multi_Kpid_ptr,3);
 
     initPowerControllerConfig(&power_ctrl_config, M3508_TORQUE_CONST, M3508_CURRENT_LIMIT, M3508_OUTPUT_LIMIT,
         K1_CONST,  K2_CONST, K3_CONST, SENTINEL_MAXPOWER);

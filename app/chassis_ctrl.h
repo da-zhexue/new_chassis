@@ -71,6 +71,7 @@ typedef struct
     uint8_t ctrl;
     uint8_t mode;
 
+    uint8_t gimbal_auto_rotate;
     uint8_t gimbal_shutdown_flag;
     uint8_t last_gimbal_shutdown_flag;
 

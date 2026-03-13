@@ -28,6 +28,7 @@ void cmd_imu_s_handler(const uint8_t* data);
 void cmd_imu_l_handler(const uint8_t* data);
 void cmd_buffer_handler(const uint8_t* data);
 void cmd_debug_handler(const uint8_t* data);
+void cmd_gimbal_rotate_handler(const uint8_t* data, upc_t* upc_ptr);
 
 void upc_send_attitude_handler(void);
 
@@ -64,6 +65,9 @@ uint8_t upc_decode(uint8_t* rx_data)
 			cmd_onlinecb_handler(1);
 		case CMD_POWER:
 			cmd_buffer_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN]);
+			break;
+		case CMD_GIMBAL_ROTATE:
+			cmd_gimbal_rotate_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN], &upc_ptr);
 			break;
 //		case CMD_DEBUG:
 //			cmd_debug_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN]);
@@ -153,6 +157,11 @@ void cmd_buffer_handler(const uint8_t* data)
 	unpack_4bytes_to_floats(&data[4], &power_max);
 	DTM_Write(BUFFER_DATA, &buffer_ptr, sizeof(buffer_ptr));
 	DTM_Write(POWERMAX_DATA, &power_max, sizeof(power_max));
+}
+
+void cmd_gimbal_rotate_handler(const uint8_t* data, upc_t* upc_ptr)
+{
+	upc_ptr->auto_rotate = data[0];
 }
 
 void CMD_PackPacket(const uint8_t *data_in, const uint16_t data_len, const uint16_t cmd_id)

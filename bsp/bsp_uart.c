@@ -49,7 +49,8 @@ void usart1_rec_handler(void)
             __HAL_DMA_ENABLE(&hdma_usart1_rx);
             if(this_time_rx_len > 9)
             {
-                upc_decode(uart1_rx_buffer[0]);
+                const uint8_t header = find_frame_header(uart1_rx_buffer[0], COMM_BUF_LEN);
+                param_decode(&uart1_rx_buffer[0][header]);
             }
         }
         else
@@ -61,7 +62,8 @@ void usart1_rec_handler(void)
             __HAL_DMA_ENABLE(&hdma_usart1_rx);
             if(this_time_rx_len > 9)
             {
-                upc_decode(uart1_rx_buffer[1]);
+                const uint8_t header = find_frame_header(uart1_rx_buffer[1], COMM_BUF_LEN);
+                param_decode(&uart1_rx_buffer[1][header]);
             }
         }
     }
