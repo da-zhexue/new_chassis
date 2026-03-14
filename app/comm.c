@@ -61,8 +61,10 @@ uint8_t upc_decode(uint8_t* rx_data)
 			break;
 		case CMD_IMU_L_INFO:
 			cmd_imu_l_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN]);
+			break;
 		case CMD_ONLINECB:
 			cmd_onlinecb_handler(1);
+			break;
 		case CMD_POWER:
 			cmd_buffer_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN]);
 			break;

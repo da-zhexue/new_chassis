@@ -27,12 +27,14 @@
 chassis_t chassis_ptr;
 m3508_ctrl_t m3508_ctrl[4];
 m9025_ctrl_t m9025_ctrl;
+
 #else
 static chassis_t chassis_ptr;
 static m3508_ctrl_t m3508_ctrl[4];
 static m9025_ctrl_t m9025_ctrl;
 #endif
 
+int32_t mf9025_given_speed;
 static PowerControllerConfig power_ctrl_config;
 PowerControlParam ctx;
 
@@ -43,11 +45,7 @@ static float filter_vw_num[1] = {CHASSIS_FILTER_VW_BETA};
 
 static fp32 M3508_SPEED_PID[3] = {M3508_SPEED_PID_KP, M3508_SPEED_PID_KI, M3508_SPEED_PID_KD};
 static fp32 MF9025_ANGLE_PID[3] = {MF9025_ANGLE_PID_KP, MF9025_ANGLE_PID_KI, MF9025_ANGLE_PID_KD};
-static fp32 MF9025_ANGLE_MULTI_PID [3][4] = {
-    {5,MF9025_ANGLE_PID_KP, MF9025_ANGLE_PID_KI, MF9025_ANGLE_PID_KD},
-    {180,MF9025_ANGLE_PID_KP2, MF9025_ANGLE_PID_KI2, MF9025_ANGLE_PID_KD2},
-    {14400,MF9025_ANGLE_PID_KP3, MF9025_ANGLE_PID_KI3, MF9025_ANGLE_PID_KD3}
-};
+static uint16_t MF9025_SPEED_PID[3] = {MF9025_SPEED_PID_KP, MF9025_SPEED_PID_KI, MF9025_SPEED_PID_KD};
 
 void ctrl_data_update(void)
 {
@@ -209,10 +207,11 @@ void motor_ctrl_send(void)
     if(!chassis_ptr.gimbal_shutdown_flag)
     {
         PID_calc(&m9025_ctrl.pid, m9025_ctrl.cur_angle, m9025_ctrl.given_angle);
-        CAN_Control9025Speed(CAN_9025_M1_TX_ID, MF9025_MAX_IQ, (int32_t)(*m9025_ctrl.pid.out + m9025_ctrl.ff_speed)); // 前馈补偿 底盘yaw轴角速度
+        mf9025_given_speed = (int32_t)(*m9025_ctrl.pid.out + m9025_ctrl.ff_speed); // 前馈补偿 底盘yaw轴角速度
     }
     else
-        CAN_Control9025Speed(CAN_9025_M1_TX_ID, MF9025_MAX_IQ, 0);
+        mf9025_given_speed = 0;
+    CAN_Control9025Speed(CAN_9025_M1_TX_ID, MF9025_MAX_IQ, mf9025_given_speed);
 
     CAN_Control3508Current((int16_t)*m3508_ctrl[0].pid.out, (int16_t)*m3508_ctrl[1].pid.out,
                              (int16_t)*m3508_ctrl[2].pid.out, (int16_t)*m3508_ctrl[3].pid.out);
@@ -293,6 +292,7 @@ void chassis_ctrl_init(void)
     MF9025_ANGLE_PID[1] = debug_param[1];
     MF9025_ANGLE_PID[2] = debug_param[2];
     #endif
+    CAN_Set9025PID(CAN_9025_M1_TX_ID, CONTROL_PARAM_9025_SPEED_PID, MF9025_SPEED_PID[0], MF9025_SPEED_PID[1], MF9025_SPEED_PID[2]);
     for(int i = 0; i < 4; i++)
     {
         PID_init(&m3508_ctrl[i].pid, PID_POSITION, M3508_SPEED_PID, M3508_SPEED_PID_OUT_MAX, M3508_SPEED_PID_IOUT_MAX,

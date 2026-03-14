@@ -21,7 +21,7 @@ fp32 power_buffer;
 fp32 powermax;
 // fp32 power_ctrl_param[3];
 // fp32 measuredpower;
-fp32 pid_param[3];
+fp32 pid_param[6];
 uint8_t pid_ready;
 #else
 static rc_t rc;
@@ -48,8 +48,6 @@ static const DTM_Info_t DTM_Map[] = {
     [UPC_DATA] = {&upc, sizeof(upc)},
     [BUFFER_DATA] = {&power_buffer, sizeof(power_buffer)},
     [POWERMAX_DATA] = {&powermax, sizeof(powermax)},
-
-
 #ifdef DEBUG_MODE
     [PARAM_DATA] = {pid_param, sizeof(pid_param)},
     [FLAG_DATA] = {&pid_ready, sizeof(pid_ready)}
