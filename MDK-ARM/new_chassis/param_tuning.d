@@ -4,6 +4,7 @@ new_chassis\param_tuning.o: ../bsp/typedef.h
 new_chassis\param_tuning.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 new_chassis\param_tuning.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 new_chassis\param_tuning.o: D:\keil5\ARM\ARMCC\Bin\..\include\stdbool.h
+new_chassis\param_tuning.o: D:\keil5\ARM\ARMCC\Bin\..\include\string.h
 new_chassis\param_tuning.o: ../bsp/bsp_uart.h
 new_chassis\param_tuning.o: ../app/chassis_ctrl.h
 new_chassis\param_tuning.o: ../algorithm/pid.h
@@ -45,7 +46,6 @@ new_chassis\param_tuning.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_ua
 new_chassis\param_tuning.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd.h
 new_chassis\param_tuning.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
 new_chassis\param_tuning.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h
-new_chassis\param_tuning.o: ../algorithm/crc.h
 new_chassis\param_tuning.o: ..\user\DTM.h
 new_chassis\param_tuning.o: ../algorithm/user_lib.h
 new_chassis\param_tuning.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
@@ -62,3 +62,4 @@ new_chassis\param_tuning.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/t
 new_chassis\param_tuning.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 new_chassis\param_tuning.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 new_chassis\param_tuning.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
+new_chassis\param_tuning.o: ../app/CAN_tx.h

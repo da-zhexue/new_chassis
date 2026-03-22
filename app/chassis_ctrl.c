@@ -78,8 +78,8 @@ void ctrl_data_update(void)
     else if(chassis_ptr.ctrl == CHASSIS_UPC) // @TODO: 理论上需要做不同控制模式切换时数据不突变，但哨兵应该用不到，不想做了qwq
     {
         upc_ptr.start_upc_flag = 1;
-        if(OMM_detect(UPC_ONLINE))
-        {
+        // if(OMM_detect(UPC_ONLINE))
+        // {
             chassis_ptr.mode = upc_ptr.mode;
            
             vx = loop_float_constrain(upc_ptr.vx, -CHASSIS_MAX_V, CHASSIS_MAX_V);
@@ -87,17 +87,23 @@ void ctrl_data_update(void)
             vw = loop_float_constrain(upc_ptr.vw, -CHASSIS_MAX_W, CHASSIS_MAX_W);
 
             chassis_ptr.gimbal_shutdown_flag = 0;
-            chassis_ptr.given_gimbal_l_yaw = upc_ptr.gimbal_yaw;
             chassis_ptr.gimbal_auto_rotate = upc_ptr.auto_rotate;
-        }
-        else
-        {
-            //chassis_ptr.mode = 0;
-            vx = 0.0f;
-            vy = 0.0f;
-            vw = 0.0f;
-            chassis_ptr.gimbal_shutdown_flag = 1;
-        }
+            if (!chassis_ptr.gimbal_auto_rotate)
+                chassis_ptr.given_gimbal_l_yaw = upc_ptr.gimbal_yaw;
+            else
+            {
+                chassis_ptr.given_gimbal_l_yaw += 0.05f;
+            }
+
+        // }
+        // else
+        // {
+        //     //chassis_ptr.mode = 0;
+        //     vx = 0.0f;
+        //     vy = 0.0f;
+        //     vw = 0.0f;
+        //     chassis_ptr.gimbal_shutdown_flag = 1;
+        // }
     }
     else
     {
@@ -133,28 +139,21 @@ void ctrl_data_update(void)
 void motor_ctrl_update(void)
 {
     static TF_t tf_ptr;
-    static uint64_t last_change_vw;
-    static fp32 topping_vw;
     DTM_Read(TF_DATA, &tf_ptr, sizeof(tf_ptr));
     const fp32 chassis_v = chassis_ptr.given_chassis_v[0];
     const fp32 theta = chassis_ptr.given_chassis_v[1];
     fp32 chassis_w = chassis_ptr.given_chassis_w + tf_ptr.Chassis_angle.yaw_rad;
     m9025_ctrl.cur_angle = -tf_ptr.Big_Gimbal_angle.yaw_total_angle;
-    m9025_ctrl.ff_speed = (5729.5779513f * tf_ptr.Gyro[2] + (fp32)chassis_ptr.gimbal_auto_rotate * 300.0f);
+    m9025_ctrl.ff_speed = (5729.5779513f * tf_ptr.Gyro[2]);
     switch(chassis_ptr.mode)
     {
         case SPINNING_TOP:
-            if (DWT_GetTimeline_us() - last_change_vw > 200000)
-            {
-                last_change_vw = DWT_GetTimeline_us();
-                topping_vw = (fp32)(rng_smooth_rand() % 500 + 1000); // 每0.2秒随机变换一次小陀螺转速
-            }
-            chassis_w = topping_vw;
+            chassis_w = 2000.0f;
             // case穿透，将转速设为定值后继续执行跟随底盘模式逻辑
         case FOLLOW_CHASSIS:
         {
-            const fp32 sin_yaw = sinf(radian_format(tf_ptr.Chassis_angle.yaw_rad - tf_ptr.Big_Gimbal_angle.yaw_rad));
-            const fp32 cos_yaw = cosf(radian_format(tf_ptr.Chassis_angle.yaw_rad - tf_ptr.Big_Gimbal_angle.yaw_rad));
+            const fp32 sin_yaw = sinf(radian_format(tf_ptr.Chassis_angle.yaw_rad));// - tf_ptr.Big_Gimbal_angle.yaw_rad));
+            const fp32 cos_yaw = cosf(radian_format(tf_ptr.Chassis_angle.yaw_rad));// - tf_ptr.Big_Gimbal_angle.yaw_rad));
             const fp32 vx = chassis_v * cosf(theta);
 			const fp32 vy = chassis_v * sinf(theta);
             const fp32 vx_set = vx * cos_yaw - vy * sin_yaw;
@@ -211,13 +210,15 @@ void motor_ctrl_send(void)
     }
     else
         mf9025_given_speed = 0;
-    CAN_Control9025Speed(CAN_9025_M1_TX_ID, MF9025_MAX_IQ, mf9025_given_speed);
+    CAN_Control9025Speed(CAN_MF_SEND_ID, MF9025_MAX_IQ, mf9025_given_speed);
 
     CAN_Control3508Current((int16_t)*m3508_ctrl[0].pid.out, (int16_t)*m3508_ctrl[1].pid.out,
                              (int16_t)*m3508_ctrl[2].pid.out, (int16_t)*m3508_ctrl[3].pid.out);
 
     // 功率控制
-
+    static fp32 energy_buffer;
+    DTM_Read(BUFFER_DATA, &energy_buffer, sizeof(energy_buffer));
+    limitMaxPower(&power_ctrl_config, energy_buffer);
     for (int i = 0; i < 4; i++)
     {
         motorpower[i].curAv = (float)m3508_ptr[i].speed * RPM_TO_RADS / REDUCTION_RATIO;
@@ -264,6 +265,8 @@ void motor_param_get()
 
 void chassis_ctrl_init(void)
 {
+    static m9025_t m9025_ptr;
+
     chassis_ptr.given_chassis_v[0] = 0.0f;
     chassis_ptr.given_chassis_v[1] = 0.0f;
     chassis_ptr.given_chassis_w = 0.0f;
@@ -280,19 +283,31 @@ void chassis_ctrl_init(void)
     rng_init(0.98f);
 
     #ifdef DEBUG_MODE
-    static uint8_t debug_ready = 0;
-    static fp32 debug_param[3];
-    while(!debug_ready)
-    {
-        DTM_Read(FLAG_DATA, &debug_ready, sizeof(debug_ready));
-        osDelay(2);
-    }
-    DTM_Read(PARAM_DATA, debug_param, sizeof(debug_param));
-    MF9025_ANGLE_PID[0] = debug_param[0];
-    MF9025_ANGLE_PID[1] = debug_param[1];
-    MF9025_ANGLE_PID[2] = debug_param[2];
+    // static uint8_t debug_ready = 0;
+    // static fp32 debug_param[6];
+    // while(!debug_ready)
+    // {
+    //     DTM_Read(FLAG_DATA, &debug_ready, sizeof(debug_ready));
+    //     osDelay(2);
+    // }
+    //
+    // DTM_Read(PARAM_DATA, debug_param, sizeof(debug_param));
+    // MF9025_ANGLE_PID[0] = debug_param[0];
+    // MF9025_ANGLE_PID[1] = debug_param[1];
+    // MF9025_ANGLE_PID[2] = debug_param[2];
+    // MF9025_SPEED_PID[0] = (uint16_t)debug_param[3];
+    // MF9025_SPEED_PID[1] = (uint16_t)debug_param[4];
+    // MF9025_SPEED_PID[2] = (uint16_t)debug_param[5];
     #endif
-    CAN_Set9025PID(CAN_9025_M1_TX_ID, CONTROL_PARAM_9025_SPEED_PID, MF9025_SPEED_PID[0], MF9025_SPEED_PID[1], MF9025_SPEED_PID[2]);
+    while (m9025_ptr.ecd_offset == 0)
+    {
+        CAN_Get9025Measure(CAN_MF_SEND_ID);
+        osDelay(5);
+        DTM_Read(M9025_DATA, &m9025_ptr, sizeof(m9025_ptr));
+    }
+    CAN_Set9025PID(CAN_MF_SEND_ID, CONTROL_PARAM_9025_SPEED_PID, MF9025_SPEED_PID[0], MF9025_SPEED_PID[1], MF9025_SPEED_PID[2]);
+    CAN_Read9025Param(CAN_MF_SEND_ID, CONTROL_PARAM_9025_ANGLE_PID);
+    osDelay(5);
     for(int i = 0; i < 4; i++)
     {
         PID_init(&m3508_ctrl[i].pid, PID_POSITION, M3508_SPEED_PID, M3508_SPEED_PID_OUT_MAX, M3508_SPEED_PID_IOUT_MAX,

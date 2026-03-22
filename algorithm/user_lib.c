@@ -44,6 +44,42 @@ void pack_float_to_4bytes(float f1, uint8_t data[4]) {
     data[1] = (uint8_t)((u1 >> 8)  & 0xFF);
     data[0] = (uint8_t)(u1 & 0xFF);    
 }
+
+uint16_t find_frame_headers(
+    const uint8_t *buf,
+    const uint16_t buf_len,
+    const uint8_t *header,
+    const uint8_t header_len,
+    uint16_t *positions,
+    const uint16_t max_positions
+) {
+    int found_count = 0;
+
+    if (header_len == 0 || buf_len < header_len || max_positions == 0) {
+        return 0;
+    }
+
+    for (uint16_t i = 0; i <= buf_len - header_len; i++) {
+        uint8_t match = 1;
+        for (uint8_t j = 0; j < header_len; j++) {
+            if (buf[i + j] != header[j]) {
+                match = 0;
+                break;
+            }
+        }
+
+        if (match) {
+            if (found_count < max_positions) {
+                positions[found_count] = i;
+                found_count++;
+            } else {
+                break;
+            }
+        }
+    }
+
+    return found_count;
+}
 /*------------------------------------------------------------------------------------- */
 
 /*-------------------------------------常用数学函数------------------------------------- */

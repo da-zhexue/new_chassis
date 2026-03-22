@@ -28,12 +28,15 @@ void tx_handler(void)
     static uint8_t tx_buf[SEND_TOTAL_SIZE];
     static TF_t tf_ptr;
     static m9025_t m9025_ptr;
+    static fp32 imu_ptr[3];
     DTM_Read(TF_DATA, &tf_ptr, sizeof(tf_ptr));
     DTM_Read(M9025_DATA, &m9025_ptr, sizeof(m9025_ptr));
-    pack_float_to_4bytes(theta_format(-tf_ptr.Big_Gimbal_angle.yaw_deg), &tx_buf[0]);
+    DTM_Read(GIMBAL_L_DATA, imu_ptr, sizeof(imu_ptr));
+    //pack_float_to_4bytes(theta_format(-tf_ptr.Big_Gimbal_angle.yaw_total_angle), &tx_buf[0]);
+    pack_float_to_4bytes(theta_format(-imu_ptr[0]), &tx_buf[0]);
     pack_float_to_4bytes(theta_format(chassis_ptr.given_gimbal_l_yaw), &tx_buf[4]);
     pack_float_to_4bytes(m9025_ptr.speed, &tx_buf[8]);
-    pack_float_to_4bytes((fp32)mf9025_given_speed, &tx_buf[12]);
+    pack_float_to_4bytes((fp32)mf9025_given_speed / 100.0f, &tx_buf[12]);
 
     uint8_t tail[4] = {0x00, 0x00, 0x80, 0x7F};
     memcpy(&tx_buf[SEND_DATA_LEN], tail, sizeof(tail));
@@ -77,7 +80,7 @@ void param_decode(uint8_t *rx_buf)
             ready |= 0x20;
             break;
         case 0x07:
-            CAN_Control9025Speed(CAN_9025_M1_TX_ID, MF9025_MAX_IQ, 0);
+            CAN_Control9025Speed(CAN_MF_SEND_ID, MF9025_MAX_IQ, 0);
              __HAL_RCC_CLEAR_RESET_FLAGS();
             osDelay(100);
             HAL_NVIC_SystemReset();

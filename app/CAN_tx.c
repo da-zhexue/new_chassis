@@ -184,6 +184,25 @@ void CAN_Set9025PID(uint32_t id, uint8_t param, uint16_t kp, uint16_t ki, uint16
     HAL_CAN_AddTxMessage(&MOTOR_9025_CAN, &motor_9025_tx_message, motor_9025_can_tx_data, &send_mail_box);
 }
 
+void CAN_Read9025Param(uint32_t id, uint8_t param)
+{
+    uint32_t send_mail_box;
+    motor_9025_tx_message.StdId = id;
+    motor_9025_tx_message.IDE   = CAN_ID_STD;
+    motor_9025_tx_message.RTR   = CAN_RTR_DATA;
+    motor_9025_tx_message.DLC   = 0x08;
+
+    motor_9025_can_tx_data[0] = CMD_9025_READ_CONTROL_PARAM;
+    motor_9025_can_tx_data[1] = param;
+    motor_9025_can_tx_data[2] = 0x00;
+    motor_9025_can_tx_data[3] = 0x00;
+    motor_9025_can_tx_data[4] = 0x00;
+    motor_9025_can_tx_data[5] = 0x00;
+    motor_9025_can_tx_data[6] = 0x00;
+    motor_9025_can_tx_data[7] = 0x00;
+    HAL_CAN_AddTxMessage(&MOTOR_9025_CAN, &motor_9025_tx_message, motor_9025_can_tx_data, &send_mail_box);
+}
+
 void CAN_Set9025ZeroAngle(uint32_t id)
 {
 	uint32_t send_mail_box;

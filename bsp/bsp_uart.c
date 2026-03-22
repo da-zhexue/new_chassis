@@ -2,6 +2,7 @@
 #include "comm.h"
 #include "DBUS.h"
 #include "param_tuning.h"
+#include "user_lib.h"
 
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart1_tx;
@@ -50,6 +51,7 @@ void usart1_rec_handler(void)
             if(this_time_rx_len > 9)
             {
                 const uint8_t header = find_frame_header(uart1_rx_buffer[0], COMM_BUF_LEN);
+                //upc_decode(&uart1_rx_buffer[0][header]);
                 param_decode(&uart1_rx_buffer[0][header]);
             }
         }
@@ -64,6 +66,7 @@ void usart1_rec_handler(void)
             {
                 const uint8_t header = find_frame_header(uart1_rx_buffer[1], COMM_BUF_LEN);
                 param_decode(&uart1_rx_buffer[1][header]);
+                //upc_decode(&uart1_rx_buffer[0][header]);
             }
         }
     }
@@ -109,8 +112,12 @@ void usart6_rec_handler(void)
             if(this_time_rx_len > 9)
             {
                 //param_decode(uart6_rx_buffer[0]);
-                const uint8_t header = find_frame_header(uart6_rx_buffer[0], COMM_BUF_LEN);
-                upc_decode(&uart6_rx_buffer[0][header]);
+                //const uint8_t header = find_frame_header(uart6_rx_buffer[0], COMM_BUF_LEN);
+							uint8_t header = 0xA5;
+							uint16_t headers[5];
+								uint8_t header_num = find_frame_headers(uart6_rx_buffer[0], COMM_BUF_LEN, &header, 1, headers, 5);
+							for(int i = 0; i < header_num; i++)
+                upc_decode(&uart6_rx_buffer[0][headers[i]]);
             }
             __HAL_DMA_ENABLE(&hdma_usart6_rx);
         }
@@ -125,8 +132,13 @@ void usart6_rec_handler(void)
             if(this_time_rx_len > 9)
             {
                 //param_decode(uart6_rx_buffer[1]);
-                const uint8_t header = find_frame_header(uart6_rx_buffer[1], COMM_BUF_LEN);
-                upc_decode(&uart6_rx_buffer[1][header]);
+//                const uint8_t header = find_frame_header(uart6_rx_buffer[1], COMM_BUF_LEN);
+//                upc_decode(&uart6_rx_buffer[1][header]);
+														uint8_t header = 0xA5;
+							uint16_t headers[5];
+								uint8_t header_num = find_frame_headers(uart6_rx_buffer[0], COMM_BUF_LEN, &header, 1, headers, 5);
+							for(int i = 0; i < header_num; i++)
+                upc_decode(&uart6_rx_buffer[1][headers[i]]);
             }
             __HAL_DMA_ENABLE(&hdma_usart6_rx);
         }

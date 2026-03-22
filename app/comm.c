@@ -23,12 +23,10 @@
 void cmd_move_handler(const uint8_t* data, upc_t *upc_ptr);
 void cmd_rotate_handler(const uint8_t* data, upc_t *upc_ptr);
 void cmd_shart_handler(const uint8_t* data, upc_t *upc_ptr);
-void cmd_mode_handler(const uint8_t* data, upc_t *upc_ptr);
-void cmd_imu_s_handler(const uint8_t* data);
+void cmd_state_handler(const uint8_t* data, upc_t *upc_ptr);
 void cmd_imu_l_handler(const uint8_t* data);
 void cmd_buffer_handler(const uint8_t* data);
 void cmd_debug_handler(const uint8_t* data);
-void cmd_gimbal_rotate_handler(const uint8_t* data, upc_t* upc_ptr);
 
 void upc_send_attitude_handler(void);
 
@@ -57,7 +55,7 @@ uint8_t upc_decode(uint8_t* rx_data)
 			cmd_shart_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN], &upc_ptr);
 			break;
 		case CMD_MODE:
-			cmd_mode_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN], &upc_ptr);
+			cmd_state_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN], &upc_ptr);
 			break;
 		case CMD_IMU_L_INFO:
 			cmd_imu_l_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN]);
@@ -68,15 +66,16 @@ uint8_t upc_decode(uint8_t* rx_data)
 		case CMD_POWER:
 			cmd_buffer_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN]);
 			break;
-		case CMD_GIMBAL_ROTATE:
-			cmd_gimbal_rotate_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN], &upc_ptr);
-			break;
 //		case CMD_DEBUG:
 //			cmd_debug_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN]);
 //			break;
 		default:
 			break;
 	}
+	TF_t tf_ptr;
+	DTM_Read(TF_DATA, &tf_ptr, sizeof(tf_ptr));
+	if (upc_ptr.auto_rotate)
+		upc_ptr.gimbal_yaw = -tf_ptr.Big_Gimbal_angle.yaw_total_angle;
 	DTM_Write(UPC_DATA, &upc_ptr, sizeof(upc_t));
 	return 0; 
 }
@@ -86,7 +85,7 @@ uint16_t loss_bag = 0;
 float loss_rate = 0.0f;
 void cmd_debug_handler(const uint8_t* data)
 {
-	uint16_t bag = (data[0] << 8) | data[1];
+	uint16_t bag = data[0];
 	loss_bag += (bag - last_bag - 1);
 	loss_rate = (float)loss_bag / (float)bag * 1.0f;
 	last_bag = bag;
@@ -113,9 +112,11 @@ void cmd_rotate_handler(const uint8_t* data, upc_t *upc_ptr)
 	OMM_update(UPC_ONLINE);
 }
 
-void cmd_mode_handler(const uint8_t* data, upc_t *upc_ptr)
+void cmd_state_handler(const uint8_t* data, upc_t *upc_ptr)
 {
-	upc_ptr->mode = data[12];
+	upc_ptr->mode = data[0] & 0x01;
+	upc_ptr->auto_rotate = (data[0] >> 1) & 0x01;
+	upc_ptr->nav_state = (data[0] >> 2) & 0x01;
 	OMM_update(UPC_ONLINE);
 }
 
@@ -154,16 +155,9 @@ uint8_t cmd_onlinecb_handler(const uint8_t on)
 
 void cmd_buffer_handler(const uint8_t* data)
 {
-	static fp32 buffer_ptr, power_max;
+	static fp32 buffer_ptr;
 	unpack_4bytes_to_floats(&data[0], &buffer_ptr);
-	unpack_4bytes_to_floats(&data[4], &power_max);
 	DTM_Write(BUFFER_DATA, &buffer_ptr, sizeof(buffer_ptr));
-	DTM_Write(POWERMAX_DATA, &power_max, sizeof(power_max));
-}
-
-void cmd_gimbal_rotate_handler(const uint8_t* data, upc_t* upc_ptr)
-{
-	upc_ptr->auto_rotate = data[0];
 }
 
 void CMD_PackPacket(const uint8_t *data_in, const uint16_t data_len, const uint16_t cmd_id)

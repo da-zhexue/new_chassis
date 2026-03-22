@@ -95,6 +95,14 @@ typedef struct
 } first_order_filter_type_t;
 
 float q_sqrt(float x);
+uint16_t find_frame_headers(
+    const uint8_t *buf,
+     uint16_t buf_len,
+    const uint8_t *header,
+     uint8_t header_len,
+    uint16_t *positions,
+     uint16_t max_positions
+);
 
 void ramp_init(ramp_function_source_t *ramp_source_type, float frame_period, float max, float min);
 float ramp_calc(ramp_function_source_t *ramp_source_type, float input);

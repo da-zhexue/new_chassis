@@ -74,7 +74,6 @@
 "new_chassis\omm.o"
 "new_chassis\param_tuning.o"
 "new_chassis\ulog.o"
-"../Middlewares/ST/ARM/DSP/Lib/arm_cortexM4lf_math.lib"
 "new_chassis\usb_device.o"
 "new_chassis\usbd_desc.o"
 "new_chassis\usbd_cdc_if.o"
@@ -83,6 +82,7 @@
 "new_chassis\usbd_ctlreq.o"
 "new_chassis\usbd_ioreq.o"
 "new_chassis\usbd_cdc.o"
+"../Middlewares/ST/ARM/DSP/Lib/arm_cortexM4lf_math.lib"
 "E:\keil\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\ARM\arm_cortexM4lf_math.lib"
 --strict --scatter "new_chassis\new_chassis.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols

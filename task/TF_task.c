@@ -24,15 +24,16 @@ void TF_Task(void const * argurment)
 		static float gimbal_l_offset[3] = {0.0f, 0.0f, 0.0f};
 		static uint8_t gimbal_l_get_offset = 0;
 		static TF_t tf_ptr;
-		static fp32 gimbal_l_ptr[3];
 		static m9025_t m9025_ptr;
 		while(1)
 		{
 			if(OMM_detect(GIMBAL_L_ONLINE))
 			{
+				fp32 gimbal_l_ptr[3];
 				DTM_Read(GIMBAL_L_DATA, gimbal_l_ptr, sizeof(gimbal_l_ptr));
 				DTM_Read(M9025_DATA, &m9025_ptr, sizeof(m9025_ptr));
-				if (!gimbal_l_get_offset){
+				if ((!gimbal_l_get_offset) && (gimbal_l_ptr[0] >= 1e-5f || gimbal_l_ptr[0] <= -1e-5f)) // 读取到非零大云台数据，认为可以进行校准
+				{
 					gimbal_l_get_offset = 1;
 					memcpy(gimbal_l_offset, gimbal_l_ptr, sizeof(gimbal_l_ptr));
 				}
@@ -52,7 +53,7 @@ void TF_Task(void const * argurment)
 			BMI088_Read(&BMI088);
 			tf_ptr.Gyro[Z] = BMI088.Gyro[Z]; // 读取底盘yaw轴角速度用于旋转时大云台前馈补偿
 			DTM_Write(TF_DATA, &tf_ptr, sizeof(tf_ptr));
-			osDelay(1);
+			osDelay(3);
 		}
 
 }

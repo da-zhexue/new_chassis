@@ -16,7 +16,6 @@ typedef enum {
     GIMBAL_L_DATA,
     UPC_DATA,
     BUFFER_DATA,
-    POWERMAX_DATA,
     PARAM_DATA,
     FLAG_DATA,
     DTM_DATA_COUNT        
@@ -78,6 +77,7 @@ typedef struct
     uint8_t game_start;
     uint8_t mode;
     uint8_t auto_rotate;
+    uint8_t nav_state;
 
     float vx, vy, vw;
     float gimbal_yaw, chassis_yaw;

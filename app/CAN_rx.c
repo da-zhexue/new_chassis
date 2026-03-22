@@ -9,6 +9,9 @@
  */
 
 #include "CAN_rx.h"
+
+#include <sys/types.h>
+
 #include "can.h"
 #include "user_lib.h"
 #include "OMM.h"
@@ -27,6 +30,37 @@ void get_motor_3508_measure(const uint8_t motor, const uint8_t* rx_data)
     motor_3508_measure[motor].temperature = (rx_data)[6];
 	DTM_Write(M3508_DATA, motor_3508_measure, sizeof(motor_3508_measure));
     OMM_update(M3508_0_ONLINE + motor);
+}
+
+static uint16_t mf9025_pid_iq[3], mf9025_pid_speed[3], mf9025_pid_angle[3];
+static uint32_t mf9025_speed_max;
+void get_motor_9025_control_param(const uint8_t* rx_data)
+{
+	if(rx_data == NULL)
+		return;
+	switch (rx_data[0])
+	{
+		case CONTROL_PARAM_9025_ANGLE_PID:
+			mf9025_pid_angle[0] = rx_data[0] | rx_data[1] << 8;
+			mf9025_pid_angle[1] = rx_data[2] | rx_data[3] << 8;
+			mf9025_pid_angle[2] = rx_data[4] | rx_data[5] << 8;
+			break;
+		case CONTROL_PARAM_9025_SPEED_PID:
+			mf9025_pid_speed[0] = rx_data[0] | rx_data[1] << 8;
+			mf9025_pid_speed[1] = rx_data[2] | rx_data[3] << 8;
+			mf9025_pid_speed[2] = rx_data[4] | rx_data[5] << 8;
+			break;
+		case CONTROL_PARAM_9025_IQ_PID:
+			mf9025_pid_iq[0] = rx_data[0] | rx_data[1] << 8;
+			mf9025_pid_iq[1] = rx_data[2] | rx_data[3] << 8;
+			mf9025_pid_iq[2] = rx_data[4] | rx_data[5] << 8;
+			break;
+		case CONTROL_PARAM_9025_SPEED_MAX:
+				mf9025_speed_max = rx_data[0] | rx_data[1] << 8 | rx_data[2] << 16 | rx_data[3] << 24;
+				break;
+			default:
+				break;
+	}
 }
 
 void CAN_9025_MeasureProcess(const uint8_t* rx_data)
@@ -57,7 +91,7 @@ void CAN_9025_MeasureProcess(const uint8_t* rx_data)
             //该数据需要发送指令读取，即使发送指令不知为何在非调试模式下无法更新数据
             break;
         case CMD_9025_READ_CONTROL_PARAM: //read control param
-            //get_motor_9025_control_param(motor_9025->motor_9025_pid, rx_data);
+            get_motor_9025_control_param(rx_data);
             break;
         default:
             break;

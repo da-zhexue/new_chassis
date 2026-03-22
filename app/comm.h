@@ -26,7 +26,6 @@ typedef enum
 	CMD_START = 0x106,
 	CMD_ONLINECB = 0x107,
 	CMD_POWER = 0x108,
-	CMD_GIMBAL_ROTATE = 0x109,
 	CMD_DEBUG = 0x133,
 
 } upc_cmd_t;

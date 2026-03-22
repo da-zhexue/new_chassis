@@ -20,6 +20,7 @@
 #define CONTROL_PARAM_9025_ANGLE_PID 0x0A
 #define CONTROL_PARAM_9025_SPEED_PID 0x0B
 #define CONTROL_PARAM_9025_IQ_PID 0x0C
+#define CONTRTOL_PARAM_9025_SPEED_MAX 0x20
 
 #define MOTOR_3508_CAN hcan1
 #define MOTOR_9025_CAN hcan1
@@ -30,8 +31,7 @@ typedef enum
 {	
 	CAN_3508_SEND_ID = 0x200,
 	
-	CAN_MF_SEND_ID = 0x140,
-	CAN_9025_M1_TX_ID = 0x141,
+	CAN_MF_SEND_ID = 0x141
 }can_tx_id_e;
 
 void CAN_Control3508Current(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
@@ -44,5 +44,6 @@ void CAN_Control9025Speed(uint32_t id, uint16_t iqControl, uint32_t speedControl
 void CAN_CBoard_CMD(uint32_t id, uint8_t data[8]);
 void CAN_Set9025PID(uint32_t id, uint8_t param, uint16_t kp, uint16_t ki, uint16_t kd);
 void CAN_Set9025ZeroAngle(uint32_t id);
+void CAN_Read9025Param(uint32_t id, uint8_t param);
 
 #endif
