@@ -232,6 +232,12 @@ uint8_t limitMaxPower(PowerControllerConfig * config, const float buffer)
     return 0;
 }
 
+void updatePowerControlConfig(PowerControllerConfig* config, const float k2, const float k3)
+{
+    config->k2 = k2;
+    config->k3 = k3;
+}
+
 /**
  * @brief 示例使用代码
  */

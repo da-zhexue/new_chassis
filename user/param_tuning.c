@@ -32,8 +32,8 @@ void tx_handler(void)
     DTM_Read(TF_DATA, &tf_ptr, sizeof(tf_ptr));
     DTM_Read(M9025_DATA, &m9025_ptr, sizeof(m9025_ptr));
     DTM_Read(GIMBAL_L_DATA, imu_ptr, sizeof(imu_ptr));
-    //pack_float_to_4bytes(theta_format(-tf_ptr.Big_Gimbal_angle.yaw_total_angle), &tx_buf[0]);
-    pack_float_to_4bytes(theta_format(-imu_ptr[0]), &tx_buf[0]);
+    pack_float_to_4bytes(theta_format(-tf_ptr.Big_Gimbal_angle.yaw_total_angle), &tx_buf[0]);
+    //pack_float_to_4bytes(theta_format(-imu_ptr[0]), &tx_buf[0]);
     pack_float_to_4bytes(theta_format(chassis_ptr.given_gimbal_l_yaw), &tx_buf[4]);
     pack_float_to_4bytes(m9025_ptr.speed, &tx_buf[8]);
     pack_float_to_4bytes((fp32)mf9025_given_speed / 100.0f, &tx_buf[12]);

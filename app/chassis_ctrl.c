@@ -10,7 +10,6 @@
  */
 
 #include "chassis_ctrl.h"
-
 #include "bsp_dwt.h"
 #include "pid.h"
 #include "math.h"
@@ -20,6 +19,7 @@
 #include "CAN_tx.h"
 #include "ulog.h"
 #include "bsp_rng.h"
+#include "CAN_rx.h"
 #include "power_ctrl.h"
 #include "power_ctrl_param_get.h"
 
@@ -306,8 +306,9 @@ void chassis_ctrl_init(void)
         DTM_Read(M9025_DATA, &m9025_ptr, sizeof(m9025_ptr));
     }
     CAN_Set9025PID(CAN_MF_SEND_ID, CONTROL_PARAM_9025_SPEED_PID, MF9025_SPEED_PID[0], MF9025_SPEED_PID[1], MF9025_SPEED_PID[2]);
-    CAN_Read9025Param(CAN_MF_SEND_ID, CONTROL_PARAM_9025_ANGLE_PID);
     osDelay(5);
+    // CAN_Read9025Param(CAN_MF_SEND_ID, CONTROL_PARAM_9025_SPEED_MAX);
+    // osDelay(5);
     for(int i = 0; i < 4; i++)
     {
         PID_init(&m3508_ctrl[i].pid, PID_POSITION, M3508_SPEED_PID, M3508_SPEED_PID_OUT_MAX, M3508_SPEED_PID_IOUT_MAX,

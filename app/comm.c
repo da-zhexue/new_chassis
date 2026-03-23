@@ -114,9 +114,9 @@ void cmd_rotate_handler(const uint8_t* data, upc_t *upc_ptr)
 
 void cmd_state_handler(const uint8_t* data, upc_t *upc_ptr)
 {
-	upc_ptr->mode = data[0] & 0x01;
-	upc_ptr->auto_rotate = (data[0] >> 1) & 0x01;
-	upc_ptr->nav_state = (data[0] >> 2) & 0x01;
+	upc_ptr->mode = data[12] & 0x01;
+	upc_ptr->auto_rotate = (data[12] >> 1) & 0x01;
+	upc_ptr->nav_state = (data[12] >> 2) & 0x01;
 	OMM_update(UPC_ONLINE);
 }
 

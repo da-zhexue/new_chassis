@@ -54,6 +54,6 @@ void initPowerControllerConfig(PowerControllerConfig *config, float torqueConst,
                                 float k1_init, float k2_init, float k3_init, float maxPower);
 void setMaxPower(PowerControllerConfig * config, float maxPower);
 uint8_t limitMaxPower(PowerControllerConfig * config, float buffer);
-
+void updatePowerControlConfig(PowerControllerConfig* config, float k2, float k3);
 
 #endif //NEW_CHASSIS_POWER_CTRL_H

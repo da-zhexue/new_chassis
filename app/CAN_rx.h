@@ -21,7 +21,7 @@
 
 #define GIMBAL_CAN hcan2
 
-#define MF9025_ECD_IN_ZERO 0xE07D
+#define MF9025_ECD_IN_ZERO 0xB3A3
 
 typedef enum
 {	

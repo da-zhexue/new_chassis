@@ -38,7 +38,7 @@ void get_motor_9025_control_param(const uint8_t* rx_data)
 {
 	if(rx_data == NULL)
 		return;
-	switch (rx_data[0])
+	switch (rx_data[1])
 	{
 		case CONTROL_PARAM_9025_ANGLE_PID:
 			mf9025_pid_angle[0] = rx_data[0] | rx_data[1] << 8;
