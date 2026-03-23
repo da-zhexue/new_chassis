@@ -19,6 +19,8 @@
 
 #define SENTINEL_MAXPOWER 100.0f
 #define SENTINEL_POWERBUFFER 60.0f
+#define SUPERCAP_MAXPOWER 200.0f
+#define REMAINPOWER_MIN 5.0f
 
 // 电机数据结构
 typedef struct {

@@ -8,6 +8,8 @@
 
 #include "can.h"
 #include "CAN_tx.h"
+#include "CAN_rx.h"
+#include "user_lib.h"
 
 CAN_TxHeaderTypeDef  motor_3508_tx_message;
 uint8_t              motor_3508_can_tx_data[8];
@@ -236,4 +238,23 @@ void CAN_CBoard_CMD(uint32_t id, uint8_t data[8])
     gimbal_can_tx_data[6] = data[6];
     gimbal_can_tx_data[7] = data[7];
     HAL_CAN_AddTxMessage(&GIMBAL_CAN, &gimbal_tx_message, gimbal_can_tx_data, &send_mail_box);	
+}
+
+void CAN_SupercapSetPower(fp32 expected_power)
+{
+    uint32_t send_mail_box;
+    uint8_t tx_data[8] = {0};
+
+    if (expected_power < 0.0f) expected_power = 0.0f;
+    if (expected_power > 200.0f) expected_power = 200.0f;
+
+    pack_float_to_4bytes(expected_power, &tx_data[0]);
+
+    CAN_TxHeaderTypeDef tx_message;
+    tx_message.StdId = CAN_SUPERCAP_SEND_ID;
+    tx_message.IDE   = CAN_ID_STD;
+    tx_message.RTR   = CAN_RTR_DATA;
+    tx_message.DLC   = 0x08;
+
+    HAL_CAN_AddTxMessage(&MOTOR_3508_CAN, &tx_message, tx_data, &send_mail_box);
 }

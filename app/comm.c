@@ -215,20 +215,3 @@ void send_onlinecb_handler()
 	static uint8_t send_onlinecb[1] = {1};
 	CMD_PackPacket(send_onlinecb, sizeof(send_onlinecb), SEND_ONLINECB);
 }
-
-void send_cap_handler()
-{
-	static uint8_t send_cap[12]; // 未完成
-	CMD_PackPacket(send_cap, sizeof(send_cap), SEND_SUPERCAP);
-}
-
-void send_power_ctrl_param_handler()
-{
-	static float power_ctrl_param_ptr[2] = {0.0f, 0.0f};
-	DTM_Read(PARAM_DATA, power_ctrl_param_ptr, sizeof(power_ctrl_param_ptr));
-	static uint8_t send_power_ctrl_param[8] = {0};
-	pack_float_to_4bytes(power_ctrl_param_ptr[0], &send_power_ctrl_param[0]);
-	pack_float_to_4bytes(power_ctrl_param_ptr[1], &send_power_ctrl_param[4]);
-
-	CMD_PackPacket(send_power_ctrl_param, sizeof(send_power_ctrl_param), SEND_PARAM);
-}

@@ -23,6 +23,8 @@
 
 #define MF9025_ECD_IN_ZERO 0xB3A3
 
+#define SUPERCAP_RX_ID 0x301
+
 typedef enum
 {	
 	CAN_3508_M1_ID = 0x201,

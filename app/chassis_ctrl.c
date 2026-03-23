@@ -206,19 +206,44 @@ void motor_ctrl_send(void)
     if(!chassis_ptr.gimbal_shutdown_flag)
     {
         PID_calc(&m9025_ctrl.pid, m9025_ctrl.cur_angle, m9025_ctrl.given_angle);
-        mf9025_given_speed = (int32_t)(*m9025_ctrl.pid.out + m9025_ctrl.ff_speed); // 前馈补偿 底盘yaw轴角速度
+        mf9025_given_speed = (int32_t)(*m9025_ctrl.pid.out + m9025_ctrl.ff_speed);
     }
     else
         mf9025_given_speed = 0;
     CAN_Control9025Speed(CAN_MF_SEND_ID, MF9025_MAX_IQ, mf9025_given_speed);
 
-    CAN_Control3508Current((int16_t)*m3508_ctrl[0].pid.out, (int16_t)*m3508_ctrl[1].pid.out,
-                             (int16_t)*m3508_ctrl[2].pid.out, (int16_t)*m3508_ctrl[3].pid.out);
 
+    CAN_Control3508Current((int16_t)m3508_ctrl[0].pid.out[0], (int16_t)m3508_ctrl[1].pid.out[0], (int16_t)m3508_ctrl[2].pid.out[0], (int16_t)m3508_ctrl[3].pid.out[0]);
     // 功率控制
+    static upc_t upc_ptr;
+    static power_data_t power_data_ptr;
+    static fp32 maxpower;
+    DTM_Read(UPC_DATA, &upc_ptr, sizeof(upc_t));
+    DTM_Read(POWER_DATA, &power_data_ptr, sizeof(power_data_ptr));
+
+    switch (upc_ptr.nav_state) // 该策略仅作联盟赛哨兵使用
+    {
+    case 0: // NAV_NORMAL: 常规情况，不使用超电
+        maxpower = SENTINEL_MAXPOWER;
+        break;
+    case 1: // NAV_RUSH: 冲刺，叠加超电功率
+        maxpower = SENTINEL_MAXPOWER + SUPERCAP_MAXPOWER;
+        break;
+    default:
+        maxpower = SENTINEL_MAXPOWER;
+        break;
+    }
+
+    // 超电剩余能量过低时不使用超电
+    if (power_data_ptr.remain_power < REMAINPOWER_MIN)
+        maxpower = SENTINEL_MAXPOWER;
+
+    setMaxPower(&power_ctrl_config, maxpower);
+
     static fp32 energy_buffer;
     DTM_Read(BUFFER_DATA, &energy_buffer, sizeof(energy_buffer));
     limitMaxPower(&power_ctrl_config, energy_buffer);
+
     for (int i = 0; i < 4; i++)
     {
         motorpower[i].curAv = (float)m3508_ptr[i].speed * RPM_TO_RADS / REDUCTION_RATIO;
@@ -228,25 +253,26 @@ void motor_ctrl_send(void)
         motorpower[i].Current = m3508_ptr[i].current;
     }
     MotorPowerObj *motors[4] = {&motorpower[0], &motorpower[1], &motorpower[2], &motorpower[3]};
-
     allocatePowerWithLimit(motors, &power_ctrl_config, &result);
-   //  CAN_Control3508Current((int16_t)result.newTorqueCurrent[0], (int16_t)result.newTorqueCurrent[1] ,
-			// (int16_t)result.newTorqueCurrent[2], (int16_t)result.newTorqueCurrent[3]);
+
+    // CAN_Control3508Current((int16_t)result.newTorqueCurrent[0], (int16_t)result.newTorqueCurrent[1],
+    //                        (int16_t)result.newTorqueCurrent[2], (int16_t)result.newTorqueCurrent[3]);
 }
 
+float param_ptr[2];
 void motor_param_get()
 {
     static m3508_t m3508_ptr[4];
-    static float measuredpower_ptr = 160.0f;
-    static float param_ptr[2];
+    static power_data_t power_data_ptr;
+
     DTM_Read(M3508_DATA, m3508_ptr, sizeof(m3508_ptr));
-    //DTM_Read(POWER_DATA, &measuredpower_ptr, sizeof(measuredpower_ptr));
+    DTM_Read(POWER_DATA, &power_data_ptr, sizeof(power_data_ptr));
 
     float torqueFeedback[4];
     float rpmFeedback[4];
 
     for (int i = 0; i < 4; i++) {
-        torqueFeedback[i] = (float)m3508_ptr[i].current * 20.0f / 16384.0f * 0.3f; // m3508的力矩与电流比例大致等于0.3
+        torqueFeedback[i] = (float)m3508_ptr[i].current * 20.0f / 16384.0f * 0.3f;
         rpmFeedback[i] = m3508_ptr[i].speed;
     }
 
@@ -256,11 +282,10 @@ void motor_param_get()
         effectivePower += torqueFeedback[i] * angularVelocity;
     }
 
-    PowerControl_CollectMotorData(&ctx, torqueFeedback, rpmFeedback, measuredpower_ptr, 4);
+    PowerControl_CollectMotorData(&ctx, torqueFeedback, rpmFeedback, power_data_ptr.total_power, 4);
     PowerControl_Update(&ctx, effectivePower);
     param_ptr[0] = ctx.k1;
     param_ptr[1] = ctx.k2;
-    //DTM_Write(PARAM_DATA, param_ptr, sizeof(param_ptr));
 }
 
 void chassis_ctrl_init(void)

@@ -18,6 +18,7 @@ typedef enum {
     BUFFER_DATA,
     PARAM_DATA,
     FLAG_DATA,
+    POWER_DATA,
     DTM_DATA_COUNT        
 } DTM_DataID_t;
 
@@ -84,5 +85,13 @@ typedef struct
     float x, y, z;
 
 } upc_t;
+
+typedef struct
+{
+    fp32 total_power;
+    fp32 referee_power;
+    fp32 supercap_power;
+    fp32 remain_power;
+} power_data_t;
 
 #endif

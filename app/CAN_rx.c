@@ -99,6 +99,17 @@ void CAN_9025_MeasureProcess(const uint8_t* rx_data)
 	DTM_Write(M9025_DATA, &motor_9025_measure, sizeof(motor_9025_measure));
 }
 
+static void get_supercap_measure(const uint8_t* rx_data)
+{
+    static power_data_t power_data;
+    unpack_4bytes_to_floats(&rx_data[0], &power_data.total_power);
+    unpack_4bytes_to_floats(&rx_data[4], &power_data.referee_power);
+    power_data.supercap_power = power_data.total_power - power_data.referee_power;
+    power_data.remain_power = power_data.referee_power; // 若协议后续给真实剩余能量，可替换
+
+    DTM_Write(POWER_DATA, &power_data, sizeof(power_data));
+}
+
 static uint8_t rx_data[8];
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
@@ -125,6 +136,11 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 				CAN_9025_MeasureProcess(rx_data);
 				break;
 			}
+            case SUPERCAP_RX_ID:
+            {
+                get_supercap_measure(rx_data);
+                break;
+            }
 
 			default: break;
 		}

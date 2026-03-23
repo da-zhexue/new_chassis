@@ -18,8 +18,7 @@ fp32 gimbal_s_deg[3];
 fp32 gimbal_l_deg[3];
 upc_t upc;
 fp32 power_buffer;
-// fp32 power_ctrl_param[3];
-// fp32 measuredpower;
+power_data_t supercap;
 fp32 pid_param[6];
 uint8_t pid_ready;
 #else
@@ -29,8 +28,7 @@ static m9025_t m9025;
 static m3508_t m3508[4];
 static float gimbal_l_deg[3];
 static upc_t upc;
-static float power_buffer;
-static float powermax;
+static power_data_t supercap;
 #endif
 
 typedef struct {
@@ -48,10 +46,11 @@ static const DTM_Info_t DTM_Map[] = {
     [BUFFER_DATA] = {&power_buffer, sizeof(power_buffer)},
 #ifdef DEBUG_MODE
     [PARAM_DATA] = {pid_param, sizeof(pid_param)},
-    [FLAG_DATA] = {&pid_ready, sizeof(pid_ready)}
-    // [PARAM_DATA] = {power_ctrl_param, sizeof(power_ctrl_param)},
-    // [POWER_DATA] = {measuredpower, sizeof(measuredpower)},
+    [FLAG_DATA] = {&pid_ready, sizeof(pid_ready)},
 #endif
+    // [PARAM_DATA] = {power_ctrl_param, sizeof(power_ctrl_param)},
+    [POWER_DATA] = {&supercap, sizeof(supercap)}
+
 }; // 在此处存储要用于不同任务的数据
 
 static int DTM_GetInfo(const DTM_DataID_t data_id, void **ptr, size_t *size) {
