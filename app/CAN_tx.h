@@ -24,6 +24,7 @@
 
 #define MOTOR_3508_CAN hcan1
 #define MOTOR_9025_CAN hcan1
+#define SUPERCAP_CAN hcan1
 
 #define GIMBAL_CAN hcan2
 
@@ -31,7 +32,7 @@ typedef enum
 {	
 	CAN_3508_SEND_ID = 0x200,
 	CAN_MF_SEND_ID = 0x141,
-	CAN_SUPERCAP_SEND_ID = 0x300,
+	CAN_SUPERCAP_SEND_ID = 0x009,
 }can_tx_id_e;
 
 void CAN_Control3508Current(int16_t motor1, int16_t motor2, int16_t motor3, int16_t motor4);
@@ -45,6 +46,6 @@ void CAN_CBoard_CMD(uint32_t id, uint8_t data[8]);
 void CAN_Set9025PID(uint32_t id, uint8_t param, uint16_t kp, uint16_t ki, uint16_t kd);
 void CAN_Set9025ZeroAngle(uint32_t id);
 void CAN_Read9025Param(uint32_t id, uint8_t param);
-void CAN_SupercapSetPower(fp32 expected_power);
+void CAN_SupercapSetPower(uint8_t use);
 
 #endif

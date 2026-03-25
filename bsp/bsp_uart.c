@@ -113,11 +113,11 @@ void usart6_rec_handler(void)
             {
                 //param_decode(uart6_rx_buffer[0]);
                 //const uint8_t header = find_frame_header(uart6_rx_buffer[0], COMM_BUF_LEN);
-							uint8_t header = 0xA5;
-							uint16_t headers[5];
-								uint8_t header_num = find_frame_headers(uart6_rx_buffer[0], COMM_BUF_LEN, &header, 1, headers, 5);
-							for(int i = 0; i < header_num; i++)
-                upc_decode(&uart6_rx_buffer[0][headers[i]]);
+                uint8_t header = 0xA5;
+                uint16_t headers[5];
+                uint8_t header_num = find_frame_headers(uart6_rx_buffer[0], COMM_BUF_LEN, &header, 1, headers, 5);
+                for(int i = 0; i < header_num; i++)
+                    upc_decode(&uart6_rx_buffer[0][headers[i]]);
             }
             __HAL_DMA_ENABLE(&hdma_usart6_rx);
         }
@@ -134,11 +134,11 @@ void usart6_rec_handler(void)
                 //param_decode(uart6_rx_buffer[1]);
 //                const uint8_t header = find_frame_header(uart6_rx_buffer[1], COMM_BUF_LEN);
 //                upc_decode(&uart6_rx_buffer[1][header]);
-														uint8_t header = 0xA5;
-							uint16_t headers[5];
-								uint8_t header_num = find_frame_headers(uart6_rx_buffer[0], COMM_BUF_LEN, &header, 1, headers, 5);
-							for(int i = 0; i < header_num; i++)
-                upc_decode(&uart6_rx_buffer[1][headers[i]]);
+                uint8_t header = 0xA5;
+                uint16_t headers[5];
+                uint8_t header_num = find_frame_headers(uart6_rx_buffer[1], COMM_BUF_LEN, &header, 1, headers, 5);
+                for(int i = 0; i < header_num; i++)
+                    upc_decode(&uart6_rx_buffer[1][headers[i]]);
             }
             __HAL_DMA_ENABLE(&hdma_usart6_rx);
         }

@@ -27,7 +27,20 @@ Project File Date:  03/21/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\keil5\ARM\ARMCC\Bin'
 Build target 'new_chassis'
-"new_chassis\new_chassis.axf" - 0 Error(s), 0 Warning(s).
+compiling CAN_rx.c...
+..\app\CAN_rx.c(32): warning:  #550-D: variable "mf9025_pid_iq"  was set but never used
+  static uint16_t mf9025_pid_iq[3], mf9025_pid_speed[3], mf9025_pid_angle[3];
+..\app\CAN_rx.c(32): warning:  #550-D: variable "mf9025_pid_speed"  was set but never used
+  static uint16_t mf9025_pid_iq[3], mf9025_pid_speed[3], mf9025_pid_angle[3];
+..\app\CAN_rx.c(32): warning:  #550-D: variable "mf9025_pid_angle"  was set but never used
+  static uint16_t mf9025_pid_iq[3], mf9025_pid_speed[3], mf9025_pid_angle[3];
+..\app\CAN_rx.c(33): warning:  #550-D: variable "mf9025_speed_max"  was set but never used
+  static uint32_t mf9025_speed_max;
+..\app\CAN_rx.c: 4 warnings, 0 errors
+linking...
+Program Size: Code=62508 RO-data=1664 RW-data=816 ZI-data=73464  
+FromELF: creating hex file...
+"new_chassis\new_chassis.axf" - 0 Error(s), 4 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -56,7 +69,7 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:DSP:Library:1.7.0
       Include file:  CMSIS\DSP\Include\arm_math.h
       Library file:  CMSIS\DSP\Lib\ARM\arm_cortexM4lf_math.lib
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:08
 </pre>
 </body>
 </html>

@@ -213,7 +213,7 @@ void motor_ctrl_send(void)
     CAN_Control9025Speed(CAN_MF_SEND_ID, MF9025_MAX_IQ, mf9025_given_speed);
 
 
-    CAN_Control3508Current((int16_t)m3508_ctrl[0].pid.out[0], (int16_t)m3508_ctrl[1].pid.out[0], (int16_t)m3508_ctrl[2].pid.out[0], (int16_t)m3508_ctrl[3].pid.out[0]);
+    //CAN_Control3508Current((int16_t)m3508_ctrl[0].pid.out[0], (int16_t)m3508_ctrl[1].pid.out[0], (int16_t)m3508_ctrl[2].pid.out[0], (int16_t)m3508_ctrl[3].pid.out[0]);
     // 功率控制
     static upc_t upc_ptr;
     static power_data_t power_data_ptr;
@@ -227,7 +227,7 @@ void motor_ctrl_send(void)
         maxpower = SENTINEL_MAXPOWER;
         break;
     case 1: // NAV_RUSH: 冲刺，叠加超电功率
-        maxpower = SENTINEL_MAXPOWER + SUPERCAP_MAXPOWER;
+        maxpower = SENTINEL_MAXPOWER + power_data_ptr.supercap_power;
         break;
     default:
         maxpower = SENTINEL_MAXPOWER;
@@ -255,8 +255,8 @@ void motor_ctrl_send(void)
     MotorPowerObj *motors[4] = {&motorpower[0], &motorpower[1], &motorpower[2], &motorpower[3]};
     allocatePowerWithLimit(motors, &power_ctrl_config, &result);
 
-    // CAN_Control3508Current((int16_t)result.newTorqueCurrent[0], (int16_t)result.newTorqueCurrent[1],
-    //                        (int16_t)result.newTorqueCurrent[2], (int16_t)result.newTorqueCurrent[3]);
+    CAN_Control3508Current((int16_t)result.newTorqueCurrent[0], (int16_t)result.newTorqueCurrent[1],
+                           (int16_t)result.newTorqueCurrent[2], (int16_t)result.newTorqueCurrent[3]);
 }
 
 float param_ptr[2];

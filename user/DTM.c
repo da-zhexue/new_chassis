@@ -9,12 +9,13 @@
 
 #include "DTM.h"
 #include <string.h>
+
+#include "cmsis_gcc.h"
 #ifdef DEBUG_MODE
 rc_t rc;
 TF_t tf;
 m9025_t m9025;
 m3508_t m3508[4];
-fp32 gimbal_s_deg[3];
 fp32 gimbal_l_deg[3];
 upc_t upc;
 fp32 power_buffer;
@@ -28,6 +29,7 @@ static m9025_t m9025;
 static m3508_t m3508[4];
 static float gimbal_l_deg[3];
 static upc_t upc;
+fp32 power_buffer;
 static power_data_t supercap;
 #endif
 
@@ -71,8 +73,11 @@ DTM_Error_t DTM_Write(const DTM_DataID_t data_id, const void *data, const size_t
         return DTM_ERR_UNKNOWN_ID;
     if (size != var_size)
         return DTM_ERR_SIZE_MISMATCH;
-    
+
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
     memcpy(var_ptr, data, size);
+    __set_PRIMASK(primask);
     return DTM_SUCCESS;
 }
 
@@ -85,6 +90,9 @@ DTM_Error_t DTM_Read(const DTM_DataID_t data_id, void *data, const size_t size) 
     if (size != var_size) 
         return DTM_ERR_SIZE_MISMATCH;
 
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
     memcpy(data, var_ptr, size);
+    __set_PRIMASK(primask);
     return DTM_SUCCESS;
 }

@@ -64,6 +64,7 @@ new_chassis\chassis_ctrl.o: ../user/DTM.h
 new_chassis\chassis_ctrl.o: ..\app\CAN_tx.h
 new_chassis\chassis_ctrl.o: ../user/ulog.h
 new_chassis\chassis_ctrl.o: ../bsp/bsp_rng.h
+new_chassis\chassis_ctrl.o: ..\app\CAN_rx.h
 new_chassis\chassis_ctrl.o: ..\app\power_ctrl.h
 new_chassis\chassis_ctrl.o: ..\app\power_ctrl_param_get.h
 new_chassis\chassis_ctrl.o: ../algorithm/rls.h

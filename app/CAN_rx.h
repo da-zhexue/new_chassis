@@ -23,7 +23,8 @@
 
 #define MF9025_ECD_IN_ZERO 0xB3A3
 
-#define SUPERCAP_RX_ID 0x301
+#define SUPERCAP_RX_POWER_ID 0x010
+#define SUPERCAP_RX_REMAIN_ID 0x011
 
 typedef enum
 {	

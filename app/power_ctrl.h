@@ -15,12 +15,12 @@
 
 #define K1_CONST 0.2f
 #define K2_CONST 1.2f
-#define K3_CONST 7.0f
+#define K3_CONST 8.0f
 
-#define SENTINEL_MAXPOWER 100.0f
+#define SENTINEL_MAXPOWER 50.0f
 #define SENTINEL_POWERBUFFER 60.0f
 #define SUPERCAP_MAXPOWER 200.0f
-#define REMAINPOWER_MIN 5.0f
+#define REMAINPOWER_MIN 14.0f
 
 // 电机数据结构
 typedef struct {
