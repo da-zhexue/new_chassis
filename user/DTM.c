@@ -9,8 +9,7 @@
 
 #include "DTM.h"
 #include <string.h>
-
-#include "cmsis_gcc.h"
+#define DEBUG_MODE
 #ifdef DEBUG_MODE
 rc_t rc;
 TF_t tf;
@@ -73,11 +72,7 @@ DTM_Error_t DTM_Write(const DTM_DataID_t data_id, const void *data, const size_t
         return DTM_ERR_UNKNOWN_ID;
     if (size != var_size)
         return DTM_ERR_SIZE_MISMATCH;
-
-    uint32_t primask = __get_PRIMASK();
-    __disable_irq();
     memcpy(var_ptr, data, size);
-    __set_PRIMASK(primask);
     return DTM_SUCCESS;
 }
 
@@ -90,9 +85,6 @@ DTM_Error_t DTM_Read(const DTM_DataID_t data_id, void *data, const size_t size) 
     if (size != var_size) 
         return DTM_ERR_SIZE_MISMATCH;
 
-    uint32_t primask = __get_PRIMASK();
-    __disable_irq();
     memcpy(data, var_ptr, size);
-    __set_PRIMASK(primask);
     return DTM_SUCCESS;
 }

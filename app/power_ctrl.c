@@ -93,7 +93,7 @@ void allocatePowerWithLimit(MotorPowerObj *objs[4], const PowerControllerConfig 
         // 误差较小，完全按功率比例分配
         errorConfidence = 0.0f;
     }
-
+    errorConfidence = 0.0f;
     // 第四步：重新分配功率，计算新输出
     float totalAllocatedPower = 0.0f;
 
@@ -224,9 +224,9 @@ void setMaxPower(PowerControllerConfig * config, const float maxPower) // 裁判
 uint8_t limitMaxPower(PowerControllerConfig * config, const float buffer)
 {
     const float raw_maxPower = config->maxPower;
-    if (buffer - SENTINEL_POWERBUFFER > 1e-5)
+    if (SENTINEL_POWERBUFFER - buffer > 0.01f)
     {
-        config->maxPower = raw_maxPower * 0.80f;
+        config->maxPower = 75.0f;
         return 1;
     }
     return 0;

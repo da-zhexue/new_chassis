@@ -67,7 +67,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
         app/power_ctrl.c
         app/power_ctrl_param_get.c
 
-        #bsp/bsp_buzzer.c
+        bsp/bsp_buzzer.c
         bsp/bsp_can.c
         bsp/bsp_delay.c
         bsp/bsp_dwt.c

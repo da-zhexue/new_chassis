@@ -23,10 +23,12 @@
 void cmd_move_handler(const uint8_t* data, upc_t *upc_ptr);
 void cmd_rotate_handler(const uint8_t* data, upc_t *upc_ptr);
 void cmd_shart_handler(const uint8_t* data, upc_t *upc_ptr);
+void cmd_over_handler(const uint8_t* data, upc_t *upc_ptr);
 void cmd_state_handler(const uint8_t* data, upc_t *upc_ptr);
 void cmd_imu_l_handler(const uint8_t* data);
 void cmd_buffer_handler(const uint8_t* data);
 void cmd_debug_handler(const uint8_t* data);
+void cmd_rc_ctrl_handler(const uint8_t* data, upc_t *upc_ptr);
 
 void upc_send_attitude_handler(void);
 
@@ -54,6 +56,9 @@ uint8_t upc_decode(uint8_t* rx_data)
 		case CMD_START:
 			cmd_shart_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN], &upc_ptr);
 			break;
+		case CMD_OVER:
+			cmd_over_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN], &upc_ptr);
+			break;
 		case CMD_MODE:
 			cmd_state_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN], &upc_ptr);
 			break;
@@ -66,6 +71,9 @@ uint8_t upc_decode(uint8_t* rx_data)
 		case CMD_POWER:
 			cmd_buffer_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN]);
 			break;
+		case CMD_RC:
+			cmd_rc_ctrl_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN], &upc_ptr);
+			break;
 //		case CMD_DEBUG:
 //			cmd_debug_handler(&rx_data[FRAME_HEADER_LEN+CMD_ID_LEN]);
 //			break;
@@ -76,6 +84,11 @@ uint8_t upc_decode(uint8_t* rx_data)
 	DTM_Read(TF_DATA, &tf_ptr, sizeof(tf_ptr));
 	if (upc_ptr.auto_rotate)
 		upc_ptr.gimbal_yaw = -tf_ptr.Big_Gimbal_angle.yaw_total_angle;
+	if ((DWT_GetTimeline_us() - upc_ptr.last_rc_ctrl > 2000000) && upc_ptr.rc_ctrl) // 2s无遥控信号则由上位机控制
+	{
+		upc_ptr.rc_ctrl = 0;
+		upc_ptr.gimbal_yaw = -tf_ptr.Big_Gimbal_angle.yaw_total_angle;
+	}
 	DTM_Write(UPC_DATA, &upc_ptr, sizeof(upc_t));
 	return 0; 
 }
@@ -135,6 +148,23 @@ void cmd_shart_handler(const uint8_t* data, upc_t *upc_ptr)
 {
 	//send_start_handler();
 	upc_ptr->game_start = 1;
+}
+
+void cmd_over_handler(const uint8_t* data, upc_t *upc_ptr)
+{
+	//send_start_handler();
+	upc_ptr->game_start = 0;
+}
+
+void cmd_rc_ctrl_handler(const uint8_t* data, upc_t *upc_ptr)
+{
+	upc_ptr->last_rc_ctrl = DWT_GetTimeline_us();
+	upc_ptr->rc_ctrl = 1;
+	upc_ptr->rc_data.ch0 = (int16_t)((data[1] << 8) | data[0]);
+	upc_ptr->rc_data.ch1 = (int16_t)((data[3] << 8) | data[2]);
+	upc_ptr->rc_data.ch2 = (int16_t)((data[5] << 8) | data[4]);
+	upc_ptr->rc_data.ch3 = (int16_t)((data[7] << 8) | data[6]);
+	OMM_update(UPC_ONLINE);
 }
 
 uint8_t cmd_onlinecb_handler(const uint8_t on)

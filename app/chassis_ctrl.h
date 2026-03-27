@@ -5,8 +5,8 @@
 
 #define RC_VAL_MAX 660.0f
 #define GIMBAL_ANGLE_DELTA_MAX 0.12f
-#define CHASSIS_MAX_V 8.0f
-#define CHASSIS_MAX_W 8.0f
+#define CHASSIS_MAX_V 7.0f
+#define CHASSIS_MAX_W 7.0f
 
 #define CHASSIS_FILTER_VX_BETA 0.2f
 #define CHASSIS_FILTER_VY_BETA 0.2f

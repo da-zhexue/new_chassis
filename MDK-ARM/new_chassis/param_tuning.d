@@ -63,3 +63,5 @@ new_chassis\param_tuning.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/q
 new_chassis\param_tuning.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 new_chassis\param_tuning.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 new_chassis\param_tuning.o: ../app/CAN_tx.h
+new_chassis\param_tuning.o: ../app/power_ctrl.h
+new_chassis\param_tuning.o: ../bsp/bsp_buzzer.h

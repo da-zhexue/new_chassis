@@ -29,7 +29,7 @@ m3508_ctrl_t m3508_ctrl[4];
 m9025_ctrl_t m9025_ctrl;
 
 #else
-static chassis_t chassis_ptr;
+chassis_t chassis_ptr;
 static m3508_ctrl_t m3508_ctrl[4];
 static m9025_ctrl_t m9025_ctrl;
 #endif
@@ -54,11 +54,17 @@ void ctrl_data_update(void)
 
     DTM_Read(RC_DATA, &rc_ptr, sizeof(rc_t));
     DTM_Read(UPC_DATA, &upc_ptr, sizeof(upc_t));
-    //if (!upc_ptr.game_start) return;
-    if(OMM_detect(RC_ONLINE))
-        chassis_ptr.ctrl = rc_ptr.s1;
-    else
-        chassis_ptr.ctrl = CHASSIS_RC_OFFLINE;
+
+    // if(OMM_detect(RC_ONLINE))
+    //     chassis_ptr.ctrl = rc_ptr.s1;
+    // else
+    //     chassis_ptr.ctrl = CHASSIS_RC_OFFLINE;
+
+    // if (!upc_ptr.game_start)
+    //     chassis_ptr.ctrl = CHASSIS_RC_OFFLINE;
+    chassis_ptr.ctrl = CHASSIS_UPC;
+    if (upc_ptr.rc_ctrl)
+        chassis_ptr.ctrl = CHASSIS_RC;
 
     static fp32 vx, vy, vw, yaw_delta;
     static fp32 vx_filter, vy_filter, vw_filter;
@@ -67,12 +73,19 @@ void ctrl_data_update(void)
     {
         chassis_ptr.mode = 0;
         upc_ptr.start_upc_flag = 0;
-        vx = (fp32)rc_ptr.ch3 * CHASSIS_MAX_V / RC_VAL_MAX;
-        vy = (fp32)rc_ptr.ch2 * CHASSIS_MAX_V / RC_VAL_MAX;
-        vw = (fp32)rc_ptr.ch1 * CHASSIS_MAX_W / RC_VAL_MAX;
+        // vx = (fp32)rc_ptr.ch3 * CHASSIS_MAX_V / RC_VAL_MAX;
+        // vy = (fp32)rc_ptr.ch2 * CHASSIS_MAX_V / RC_VAL_MAX;
+        // vw = (fp32)rc_ptr.ch1 * CHASSIS_MAX_W / RC_VAL_MAX;
+        //
+        // chassis_ptr.gimbal_shutdown_flag = 0;
+        // yaw_delta = (fp32)rc_ptr.ch0 * GIMBAL_ANGLE_DELTA_MAX / RC_VAL_MAX;
+        // chassis_ptr.given_gimbal_l_yaw += yaw_delta;
+        vx = (fp32)upc_ptr.rc_data.ch3 * CHASSIS_MAX_V / RC_VAL_MAX;
+        vy = (fp32)upc_ptr.rc_data.ch2 * CHASSIS_MAX_V / RC_VAL_MAX;
+        vw = (fp32)upc_ptr.rc_data.ch1 * CHASSIS_MAX_W / RC_VAL_MAX;
 
         chassis_ptr.gimbal_shutdown_flag = 0;
-        yaw_delta = (fp32)rc_ptr.ch0 * GIMBAL_ANGLE_DELTA_MAX / RC_VAL_MAX;
+        yaw_delta = (fp32)upc_ptr.rc_data.ch0 * GIMBAL_ANGLE_DELTA_MAX / RC_VAL_MAX;
         chassis_ptr.given_gimbal_l_yaw += yaw_delta;
     }
     else if(chassis_ptr.ctrl == CHASSIS_UPC) // @TODO: 理论上需要做不同控制模式切换时数据不突变，但哨兵应该用不到，不想做了qwq
@@ -81,10 +94,13 @@ void ctrl_data_update(void)
         // if(OMM_detect(UPC_ONLINE))
         // {
             chassis_ptr.mode = upc_ptr.mode;
-           
-            vx = loop_float_constrain(upc_ptr.vx, -CHASSIS_MAX_V, CHASSIS_MAX_V);
-            vy = loop_float_constrain(upc_ptr.vy, -CHASSIS_MAX_V, CHASSIS_MAX_V);
-            vw = loop_float_constrain(upc_ptr.vw, -CHASSIS_MAX_W, CHASSIS_MAX_W);
+
+            vx = upc_ptr.vx;
+            vy = upc_ptr.vy;
+            vw = upc_ptr.vw;
+            float_constrain(&vx, -CHASSIS_MAX_V, CHASSIS_MAX_V);
+            float_constrain(&vy, -CHASSIS_MAX_V, CHASSIS_MAX_V);
+            float_constrain(&vw, -CHASSIS_MAX_W, CHASSIS_MAX_W);
 
             chassis_ptr.gimbal_shutdown_flag = 0;
             chassis_ptr.gimbal_auto_rotate = upc_ptr.auto_rotate;
@@ -148,7 +164,7 @@ void motor_ctrl_update(void)
     switch(chassis_ptr.mode)
     {
         case SPINNING_TOP:
-            chassis_w = 2000.0f;
+            chassis_w = 3000.0f;
             // case穿透，将转速设为定值后继续执行跟随底盘模式逻辑
         case FOLLOW_CHASSIS:
         {
@@ -238,7 +254,7 @@ void motor_ctrl_send(void)
     if (power_data_ptr.remain_power < REMAINPOWER_MIN)
         maxpower = SENTINEL_MAXPOWER;
 
-    setMaxPower(&power_ctrl_config, maxpower);
+    //setMaxPower(&power_ctrl_config, maxpower);
 
     static fp32 energy_buffer;
     DTM_Read(BUFFER_DATA, &energy_buffer, sizeof(energy_buffer));
@@ -255,8 +271,7 @@ void motor_ctrl_send(void)
     MotorPowerObj *motors[4] = {&motorpower[0], &motorpower[1], &motorpower[2], &motorpower[3]};
     allocatePowerWithLimit(motors, &power_ctrl_config, &result);
 
-    CAN_Control3508Current((int16_t)result.newTorqueCurrent[0], (int16_t)result.newTorqueCurrent[1],
-                           (int16_t)result.newTorqueCurrent[2], (int16_t)result.newTorqueCurrent[3]);
+     CAN_Control3508Current((int16_t)result.newTorqueCurrent[0], (int16_t)result.newTorqueCurrent[1], (int16_t)result.newTorqueCurrent[2], (int16_t)result.newTorqueCurrent[3]);
 }
 
 float param_ptr[2];
@@ -288,6 +303,7 @@ void motor_param_get()
     param_ptr[1] = ctx.k2;
 }
 
+extern uint16_t mf9025_pid_speed[3];
 void chassis_ctrl_init(void)
 {
     static m9025_t m9025_ptr;
@@ -330,8 +346,13 @@ void chassis_ctrl_init(void)
         osDelay(5);
         DTM_Read(M9025_DATA, &m9025_ptr, sizeof(m9025_ptr));
     }
+    osDelay(500);
+    // while (!(mf9025_pid_speed[0] == MF9025_SPEED_PID[0] && mf9025_pid_speed[1] == MF9025_SPEED_PID[1] && mf9025_pid_speed[2] == MF9025_SPEED_PID[2]))
+    // {
+    //     CAN_Set9025PID(CAN_MF_SEND_ID, CONTROL_PARAM_9025_SPEED_PID, MF9025_SPEED_PID[0], MF9025_SPEED_PID[1], MF9025_SPEED_PID[2]);
+    //     osDelay(5);
+    // }
     CAN_Set9025PID(CAN_MF_SEND_ID, CONTROL_PARAM_9025_SPEED_PID, MF9025_SPEED_PID[0], MF9025_SPEED_PID[1], MF9025_SPEED_PID[2]);
-    osDelay(5);
     // CAN_Read9025Param(CAN_MF_SEND_ID, CONTROL_PARAM_9025_SPEED_MAX);
     // osDelay(5);
     for(int i = 0; i < 4; i++)

@@ -1,4 +1,6 @@
 #include "bsp_buzzer.h"
+
+#include "cmsis_os.h"
 #include "main.h"
 extern TIM_HandleTypeDef htim4;
 void buzzer_on(uint16_t psc, uint16_t pwm)
@@ -10,4 +12,74 @@ void buzzer_on(uint16_t psc, uint16_t pwm)
 void buzzer_off(void)
 {
     __HAL_TIM_SetCompare(&htim4, TIM_CHANNEL_3, 0);
+}
+
+void buzzer_tone(const int frequency)
+{
+    if (frequency <= 0) // 处理休止符 (NOTE_D0)
+    {
+        buzzer_off();
+        return;
+    }
+
+    const uint32_t timer_clock = 1000000;
+    const uint16_t arr = (timer_clock / frequency) - 1;
+    const uint16_t pwm = arr / 2; // 50% 占空比，声音最响亮
+
+    buzzer_on(167, pwm); // 167 是预分频器值，确保计数器时钟为 1MHz
+    __HAL_TIM_SET_AUTORELOAD(&htim4, arr);           // 设置频率
+
+    // 启动 PWM
+    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
+}
+
+uint16_t music_speed=250;
+int tune[] =
+{
+  NOTE_DL7, NOTE_D1, NOTE_D2, NOTE_D5, NOTE_DL6, NOTE_DL7, NOTE_D1, NOTE_D5, NOTE_DL5, NOTE_DL6, NOTE_D1, NOTE_D3, NOTE_D3, NOTE_DL3, NOTE_DL4, NOTE_DL5, NOTE_D1, NOTE_D1, NOTE_DL2, NOTE_DL3, NOTE_DL4, NOTE_D1, NOTE_DL7,
+  NOTE_D2, NOTE_D0, NOTE_D2, NOTE_D0, NOTE_D2, NOTE_D0, NOTE_D2, NOTE_DL3, NOTE_D1, NOTE_D0, NOTE_D1, NOTE_D0, NOTE_D1, NOTE_D0, NOTE_D1, NOTE_DL3, NOTE_D2, NOTE_D0, NOTE_D2, NOTE_D0, NOTE_D2, NOTE_D0, NOTE_D2, NOTE_DL3, NOTE_D1, NOTE_D0, NOTE_D1, NOTE_D0, NOTE_D1, NOTE_D0, NOTE_D1, NOTE_DL3,
+  NOTE_D1, NOTE_D2, NOTE_D3, NOTE_D3, NOTE_D3, NOTE_DL6, NOTE_DL7, NOTE_D1, NOTE_D3, NOTE_D2, NOTE_D1,
+  NOTE_D2, NOTE_D2, NOTE_DL5, NOTE_DL6, NOTE_DL7, NOTE_D2, NOTE_D1, NOTE_DL7, NOTE_D1, NOTE_D1, NOTE_DL4, NOTE_DL5, NOTE_DL6, NOTE_D1, NOTE_D1, NOTE_DL7, NOTE_DL6, NOTE_DL7,
+  NOTE_DL7, NOTE_D1, NOTE_DL7, NOTE_DL6, NOTE_D0, NOTE_D0, NOTE_DL6, NOTE_DL7, NOTE_D1, NOTE_D2, NOTE_D3, NOTE_D0, NOTE_DL6, NOTE_D3, NOTE_D2, NOTE_D2, NOTE_D1,
+  NOTE_D2, NOTE_D2, NOTE_DL5, NOTE_DL6, NOTE_DL7, NOTE_D2, NOTE_D3, NOTE_D3, NOTE_DL7, NOTE_D1, NOTE_D1, NOTE_D5, NOTE_D4, NOTE_D3, NOTE_D3, NOTE_D2, NOTE_D2, NOTE_D1,
+  NOTE_D3, NOTE_D0, NOTE_D0, NOTE_D0, NOTE_D0, NOTE_D3, NOTE_D4, NOTE_DH2, NOTE_D3, NOTE_DH2, NOTE_D3, NOTE_D4, NOTE_DH2, NOTE_D3, NOTE_D4, NOTE_DH1, NOTE_D2, NOTE_D3, NOTE_D7, NOTE_D2,
+  NOTE_D2, NOTE_D3, NOTE_D7, NOTE_D2, NOTE_D3, NOTE_D7, NOTE_D2, NOTE_D3, NOTE_D7, NOTE_D2, NOTE_D3, NOTE_D7, NOTE_D1, NOTE_D2, NOTE_DL5, NOTE_DL6, NOTE_DL7, NOTE_D1, NOTE_D2, NOTE_D3, NOTE_D4, NOTE_D5, NOTE_D6, NOTE_D5, NOTE_D4, NOTE_D3,
+  NOTE_DH2, NOTE_DH1, NOTE_D7, NOTE_D6, NOTE_D6, NOTE_D5_,
+  NOTE_D6, NOTE_D5_, NOTE_D6_, NOTE_D3, NOTE_D0, NOTE_DH3, NOTE_DH2, NOTE_DH1, NOTE_D7, NOTE_D6,
+  NOTE_D6, NOTE_D5, NOTE_D5, NOTE_D0, NOTE_DH2, NOTE_DH1, NOTE_D7, NOTE_D6, NOTE_D5, NOTE_D5, NOTE_DH1, NOTE_DH1, NOTE_D0, NOTE_DH5, NOTE_DH4, NOTE_DH3,
+  NOTE_DH3, NOTE_D6, NOTE_D6, NOTE_D6, NOTE_D7, NOTE_DH1, NOTE_DH2, NOTE_DH3, NOTE_DH3, NOTE_D6, NOTE_D7, NOTE_DH1, NOTE_DH3, NOTE_DH2, NOTE_DH2, NOTE_DH2, NOTE_DH1,
+  NOTE_DH2, NOTE_DH2, NOTE_D5, NOTE_D7, NOTE_DH2, NOTE_DH4, NOTE_DH3, NOTE_DH3, NOTE_DH3, NOTE_DH5, NOTE_D0, NOTE_DH1, NOTE_DH1, NOTE_D0, NOTE_D6, NOTE_D7, NOTE_DH1, NOTE_DH1, NOTE_D7,
+  NOTE_D7, NOTE_D7, NOTE_D6, NOTE_D6, NOTE_DH2, NOTE_DH1_,
+  NOTE_DL7, NOTE_D1, NOTE_D2, NOTE_D5, NOTE_DL7, NOTE_D1, NOTE_D2, NOTE_D5, NOTE_DL6, NOTE_DL7, NOTE_D1, NOTE_D3, NOTE_D3, NOTE_DL3, NOTE_DL4, NOTE_DL5, NOTE_D2, NOTE_DL3, NOTE_DL4, NOTE_DL5, NOTE_D1, NOTE_DL2, NOTE_DL3, NOTE_DL4, NOTE_D1, NOTE_DL4,
+  NOTE_DH1, NOTE_D7, NOTE_DH1, NOTE_DH1
+};
+float duration[] =
+{
+  1,1,1,1,1,1,1,1, 1,1,1,1,4, 1,1,1,1,1,1,1,1, 4,4,
+  1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
+  8, 4,4, 4,1,1,1,1, 2,4,1,
+  4,1,1,1,1, 2,4,2, 4,1,1,1,1, 1,1,2,2,2,
+  2,0.5,0.5,4, 2,2,1,1,1,1, 6,1,1, 2,1,2,2,
+  4,1,1,1,1, 2,1,2,2, 4,1,1,1,1, 2,2,2,1,
+  8, 2,2,2,2, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,
+  1,1,1,1,1,1,1,1, 1,1,1,1,1,1,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25, 4,4, 4,4,
+  4,4, 4,4, 8, 8,
+  8, 4,4, 8, 1,1,1,1,2,2,
+  2,1,4, 1,1,1,1,2,2, 2,1,4, 2,2,2,2,
+  2,1,4, 2,2,2,2, 4,1,1,1,1, 2,1,1,2,2,
+  4,1,1,1,1, 2,1,1,1,2, 0.5,1,6, 1,1,1,1,2,1,
+  6,1,1, 8, 8, 8,
+  1,1,1,1,1,1,1,1, 1,1,1,1,4, 1,1,1,1,1,1,1,1, 1,1,1,1,4,
+  8,8,8,8,
+};
+uint16_t music_length = sizeof(tune) / sizeof(tune[0]);
+
+void music()
+{
+    for (uint16_t i = 0; i < music_length; i++)
+    {
+        buzzer_tone(tune[i]);
+        osDelay((uint32_t)((fp32)music_speed * duration[i]));
+        buzzer_off();
+    }
 }

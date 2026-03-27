@@ -29,7 +29,7 @@ void get_motor_3508_measure(const uint8_t motor, const uint8_t* rx_data)
     OMM_update(M3508_0_ONLINE + motor);
 }
 
-static uint16_t mf9025_pid_iq[3], mf9025_pid_speed[3], mf9025_pid_angle[3];
+uint16_t mf9025_pid_iq[3], mf9025_pid_speed[3], mf9025_pid_angle[3];
 static uint32_t mf9025_speed_max;
 void get_motor_9025_control_param(const uint8_t* rx_data)
 {
@@ -87,6 +87,7 @@ void CAN_9025_MeasureProcess(const uint8_t* rx_data)
             //get_motor_9025_ecd_data(motor_9025->motor_9025_ecd_data, rx_data); 
             //该数据需要发送指令读取，即使发送指令不知为何在非调试模式下无法更新数据
             break;
+    	case 0xC1:
         case CMD_9025_READ_CONTROL_PARAM: //read control param
             get_motor_9025_control_param(rx_data);
             break;

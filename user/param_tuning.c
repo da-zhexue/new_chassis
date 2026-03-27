@@ -7,7 +7,7 @@
 #include "user_lib.h"
 #include "CAN_tx.h"
 #include "power_ctrl.h"
-
+#include "bsp_buzzer.h"
 
 #ifdef DEBUG_MODE
 extern chassis_t chassis_ptr;
@@ -21,6 +21,8 @@ void param_tuning_Task(void const *argument)
     while(1) {
         tx_handler();
         osDelay(1);
+        // music();
+        // osDelay(500);
     }
 }
 

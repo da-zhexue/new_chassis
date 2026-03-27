@@ -13,11 +13,11 @@
 #define M3508_CURRENT_LIMIT 20.0f // M3508最大电流 C620说明书给出最大输出20A
 #define M3508_OUTPUT_LIMIT 16384.0f // 归一化输出上限 -16384~16384 -> -20A~20A
 
-#define K1_CONST 0.2f
+#define K1_CONST 0.22f
 #define K2_CONST 1.2f
-#define K3_CONST 8.0f
+#define K3_CONST 4.0f
 
-#define SENTINEL_MAXPOWER 50.0f
+#define SENTINEL_MAXPOWER 90.0f
 #define SENTINEL_POWERBUFFER 60.0f
 #define SUPERCAP_MAXPOWER 200.0f
 #define REMAINPOWER_MIN 14.0f

@@ -23,10 +23,12 @@ typedef enum
 	CMD_MOVE = 0x103,
 	CMD_ROTATE = 0x104,
 	CMD_MODE = 0x105,
-	CMD_START = 0x106,
+	CMD_START = 0xAAA,
+	CMD_OVER = 0xBBB,
 	CMD_ONLINECB = 0x107,
 	CMD_POWER = 0x108,
 	CMD_DEBUG = 0x133,
+	CMD_RC = 0x909,
 
 } upc_cmd_t;
 

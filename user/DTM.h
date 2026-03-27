@@ -79,6 +79,9 @@ typedef struct
     uint8_t mode;
     uint8_t auto_rotate;
     uint8_t nav_state;
+    uint8_t rc_ctrl;
+    uint64_t last_rc_ctrl;
+    rc_t rc_data;
 
     float vx, vy, vw;
     float gimbal_yaw, chassis_yaw;
